@@ -9,6 +9,7 @@ You will need [Node](https://nodejs.org/en/download/current/) 7.9 or above, and 
 ```
 git clone https://github.com/UCDClassNitta/ECS160Tools.git
 cd ECS160Tools
+git checkout electron
 npm install
 npm start
 ```
