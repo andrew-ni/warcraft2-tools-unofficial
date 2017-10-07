@@ -5,6 +5,7 @@
 		// Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
 		"krizzdewizz.tag-rename",
 		"bradgashler.htmltagwrap",
-		"michelemelluso.code-beautifier"
+		"michelemelluso.code-beautifier",
+		"eg2.tslint"
 	]
 }
