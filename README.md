@@ -33,7 +33,23 @@ An electron app consists of two (or more) threads. The first is the Main Process
 
 Please try to follow this [Style Guide](https://github.com/agis/git-style-guide#table-of-contents) when using Git.
 
-#### Sample workflow for making new features/changes:
+### Code Formatting
+
+Keeping a consistent code format is important and reduces the occurrences of merge conflicts.
+
+To keep a consistent style on all platforms we are using [TypeScript Formatter (tsfmt)](https://github.com/vvakame/typescript-formatter) and [TS Lint](https://github.com/palantir/tslint).
+
+#### Visual Studio Code
+If you are using VS Code as your editor (and you've install the recommended workspace extensions: `ctrl+shift+p` and type `workspace recommended` to view them) then the formatting should happen automatically.
+
+#### Formatting using the command line
+The following commands are available to help with formatting the code:
+- `npm run lint`  Checks the code for formatting errors but does not fix them
+- `npm run format` Will check for errors and fix as many as it can automatically
+
+**Always format your code before commiting**
+
+### Sample workflow for making new features/changes:
   1. Checkout `dev` and pull the latest changes from GitHub
      - `git checkout dev`
      - `git pull origin dev`
@@ -56,6 +72,3 @@ Please try to follow this [Style Guide](https://github.com/agis/git-style-guide#
      - `git push origin <branch-name>`
   6. Create a pull request on GitHub.
      - `GitHub` > `Pull requests` >  `New pull request` > `compare: <branch-name>` > `Create pull request` > Fill in the description > `Create pull request`
-
-# Code Formatting
-TODO
