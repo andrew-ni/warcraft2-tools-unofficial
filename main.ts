@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
+import { buildMenu } from './main/menubar';
 
 const url = require('url');
 
@@ -19,6 +20,10 @@ function start() {
 function createWindow(openDevTools: boolean) {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
+
+  // create menubar
+  buildMenu(mainWindow.webContents);
+
   mainWindow.maximize();
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
