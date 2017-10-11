@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {ipcRenderer} from 'electron';
+import { ipcRenderer } from 'electron';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,11 @@ export class AppComponent {
   constructor() {
     // register listener on construction
     ipcRenderer.on('menu:file:new', (event) => {
-      console.log('new button clicked');
+      console.log('menu:file:new');
     });
+  }
+
+  buttonClick() {
+    this.title = 'button clicked';
   }
 }

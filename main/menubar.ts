@@ -1,4 +1,4 @@
-import { app, Menu } from 'electron';
+import { Menu } from 'electron';
 
 export function buildMenu(window: Electron.WebContents): void {
   const template = [
