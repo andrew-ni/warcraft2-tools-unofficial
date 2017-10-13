@@ -45,6 +45,6 @@ export module IO {
     if (filepath === undefined) {
       dialog.showSaveDialog(options, (path: string) => filepath = path);
     }
-    fs.writeFile(filepath, data, () => {});
+    fs.writeFile(filepath, data, () => { });
   }
 }

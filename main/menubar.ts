@@ -14,13 +14,13 @@ export function buildMenu(window: Electron.WebContents): void {
           label: 'Load Map',
           click() {
             IO.loadMap(window);
-           }
+          }
         },
         {
           label: 'Save Map',
           click() {
             window.send('menu:file:save');
-        }
+          }
         },
         {
           label: 'Save Map As...',
