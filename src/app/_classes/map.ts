@@ -1,10 +1,11 @@
+import { Tile } from './tile';
 export class Map {
-  
+
     // `mapData` is the raw file contents
     constructor(mapData: string) {
       this.parseMapData(mapData);
     }
-  
+
     private parseMapData(mapData: string): void {
       const Map: Tile[] = new Array();
       for (let i = 0, len = mapData.length; i < len; i++) {
@@ -47,4 +48,4 @@ export class Map {
       }
     }
   }
-  
+
