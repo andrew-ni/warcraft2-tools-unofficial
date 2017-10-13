@@ -18,7 +18,7 @@ function start() {
   if (serve) require('electron-reload')(__dirname, {});
 }
 
-function createWindow(openDevTools: boolean) {
+async function createWindow(openDevTools: boolean) {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
 

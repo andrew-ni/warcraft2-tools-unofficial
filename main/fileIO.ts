@@ -10,7 +10,7 @@ const options = {
 // Module is like a namespace so we don't polute the global space
 export module IO {
   // Note it is async, opening files take a long time and we don't want to block the thread
-  export function loadMap(window: Electron.WebContents) {
+  export async function loadMap(window: Electron.WebContents) {
     console.log('loadMap');
 
 
@@ -39,7 +39,7 @@ export module IO {
   */
 
   // Renderer allows us to save
-  export function saveMap(window: Electron.WebContents, data: string, filepath: string) {
+  export async function saveMap(window: Electron.WebContents, data: string, filepath: string) {
     console.log('saveMap');
 
     if (filepath === undefined) {
