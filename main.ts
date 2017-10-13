@@ -74,6 +74,3 @@ start();
 ipcMain.on('map:save', (event, data: string, filepath?: string) => {
   IO.saveMap(event.sender, data, filepath);
 });
-
-
-
