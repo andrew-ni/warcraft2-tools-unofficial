@@ -1,4 +1,5 @@
 import { Menu } from 'electron';
+import { IO } from './fileIO';
 
 export function buildMenu(window: Electron.WebContents): void {
   const template = [
@@ -11,7 +12,9 @@ export function buildMenu(window: Electron.WebContents): void {
         },
         {
           label: 'Load Map',
-          click() { window.send('menu:file:open'); }
+          click() {
+            IO.loadMap(window);
+           }
         },
         {
           label: 'Save Map',
