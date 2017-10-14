@@ -1,12 +1,23 @@
 import { Tile } from './tile';
+import { IMap } from './map.model';
+
 export class Map {
+    imap: IMap;
+    nameStr: string;
+    dimStr: string;
+    terrainStr: string;
+    partialStr: string;
+    numPlayersStr: string;
+    startResStr: string;
+    numAssetsStr: string;
+    startAssetsStr: string;
 
     // `mapData` is the raw file contents
     constructor(mapData: string) {
-      this.parseMapData(mapData);
+      this.imap = this.parseMapData(mapData);
     }
 
-    private parseMapData(mapData: string): void {
+    private parseMapData(mapData: string): IMap {
       const Map: Tile[] = new Array();
       for (let i = 0, len = mapData.length; i < len; i++) {
         console.log(i);
@@ -44,8 +55,11 @@ export class Map {
           default:
             Map.push(new Tile('PARSEFAIL', ''));
             break;
+
+
         }
       }
+      return null;
     }
   }
 
