@@ -1,8 +1,8 @@
 import { IAsset } from './asset.model';
 
 export class Asset {
-    iasset: IAsset;
+  iasset: IAsset;
 
-    constructor() {
-    }
+  constructor() {
   }
+}
