@@ -1,5 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+import { buildMenu } from './main/menubar';
+import { IO } from './main/fileIO';
 
 const url = require('url');
 
@@ -16,9 +18,13 @@ function start() {
   if (serve) require('electron-reload')(__dirname, {});
 }
 
-function createWindow(openDevTools: boolean) {
+async function createWindow(openDevTools: boolean) {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
+
+  // create menubar
+  buildMenu(mainWindow.webContents);
+
   mainWindow.maximize();
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -61,4 +67,10 @@ app.on('activate', function() {
   }
 });
 
+
 start();
+
+// save map file
+ipcMain.on('map:save', (event, data: string, filepath?: string) => {
+  IO.saveMap(event.sender, data, filepath);
+});
