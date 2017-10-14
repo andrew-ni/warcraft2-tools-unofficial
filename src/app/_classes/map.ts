@@ -4,8 +4,8 @@ import { Asset } from './asset';
 
 export class Map {
   name: string;
-  x: number;
-  y: number;
+  width: number;
+  height: number;
   mapLayer1: Tile[][];
   players: Player[] = [];
   assets: Asset[] = [];
@@ -16,30 +16,24 @@ export class Map {
   }
 
   private parseMapData(mapData: string): void {
-    this.name = this.parseName(mapData);
-    [this.x, this.y] = this.parseDimensions(mapData);
-    this.mapLayer1 = this.parseTerrain(mapData);
-    this.players = this.parsePlayers(mapData);
-    this.assets = this.parseAssets(mapData);
+    const [, name, dimension, terrain, bits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
+
+    this.name = name.trim();
+    [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
+    this.mapLayer1 = this.parseTerrain(terrain);
+    this.players = this.parsePlayers(players);
+    this.assets = this.parseAssets(assets);
   }
 
-  private parseName(mapData: string): string {
-    return '';
-  }
-
-  private parseDimensions(mapData: string): number[] {
+  private parseTerrain(terrainData: string): Tile[][] {
     return null;
   }
 
-  private parseTerrain(mapData: string): Tile[][] {
+  private parsePlayers(playersData: string): Player[] {
     return null;
   }
 
-  private parsePlayers(mapData: string): Player[] {
-    return null;
-  }
-
-  private parseAssets(mapData: string): Asset[] {
+  private parseAssets(assetsData: string): Asset[] {
     return null;
   }
 
