@@ -11,6 +11,7 @@ export class Map {
   startResStr: string;
   numAssetsStr: string;
   startAssetsStr: string;
+<<<<<<< HEAD
   mapArray: Tile[][] = [[]];
 
   // `mapData` is the raw file contents
@@ -21,6 +22,30 @@ export class Map {
   private parseMapData(mapData: string): IMap {
     for (let i = 0; i < 10/*todo*/; i++) {
       for (let j = 0; j < 10 /*todo*/; j++) {
+=======
+
+  // `mapData` is the raw file contents
+  constructor(mapData: string) {
+    this.height = 5;
+    this.width = 5;
+    this.mapArray = new Array(5);
+    for (let i = 0; i < this.height; i++) {
+      this.mapArray[i] = new Array(5);
+      for (let j = 0; j < this.width; j++) {
+        this.mapArray[i][j] = new Tile('', '');
+      }
+    }
+    this.parseMapData(mapData);
+  }
+  height: number;
+  width: number;
+  mapArray: Tile[][];
+
+
+  private parseMapData(mapData: string): void {
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+>>>>>>> cleaned up map.ts
         switch (mapData[i]) {
           case 'G':
             this.mapArray[i][j] = new Tile('DarkGrass', '');
@@ -58,6 +83,9 @@ export class Map {
         }
       }
     }
+<<<<<<< HEAD
     return null;
+=======
+>>>>>>> cleaned up map.ts
   }
 }
