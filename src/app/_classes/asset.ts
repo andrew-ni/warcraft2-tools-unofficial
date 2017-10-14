@@ -1,7 +1,8 @@
-import { IAsset } from './asset.model';
-
 export class Asset {
-  iasset: IAsset;
+  playerid: number;
+  type: string;
+  x: number;
+  y: number;
 
   constructor() {
   }

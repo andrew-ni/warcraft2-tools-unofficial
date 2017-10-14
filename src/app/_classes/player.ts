@@ -1,7 +1,10 @@
-import { IPlayer } from './player.model';
+import { Asset } from './asset';
 
 export class Player {
-  iplayer: IPlayer;
+  id: number;
+  gold: number;
+  lumber: number;
+  assets: Asset[];
 
   constructor() {
   }
