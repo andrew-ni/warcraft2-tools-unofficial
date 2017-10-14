@@ -8,34 +8,30 @@ export class Map {
   numPlayers: number;
   numAssets: number;
   mapLayer1: Tile[][];
-  players: Player[];
+  players: Player[] = [];
 
   // `mapData` is the raw file contents
   constructor(mapData: string) {
     this.parseMapData(mapData);
   }
 
-  /*
-  name: string;
-  x: number;
-  y: number;
-  numPlayers: number;
-  numAssets: number;
-  mapLayer1: Tile[][];
-  players: Player[];
-  */
-
   private parseMapData(mapData: string): void {
-    this.name = 'asdf'; // SPLIT MAPDATA
+    this.name = this.parseName(mapData);
 
-    [this.x, this.y] = this.parseDim(mapData);
+    [this.x, this.y] = this.parseDimensions(mapData);
 
     this.numPlayers = this.parseNumPlayers(mapData);
     this.numAssets = this.parseNumAssets(mapData);
 
-    this.mapLayer1 = this.setTerrain(mapData);
-    this.players = this.createPlayers(this.numPlayers, mapData);
+    this.mapLayer1 = this.parseTerrain(mapData);
+    this.players = this.parsePlayers(this.numPlayers, mapData);
+  }
 
+  private parseName(mapData: string): string {
+    return '';
+  }
+
+  private parseDimensions(mapData: string): number[] {
     return null;
   }
 
@@ -47,17 +43,14 @@ export class Map {
     return 10;
   }
 
-  private parseDim(mapData: string): number[] {
+  private parseTerrain(mapData: string): Tile[][] {
     return null;
   }
 
-  private createPlayers(numPlayers: number, mapData: string): Player[] {
+  private parsePlayers(numPlayers: number, mapData: string): Player[] {
     return null;
   }
 
-  private setTerrain(mapData: string): Tile[][] {
-    return null;
-  }
 
   // private parseMapData(mapData: string): IMap {
   //   for (let i = 0; i < 10/*todo*/; i++) {
