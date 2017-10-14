@@ -1,14 +1,14 @@
 import { Tile } from './tile';
 import { Player } from './player';
+import { Asset } from './asset';
 
 export class Map {
   name: string;
   x: number;
   y: number;
-  numPlayers: number;
-  numAssets: number;
   mapLayer1: Tile[][];
   players: Player[] = [];
+  assets: Asset[] = [];
 
   // `mapData` is the raw file contents
   constructor(mapData: string) {
@@ -17,14 +17,10 @@ export class Map {
 
   private parseMapData(mapData: string): void {
     this.name = this.parseName(mapData);
-
     [this.x, this.y] = this.parseDimensions(mapData);
-
-    this.numPlayers = this.parseNumPlayers(mapData);
-    this.numAssets = this.parseNumAssets(mapData);
-
     this.mapLayer1 = this.parseTerrain(mapData);
-    this.players = this.parsePlayers(this.numPlayers, mapData);
+    this.players = this.parsePlayers(mapData);
+    this.assets = this.parseAssets(mapData);
   }
 
   private parseName(mapData: string): string {
@@ -35,19 +31,15 @@ export class Map {
     return null;
   }
 
-  private parseNumPlayers(mapData: string): number {
-    return 10;
-  }
-
-  private parseNumAssets(mapData: string): number {
-    return 10;
-  }
-
   private parseTerrain(mapData: string): Tile[][] {
     return null;
   }
 
-  private parsePlayers(numPlayers: number, mapData: string): Player[] {
+  private parsePlayers(mapData: string): Player[] {
+    return null;
+  }
+
+  private parseAssets(mapData: string): Asset[] {
     return null;
   }
 
