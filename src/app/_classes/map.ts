@@ -18,7 +18,6 @@ export class Map {
   private parseMapData(mapData: string): void {
     const [, name, dimension, terrain, bits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
-
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
     this.mapLayer1 = this.parseTerrain(terrain);
@@ -74,24 +73,24 @@ export class Map {
     return mapArray;
   }
 
-  private parsePlayers(playersData: string, assetData: Asset[]): Player[] {
+  private parsePlayers(playersData: string, assets: Asset[]): Player[] {
     const players: Player[] = [];
     const lines = playersData.split('\r\n');
 
     let line: string;
-    let lineArray = [];
+    let lineArray: string[];
     let asset: Asset;
     let player: Player;
 
     for (line of lines) {
       lineArray = line.split(' ');
-      players.push(new Player(lineArray[0], lineArray[1], lineArray[2]));
+      players.push(new Player(Number(lineArray[0]), Number(lineArray[1]), Number(lineArray[2])));
     }
 
-    for (asset of assetData) {
+    for (asset of assets) {
       // players[asset.owner].assets.push(asset); won't work if players aren't listed by id-order
       for (player of players) {
-        // can't use triple equals. use double even if tslint complains
+        // tslint:disable-next-line:triple-equals ; we have to use double equals here
         if (asset.owner == player.id) {
           player.assets.push(asset);
         }
@@ -102,18 +101,16 @@ export class Map {
   }
 
   private parseAssets(assetsData: string): Asset[] {
+    const parsedAssets: Asset[] = [];
     const lines = assetsData.split('\r\n');
 
     let line: string;
     let lineArray: string[];
 
-    const parsedAssets: Asset[] = [];
-
     for (line of lines) {
       lineArray = line.split(' ');
-
       // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset( Number( lineArray[1] ), lineArray[0], Number(lineArray[2]), Number(lineArray[3]) ));
+      parsedAssets.push(new Asset(Number(lineArray[1]), lineArray[0], Number(lineArray[2]), Number(lineArray[3])));
     }
 
     return parsedAssets;
