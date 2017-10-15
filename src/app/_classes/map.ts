@@ -77,21 +77,15 @@ export class Map {
     const players: Player[] = [];
     const lines = playersData.split('\r\n');
 
-    let line: string;
-    let lineArray: string[];
-    let asset: Asset;
-    let player: Player;
-
-    for (line of lines) {
-      lineArray = line.split(' ');
-      players.push(new Player(Number(lineArray[0]), Number(lineArray[1]), Number(lineArray[2])));
+    for (const line of lines) {
+      const [id, gold, lumber] = line.split(' ').map((x) => parseInt(x, 10));
+      players.push(new Player(id, gold, lumber));
     }
 
-    for (asset of assets) {
+    for (const asset of assets) {
       // players[asset.owner].assets.push(asset); won't work if players aren't listed by id-order
-      for (player of players) {
-        // tslint:disable-next-line:triple-equals ; we have to use double equals here
-        if (asset.owner == player.id) {
+      for (const player of players) {
+        if (asset.owner === player.id) {
           player.assets.push(asset);
         }
       }
