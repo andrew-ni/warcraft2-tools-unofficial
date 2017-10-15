@@ -16,7 +16,7 @@ export class Map {
   }
 
   private parseMapData(mapData: string): void {
-    const [, name, dimension, terrain, bits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
+    const [, name, dimension, terrain, , , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
