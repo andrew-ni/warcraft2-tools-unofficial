@@ -98,13 +98,10 @@ export class Map {
     const parsedAssets: Asset[] = [];
     const lines = assetsData.split('\r\n');
 
-    let line: string;
-    let lineArray: string[];
-
-    for (line of lines) {
-      lineArray = line.split(' ');
+    for (const line of lines) {
+      const [type, owner, x, y] = line.split(' ');
       // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset(Number(lineArray[1]), lineArray[0], Number(lineArray[2]), Number(lineArray[3])));
+      parsedAssets.push(new Asset(parseInt(owner, 10), type, parseInt(x, 10), parseInt(y, 10)));
     }
 
     return parsedAssets;
