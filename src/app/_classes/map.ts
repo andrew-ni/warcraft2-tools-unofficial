@@ -21,14 +21,14 @@ export class Map {
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
     this.mapLayer1 = this.parseTerrain(terrain);
-    this.players = this.parsePlayers(players);
     this.assets = this.parseAssets(assets);
+    this.players = this.parsePlayers(players, this.assets);
   }
 
   private parseTerrain(terrainData: string): Tile[][] {
-    let mapArray = new Array(this.height);
+    const mapArray = new Array(this.height);
     for (let i = 0; i < this.height; i++) {
-      mapArray[i] = new Array(this.width)
+      mapArray[i] = new Array(this.width);
     }
     terrainData = terrainData.replace(/[^a-zA-Z]/g, '');
     for (let i = 0; i < this.height; i++) {
@@ -73,8 +73,30 @@ export class Map {
     return mapArray;
   }
 
-  private parsePlayers(playersData: string): Player[] {
-    return null;
+  private parsePlayers(playersData: string, assets: Asset[]): Player[] {
+    const players: Player[] = [];
+    const lines = playersData.split('\n');
+
+    let line: string;
+    let lineArray = [];
+    let asset: Asset;
+    let player: Player;
+
+    for (line of lines) {
+      lineArray = line.split(' ');
+      players.push(new Player(lineArray[0], lineArray[1], lineArray[2]));
+    }
+
+    for (asset of assets) {
+      // players[asset.owner].assets.push(asset); won't work if players aren't listed by id-order
+      for (player of players) {
+        if (asset.owner === player.id) {
+          player.assets.push(asset);
+        }
+      }
+    }
+
+    return players;
   }
 
   private parseAssets(assetsData: string): Asset[] {
