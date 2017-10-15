@@ -1,4 +1,4 @@
-import { Tile } from './tile';
+import { Tile, strToTileType } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
 
@@ -26,51 +26,17 @@ export class Map {
   }
 
   private parseTerrain(terrainData: string): Tile[][] {
-    const mapArray = new Array(this.height);
-    for (let i = 0; i < this.height; i++) {
-      mapArray[i] = new Array(this.width);
-    }
-    terrainData = terrainData.replace(/[^a-zA-Z]/g, '');
-    for (let i = 0; i < this.height; i++) {
-      for (let j = 0; j < this.width; j++) {
-        switch (terrainData[i * this.height + j]) {
-          case 'G':
-            mapArray[i][j] = new Tile('DarkGrass');
-            break;
-          case 'g':
-            mapArray[i][j] = new Tile('LightGrass');
-            break;
-          case 'D':
-            mapArray[i][j] = new Tile('DarkDirt');
-            break;
-          case 'd':
-            mapArray[i][j] = new Tile('LightDirt');
-            break;
-          case 'R':
-            mapArray[i][j] = new Tile('Rock');
-            break;
-          case 'r':
-            mapArray[i][j] = new Tile('RockPartial');
-            break;
-          case 'F':
-            mapArray[i][j] = new Tile('Forest');
-            break;
-          case 'f':
-            mapArray[i][j] = new Tile('ForestPartial');
-            break;
-          case 'W':
-            mapArray[i][j] = new Tile('DeepWater');
-            break;
-          case 'w':
-            mapArray[i][j] = new Tile('ShallowWater');
-            break;
-          default:
-            mapArray[i][j] = new Tile('PARSEFAIL');
-            break;
-        }
+    const terrain: Tile[][] = [];
+    const rows = terrainData.trim().split(/\r?\n/);
+
+    for (const [index, row] of rows.entries()) {
+      terrain.push([]);
+      for (const tileLetter of row.split('')) {
+        terrain[index].push(new Tile(strToTileType[tileLetter]));
       }
     }
-    return mapArray;
+
+    return terrain;
   }
 
   private parsePlayers(playersData: string, assets: Asset[]): Player[] {
