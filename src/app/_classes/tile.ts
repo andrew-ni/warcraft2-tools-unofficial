@@ -1,8 +1,6 @@
 export class Tile {
-  constructor(tiletype: string, tilepath: string) {
-    this.tiletype = tiletype;
-    this.tilepath = tilepath;
+  constructor(tileType: string) {
+    this.tileType = tileType;
   }
-  tiletype: string;
-  tilepath: string;
+  tileType: string;
 }
