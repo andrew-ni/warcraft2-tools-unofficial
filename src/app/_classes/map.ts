@@ -18,11 +18,12 @@ export class Map {
   private parseMapData(mapData: string): void {
     const [, name, dimension, terrain, bits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
+
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
     this.mapLayer1 = this.parseTerrain(terrain);
-    this.assets = this.parseAssets(assets);
-    this.players = this.parsePlayers(players, this.assets);
+    this.assets = this.parseAssets(assets.trim());
+    this.players = this.parsePlayers(players.trim(), this.assets);
   }
 
   private parseTerrain(terrainData: string): Tile[][] {
@@ -73,9 +74,9 @@ export class Map {
     return mapArray;
   }
 
-  private parsePlayers(playersData: string, assets: Asset[]): Player[] {
+  private parsePlayers(playersData: string, assetData: Asset[]): Player[] {
     const players: Player[] = [];
-    const lines = playersData.split('\n');
+    const lines = playersData.split('\r\n');
 
     let line: string;
     let lineArray = [];
@@ -87,10 +88,11 @@ export class Map {
       players.push(new Player(lineArray[0], lineArray[1], lineArray[2]));
     }
 
-    for (asset of assets) {
+    for (asset of assetData) {
       // players[asset.owner].assets.push(asset); won't work if players aren't listed by id-order
       for (player of players) {
-        if (asset.owner === player.id) {
+        // can't use triple equals. use double even if tslint complains
+        if (asset.owner == player.id) {
           player.assets.push(asset);
         }
       }
@@ -100,6 +102,20 @@ export class Map {
   }
 
   private parseAssets(assetsData: string): Asset[] {
-    return null;
+    const lines = assetsData.split('\r\n');
+
+    let line: string;
+    let lineArray: string[];
+
+    const parsedAssets: Asset[] = [];
+
+    for (line of lines) {
+      lineArray = line.split(' ');
+
+      // .map format is type owner x y, whereas asset construction is owner type x y
+      parsedAssets.push(new Asset( Number( lineArray[1] ), lineArray[0], Number(lineArray[2]), Number(lineArray[3]) ));
+    }
+
+    return parsedAssets;
   }
 }
