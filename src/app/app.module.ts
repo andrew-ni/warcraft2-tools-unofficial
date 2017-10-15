@@ -6,11 +6,13 @@ git import { TempComponent } from './temp/temp.component';
 
 // Services
 import { MapService } from 'services/map.service';
+import { MapComponent } from './map/map.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TempComponent
+    TempComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule
