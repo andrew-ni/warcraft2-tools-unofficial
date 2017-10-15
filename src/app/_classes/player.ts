@@ -6,6 +6,9 @@ export class Player {
   lumber: number;
   assets: Asset[];
 
-  constructor() {
+  constructor(id: number, gold: number, lumber: number) {
+    this.id = id;
+    this.gold = gold;
+    this.lumber = lumber;
   }
 }
