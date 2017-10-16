@@ -37,7 +37,7 @@ export class Map {
   public stringify(): string {
     // convert the contents of this Map to a string which can be written as configuration
     if (!this.canSave) {
-      return null;    // return null to indicate we could not generate a string, thus not calling the save file IO ipc call
+      return undefined;    // return undefined to indicate we could not generate a string, thus not calling the save file IO ipc call
     }
 
     const lines: string[] = [];

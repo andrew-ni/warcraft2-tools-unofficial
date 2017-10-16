@@ -36,7 +36,7 @@ export function buildMenu(window: Electron.WebContents): void {
         {
           label: 'Save Map As...',
           async click() {
-            dialog.showSaveDialog(options, function (filePath) {
+            dialog.showSaveDialog(options, (filePath) => {
               if (filePath) {
                 console.log(filePath);
                 window.send('menu:file:save', filePath);

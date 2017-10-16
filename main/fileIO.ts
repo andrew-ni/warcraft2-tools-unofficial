@@ -22,7 +22,7 @@ export module IO {
   */
 
   // Renderer allows us to save
-  export async function saveMap(window: Electron.WebContents, data: string, filepath: string) {
+  export async function saveMap(data: string, filepath: string) {
     console.log('saveMap');
     fs.writeFile(filepath, data, () => { });
   }
