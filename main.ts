@@ -71,6 +71,6 @@ app.on('activate', function() {
 start();
 
 // save map file
-ipcMain.on('map:save', (event, data: string, filepath?: string) => {
-  IO.saveMap(event.sender, data, filepath);
+ipcMain.on('map:save', (event: Electron.IpcMessageEvent, data: string, filepath: string) => {
+  IO.saveMap(data, filepath);
 });

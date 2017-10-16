@@ -1,5 +1,11 @@
-import { Menu } from 'electron';
+import { Menu, dialog } from 'electron';
 import { IO } from './fileIO';
+
+const options = {
+  filters: [
+    { name: 'Map File (.map)', extensions: ['map'] }
+  ]
+};
 
 export function buildMenu(window: Electron.WebContents): void {
   const template = [
@@ -12,8 +18,13 @@ export function buildMenu(window: Electron.WebContents): void {
         },
         {
           label: 'Load Map',
-          click() {
-            IO.loadMap(window);
+          async click() {   // declare async because opening files taes a long time
+            dialog.showOpenDialog(options, (paths: string[]) => {
+              if (paths === undefined) return;
+
+              console.log(paths[0]);
+              IO.loadMap(window, paths[0]);
+            });
           }
         },
         {
@@ -24,7 +35,14 @@ export function buildMenu(window: Electron.WebContents): void {
         },
         {
           label: 'Save Map As...',
-          click() { window.send('menu:file:saveAs'); }
+          async click() {
+            dialog.showSaveDialog(options, (filePath) => {
+              if (filePath) {
+                console.log(filePath);
+                window.send('menu:file:save', filePath);
+              }
+            });
+          }
         }
       ]
     }
