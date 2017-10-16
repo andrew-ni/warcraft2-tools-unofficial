@@ -5,17 +5,21 @@ import { Asset } from './asset';
 export class Map {
 
   // Headers are for stringify(), which needs them to output map comments
-  NAME_HEADER = '# Map Name';
-  DIMENSION_HEADER = '# Map Dimensions W x H';
-  TERRAIN_HEADER = '# Map Terrain Data';
-  PARTIAL_BITS_HEADER = '# Map Partial Bits';
-  PLAYER_NUM_HEADER = '# Number of players';
-  PLAYER_RESOURCES_HEADER = '# Starting resources Player Gold Lumber';
-  ASSET_NUM_HEADER = '# Number of assets';
-  ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
-  AI_NUM_HEADER = '# Number of scripts';
-  AI_SCRIPTS_HEADER = '# AI Scripts';
+  static NAME_HEADER = '# Map Name';
+  static DIMENSION_HEADER = '# Map Dimensions W x H';
+  static TERRAIN_HEADER = '# Map Terrain Data';
+  static PARTIAL_BITS_HEADER = '# Map Partial Bits';
+  static PLAYER_NUM_HEADER = '# Number of players';
+  static PLAYER_RESOURCES_HEADER = '# Starting resources Player Gold Lumber';
+  static ASSET_NUM_HEADER = '# Number of assets';
+  static ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
+  static AI_NUM_HEADER = '# Number of scripts';
+  static AI_SCRIPTS_HEADER = '# AI Scripts';
 
+  // map status flags
+  canSave: boolean;
+
+  // map detail fields
   name: string;
   width: number;
   height: number;
@@ -26,12 +30,58 @@ export class Map {
 
   // `mapData` is the raw file contents
   constructor(mapData: string) {
+    this.canSave = false;       // save state is not ready yet
     this.parseMapData(mapData);
   }
 
   public stringify(): string {
+    console.log('stringify() called');
+
     // convert the contents of this file to a string which can be written as configuration
-    return 'dummy output';
+    if (!this.canSave) {
+      return null;    // return null to indicate we could not generate a string, thus not calling the save file IO ipc call
+    }
+
+    const lines: string[] = [];
+
+    lines.push(Map.NAME_HEADER);
+    lines.push(this.name);
+    lines.push(Map.DIMENSION_HEADER);
+    lines.push(this.width + ' ' + this.height);
+
+    lines.push(Map.TERRAIN_HEADER);
+    for (const yList of this.mapLayer1) {
+      let line = '';
+      for (const tile of yList) {
+        line += tile.tileType;  // write out all tile types
+      }
+      lines.push(line);
+    }
+
+    lines.push(Map.PARTIAL_BITS_HEADER);
+    for (const row of this.partialBits) {
+      let line = '';
+      for (const bit of row) {
+        line += bit;  // write out all bits
+      }
+      lines.push(line);
+    }
+
+    lines.push(Map.PLAYER_NUM_HEADER);
+    lines.push(String(this.players.length));    // convert player[] length to string
+
+    lines.push(Map.PLAYER_RESOURCES_HEADER);
+    for (const player of this.players) {
+      lines.push(player.id + ' ' + player.gold + ' ' + player.lumber);
+    }
+
+    lines.push(Map.ASSET_NUM_HEADER);
+    lines.push(String(this.assets.length));
+    for (const asset of this.assets) {
+      lines.push(asset.type + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
+    }
+
+    return lines.join('\n');  // join all lines with newline
   }
 
   private parseMapData(mapData: string): void {
@@ -43,9 +93,13 @@ export class Map {
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
     this.players = this.parsePlayers(players.trim(), this.assets);
+
+    // if execution has reached this point, that means all parsing was completed successfully
+    this.canSave = true;
   }
 
   // PARSE helper methods
+  // TODO: implement exception throwing in order to detect parse failure
 
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];

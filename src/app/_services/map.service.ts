@@ -19,9 +19,25 @@ export class MapService {
 
     // Event listener for saving a map
     ipcRenderer.on('menu:file:save', (event) => {
+      // DEBUG: clean up console logs
+
       console.log('save-map request received');
-      // TODO: call stringify() and notify main thread
-      ipcRenderer.send('map:save', this.map.stringify(), this._filePath);
+      if (this.map == null) {
+        console.log('save-map rejected because Map was not created');
+        return;
+      }
+
+      const response: string = this.map.stringify();
+
+      if (response == null) {
+        console.log('save-map rejected because Map returned null');
+        return;
+      }
+
+      // DEBUG: remove this, print just for debug
+      console.log(response);
+      // disabled for now because we accidentally overwrote the actual source during debug
+      // ipcRenderer.send('map:save', response, this._filePath);
     });
   }
 }

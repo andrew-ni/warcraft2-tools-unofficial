@@ -30,5 +30,5 @@ export class Tile {
   constructor(tileType: TileType) {
     this.tileType = tileType;
   }
-  tileType: string;
+  tileType: TileType;
 }
