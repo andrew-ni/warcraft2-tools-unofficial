@@ -60,6 +60,28 @@ const postcssPlugins = function () {
 
 
 module.exports = {
+  "externals": {
+    "electron": "require('electron')",
+    "child_process": "require('child_process')",
+    "crypto": "require('crypto')",
+    "events": "require('events')",
+    "fs": "require('fs')",
+    "http": "require('http')",
+    "https": "require('https')",
+    "assert": "require('assert')",
+    "dns": "require('dns')",
+    "net": "require('net')",
+    "os": "require('os')",
+    "path": "require('path')",
+    "querystring": "require('querystring')",
+    "readline": "require('readline')",
+    "repl": "require('repl')",
+    "stream": "require('stream')",
+    "string_decoder": "require('string_decoder')",
+    "url": "require('url')",
+    "util": "require('util')",
+    "zlib": "require('zlib')"
+  },
   "resolve": {
     "extensions": [
       ".ts",
@@ -140,7 +162,7 @@ module.exports = {
       },
       {
         "exclude": [
-          path.join(process.cwd(), "src\\styles.css")
+          path.join(process.cwd(), "src\\styles.scss")
         ],
         "test": /\.scss$|\.sass$/,
         "use": [
@@ -165,65 +187,6 @@ module.exports = {
               "sourceMap": false,
               "precision": 8,
               "includePaths": []
-            }
-          }
-        ]
-      },
-      {
-        "exclude": [
-          path.join(process.cwd(), "src\\styles.css")
-        ],
-        "test": /\.less$/,
-        "use": [
-          "exports-loader?module.exports.toString()",
-          {
-            "loader": "css-loader",
-            "options": {
-              "sourceMap": false,
-              "importLoaders": 1
-            }
-          },
-          {
-            "loader": "postcss-loader",
-            "options": {
-              "ident": "postcss",
-              "plugins": postcssPlugins
-            }
-          },
-          {
-            "loader": "less-loader",
-            "options": {
-              "sourceMap": false
-            }
-          }
-        ]
-      },
-      {
-        "exclude": [
-          path.join(process.cwd(), "src\\styles.css")
-        ],
-        "test": /\.styl$/,
-        "use": [
-          "exports-loader?module.exports.toString()",
-          {
-            "loader": "css-loader",
-            "options": {
-              "sourceMap": false,
-              "importLoaders": 1
-            }
-          },
-          {
-            "loader": "postcss-loader",
-            "options": {
-              "ident": "postcss",
-              "plugins": postcssPlugins
-            }
-          },
-          {
-            "loader": "stylus-loader",
-            "options": {
-              "sourceMap": false,
-              "paths": []
             }
           }
         ]
@@ -253,7 +216,7 @@ module.exports = {
       },
       {
         "include": [
-          path.join(process.cwd(), "src\\styles.css")
+          path.join(process.cwd(), "src\\styles.scss")
         ],
         "test": /\.scss$|\.sass$/,
         "use": [
@@ -278,65 +241,6 @@ module.exports = {
               "sourceMap": false,
               "precision": 8,
               "includePaths": []
-            }
-          }
-        ]
-      },
-      {
-        "include": [
-          path.join(process.cwd(), "src\\styles.css")
-        ],
-        "test": /\.less$/,
-        "use": [
-          "style-loader",
-          {
-            "loader": "css-loader",
-            "options": {
-              "sourceMap": false,
-              "importLoaders": 1
-            }
-          },
-          {
-            "loader": "postcss-loader",
-            "options": {
-              "ident": "postcss",
-              "plugins": postcssPlugins
-            }
-          },
-          {
-            "loader": "less-loader",
-            "options": {
-              "sourceMap": false
-            }
-          }
-        ]
-      },
-      {
-        "include": [
-          path.join(process.cwd(), "src\\styles.css")
-        ],
-        "test": /\.styl$/,
-        "use": [
-          "style-loader",
-          {
-            "loader": "css-loader",
-            "options": {
-              "sourceMap": false,
-              "importLoaders": 1
-            }
-          },
-          {
-            "loader": "postcss-loader",
-            "options": {
-              "ident": "postcss",
-              "plugins": postcssPlugins
-            }
-          },
-          {
-            "loader": "stylus-loader",
-            "options": {
-              "sourceMap": false,
-              "paths": []
             }
           }
         ]

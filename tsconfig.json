@@ -12,8 +12,16 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "paths": {
+      "services/*": [
+        "app/_services/*"
+      ],
+      "*": [
+        "app/_classes/*"
+      ]
+    },
     "lib": [
-      "es2017",
+      "es2016",
       "dom",
       "esnext.asynciterable"
     ]
