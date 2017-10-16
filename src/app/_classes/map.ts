@@ -135,7 +135,7 @@ export class Map {
 
   private parsePlayers(playersData: string, assets: Asset[]): Player[] {
     const players: Player[] = [];
-    const lines = playersData.split('\r\n');
+    const lines = playersData.split(/\r?\n/);
 
     for (const line of lines) {
       const [id, gold, lumber] = line.split(' ').map((x) => parseInt(x, 10));
@@ -156,7 +156,7 @@ export class Map {
 
   private parseAssets(assetsData: string): Asset[] {
     const parsedAssets: Asset[] = [];
-    const lines = assetsData.split('\r\n');
+    const lines = assetsData.split(/\r?\n/);
 
     for (const line of lines) {
       const [type, owner, x, y] = line.split(' ');
