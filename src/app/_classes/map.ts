@@ -35,9 +35,7 @@ export class Map {
   }
 
   public stringify(): string {
-    console.log('stringify() called');
-
-    // convert the contents of this file to a string which can be written as configuration
+    // convert the contents of this Map to a string which can be written as configuration
     if (!this.canSave) {
       return null;    // return null to indicate we could not generate a string, thus not calling the save file IO ipc call
     }
@@ -77,6 +75,8 @@ export class Map {
 
     lines.push(Map.ASSET_NUM_HEADER);
     lines.push(String(this.assets.length));
+
+    lines.push(Map.ASSET_DETAIL_HEADER);
     for (const asset of this.assets) {
       lines.push(asset.type + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
     }
