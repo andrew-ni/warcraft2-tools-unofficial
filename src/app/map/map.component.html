@@ -1,0 +1,9 @@
+<div *ngIf="mapService.map">
+  <div *ngFor="let row of mapService.map.mapLayer1; let y = index">
+    <div *ngFor="let tile of row; let x = index">
+      <app-tile [tile]="tile"
+                [x]="x"
+                [y]="y"></app-tile>
+    </div>
+  </div>
+</div>

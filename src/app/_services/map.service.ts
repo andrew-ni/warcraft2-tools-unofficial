@@ -5,7 +5,7 @@ import { Map } from 'map';
 
 @Injectable()
 export class MapService {
-  private _map: Map;
+  public map: Map;
   private _filePath: string;
 
   constructor() {
@@ -13,11 +13,9 @@ export class MapService {
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event, mapData, filePath) => {
       this._filePath = filePath;
-      this._map = new Map(mapData);
+      this.map = new Map(mapData);
+      console.log(this.map);
     });
   }
 
-  get map(): Map {
-    return this._map;
-  }
 }
