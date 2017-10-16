@@ -1,4 +1,3 @@
-import { dialog } from 'electron';
 import * as fs from 'fs';
 
 // Module is like a namespace so we don't polute the global space
