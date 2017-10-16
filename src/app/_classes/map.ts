@@ -3,10 +3,24 @@ import { Player } from './player';
 import { Asset } from './asset';
 
 export class Map {
+
+  // Headers are for stringify(), which needs them to output map comments
+  NAME_HEADER = '# Map Name';
+  DIMENSION_HEADER = '# Map Dimensions W x H';
+  TERRAIN_HEADER = '# Map Terrain Data';
+  PARTIAL_BITS_HEADER = '# Map Partial Bits';
+  PLAYER_NUM_HEADER = '# Number of players';
+  PLAYER_RESOURCES_HEADER = '# Starting resources Player Gold Lumber';
+  ASSET_NUM_HEADER = '# Number of assets';
+  ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
+  AI_NUM_HEADER = '# Number of scripts';
+  AI_SCRIPTS_HEADER = '# AI Scripts';
+
   name: string;
   width: number;
   height: number;
   mapLayer1: Tile[][];
+  partialBits: string[][];
   players: Player[] = [];
   assets: Asset[] = [];
 
@@ -15,15 +29,23 @@ export class Map {
     this.parseMapData(mapData);
   }
 
+  public stringify(): string {
+    // convert the contents of this file to a string which can be written as configuration
+    return 'dummy output';
+  }
+
   private parseMapData(mapData: string): void {
-    const [, name, dimension, terrain, , , players, , assets] = mapData.split(/#.*?\r?\n/g);
+    const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
     this.mapLayer1 = this.parseTerrain(terrain);
+    this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
     this.players = this.parsePlayers(players.trim(), this.assets);
   }
+
+  // PARSE helper methods
 
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
@@ -31,12 +53,30 @@ export class Map {
 
     for (const [index, row] of rows.entries()) {
       terrain.push([]);
+
       for (const tileLetter of row.split('')) {
         terrain[index].push(new Tile(strToTileType[tileLetter]));
       }
     }
 
     return terrain;
+  }
+
+  private parsePartialBits(partialbitsData: string): string[][] {
+    // TODO: is string the best way to represent the partial bits? talk to Linux team and figure out what the hell partial bits are
+    // I'm guessing that using an actual bit to store this will be more beneficial. note: must be converted to string for stringify()
+    const partialbits: string[][] = [];
+    const rows = partialbitsData.trim().split(/\r?\n/);
+
+    for (const [index, row] of rows.entries()) {
+      partialbits.push([]);
+
+      for (const bit of row.split('')) {
+        partialbits[index].push(bit);
+      }
+    }
+
+    return partialbits;
   }
 
   private parsePlayers(playersData: string, assets: Asset[]): Player[] {

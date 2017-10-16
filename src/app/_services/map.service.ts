@@ -16,6 +16,12 @@ export class MapService {
       this.map = new Map(mapData);
       console.log(this.map);
     });
-  }
 
+    // Event listener for saving a map
+    ipcRenderer.on('menu:file:save', (event) => {
+      console.log('save-map request received');
+      // TODO: call stringify() and notify main thread
+      ipcRenderer.send('map:save', this.map.stringify(), this._filePath);
+    });
+  }
 }
