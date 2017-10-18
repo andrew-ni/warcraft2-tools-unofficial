@@ -3,14 +3,12 @@
     <div *ngFor="let tile of row; let x = index">
       <app-tile [tile]="tile"
                 [x]="x"
-                [y]="y"></app-tile>
+                [y]="y">
+      </app-tile>
     </div>
   </div>
 </div>
-<body>
-  <div>
-    <canvas id="myCanvas" width="100%" height="100%"
-    style="border:1px solid #000000;">
-    </canvas>
-  </div>
-</body>
+
+<div>
+  <canvas id='myCanvas' style='position: absolute; left: 0px; top: 0px;'></canvas>
+</div>
