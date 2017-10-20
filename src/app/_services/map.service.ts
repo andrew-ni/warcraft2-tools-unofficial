@@ -51,41 +51,32 @@ export class MapService {
 
     this.terrainImg = new Image();
     this.terrainImg.src = 'assets/Terrain.png';
-    console.log('terrainImg');
   }
 
   // Save canvas context from map.component.ts
-  public setContext(ctx: CanvasRenderingContext2D): void {
-    this.context = ctx;
-  }
-
-  // TODO: setContext is irrelevant, since we now have the canvas in scope
-  // Save canvas from map.component.ts
-  // Click only fires when released, so click-drags are inaccurate. Use mousedown instead.
-  public setClickListener(c: HTMLCanvasElement) {
+  public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
-    this.canvas.addEventListener('mousedown', this.clicked, false);
+    this.context = ctx;
+    this.setClickListener();
   }
 
-  // TODO: FIX THIS!
-  // The scope of this function is on the canvas, from addEventListener.
-  // It can't call any of the functions of Mapservice.
-  public clicked(event) {
-    console.log(Math.floor(event.pageX / 32) + ' ' + Math.floor(event.pageY / 32));
+  // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
+  private setClickListener() {
+    this.canvas.addEventListener('mousedown', () => this.clicked(event), false);
+  }
+
+  // Fires everytime click occurs. Prints coords and tile info at click location.
+  private clicked(event) {
     const x: number = Math.floor(event.pageX / 32);
     const y: number = Math.floor(event.pageY / 32);
-    // console.log(tileTypeToNum[this.map.mapLayer1[x][y].tileType]);
-    console.log(this);
-    this.helper1();
+    console.log(x + ' ' + y);
+    if (this.map !== undefined) {
+      console.log(this.map.mapLayer1[x][y].tileType);
+    }
   }
 
-  public helper1() {
-    console.log('1');
-  }
-
-  // Draws inital Map when user loads
+  // Draws Map when loaded from file.
   private drawMap(): void {
-    console.log(this.map);
     // this.drawImage(0, 0, 0);
     // this.drawImage(2, 2, 10);
     // this.drawImage(4, 4, 22);

@@ -10,28 +10,18 @@ export class MapComponent implements OnInit {
   constructor(
     private mapService: MapService,
   ) {
-    console.log('map component constructor');
-    console.log(mapService);
   }
 
   ngOnInit() {
-    // Obtain a reference to the canvas element
-    // using its id.
     const canvas: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
-
-    // Obtain a graphics context on the
-    // canvas element for drawing.
     const context: CanvasRenderingContext2D = canvas.getContext('2d');
-
 
     // Start listening to resize events and
     // draw canvas.
     initialize();
 
     function initialize() {
-      // Register an event listener to
-      // call the resizeCanvas() function each time
-      // the window is resized.
+      // Calls resizeCanvas() on window resize
       window.addEventListener('resize', resizeCanvas, false);
 
       // Draw canvas border for the first time.
@@ -54,9 +44,8 @@ export class MapComponent implements OnInit {
       redraw();
     }
 
-    // store context in map service for drawing
-    this.mapService.setContext(context);
-    this.mapService.setClickListener(canvas);
+    // Pass canvas to map service for drawing
+    this.mapService.setCanvas(canvas, context);
   }
 }
 
