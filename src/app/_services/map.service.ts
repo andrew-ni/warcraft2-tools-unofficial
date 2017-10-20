@@ -9,6 +9,7 @@ export class MapService {
   // const SPRITE_SIZE = 32;
 
   public map: Map;
+  private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
   private terrainImg: HTMLImageElement;
@@ -58,8 +59,33 @@ export class MapService {
     this.context = ctx;
   }
 
+  // TODO: setContext is irrelevant, since we now have the canvas in scope
+  // Save canvas from map.component.ts
+  // Click only fires when released, so click-drags are inaccurate. Use mousedown instead.
+  public setClickListener(c: HTMLCanvasElement) {
+    this.canvas = c;
+    this.canvas.addEventListener('mousedown', this.clicked, false);
+  }
+
+  // TODO: FIX THIS!
+  // The scope of this function is on the canvas, from addEventListener.
+  // It can't call any of the functions of Mapservice.
+  public clicked(event) {
+    console.log(Math.floor(event.pageX / 32) + ' ' + Math.floor(event.pageY / 32));
+    const x: number = Math.floor(event.pageX / 32);
+    const y: number = Math.floor(event.pageY / 32);
+    // console.log(tileTypeToNum[this.map.mapLayer1[x][y].tileType]);
+    console.log(this);
+    this.helper1();
+  }
+
+  public helper1() {
+    console.log('1');
+  }
+
   // Draws inital Map when user loads
   private drawMap(): void {
+    console.log(this.map);
     // this.drawImage(0, 0, 0);
     // this.drawImage(2, 2, 10);
     // this.drawImage(4, 4, 22);
@@ -80,16 +106,13 @@ export class MapService {
     }
   }
 
+  // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
   private drawImage(x: number, y: number, index: number): void {
     this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
-
-  }
-
-  private convertTile() {
-
   }
 }
 
+// Mapping from TileType to index in Terrain.png
 export const tileTypeToNum: TileType[] = [];
 // TileType.xxx within the square brackets will implicitly be cast to string
 // but the TileType.xxx being assigned will not be casted.
