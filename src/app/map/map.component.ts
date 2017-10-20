@@ -9,10 +9,12 @@ import { MapService } from 'services/map.service';
 export class MapComponent implements OnInit {
   constructor(
     private mapService: MapService,
-  ) { }
+  ) {
+    console.log('map component constructor');
+    console.log(mapService);
+  }
 
   ngOnInit() {
-    (function() {
       // Obtain a reference to the canvas element
       // using its id.
       const c: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
@@ -20,6 +22,7 @@ export class MapComponent implements OnInit {
       // Obtain a graphics context on the
       // canvas element for drawing.
       const context: CanvasRenderingContext2D = c.getContext('2d');
+
 
       // Start listening to resize events and
       // draw canvas.
@@ -50,6 +53,8 @@ export class MapComponent implements OnInit {
         redraw();
       }
 
-    })();
+      // store context in map service for drawing
+      this.mapService.setContext(context);
   }
 }
+
