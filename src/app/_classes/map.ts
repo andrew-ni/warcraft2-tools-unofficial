@@ -1,4 +1,4 @@
-import { Tile, strToTileType } from './tile';
+import { Tile, numToTileType, strToNum, numToChar } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
 
@@ -51,7 +51,7 @@ export class Map {
     for (const yList of this.mapLayer1) {
       let line = '';
       for (const tile of yList) {
-        line += tile.tileType;  // write out all tile types
+        line += numToChar[tile.tileType];  // write out all tile types
       }
       lines.push(line);
     }
@@ -109,7 +109,7 @@ export class Map {
       terrain.push([]);
 
       for (const tileLetter of row.split('')) {
-        terrain[index].push(new Tile(strToTileType[tileLetter]));
+        terrain[index].push(new Tile(numToTileType[tileLetter]));
       }
     }
 
