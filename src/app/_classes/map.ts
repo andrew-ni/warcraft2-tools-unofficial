@@ -1,4 +1,4 @@
-import { Tile, numToTileType, strToNum, numToChar } from './tile';
+import { TileType, Tile, numToTileType, strToNum, numToChar } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
 
@@ -32,6 +32,15 @@ export class Map {
   constructor(mapData: string) {
     this.canSave = false;       // save state is not ready yet
     this.parseMapData(mapData);
+    this.calcTiles();
+  }
+
+  private calcTiles(x = 0, y = 0, w = this.width, h = this.height): void {
+
+  }
+
+  public updateTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
+
   }
 
   public stringify(): string {
