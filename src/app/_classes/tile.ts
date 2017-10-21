@@ -31,4 +31,11 @@ export class Tile {
     this.tileType = tileType;
   }
   tileType: TileType;
+  index: number;
+
+  public updateTiles( newTile: TileType, x: number, y: number, width = 1, height = 1) {
+    asdf;
+
+    return {x, y, width, height};
+  }
 }
