@@ -135,17 +135,21 @@ export class Map {
       for (const tile of yList) {
         line += numToChar[tile.tileType];  // write out all tile types
       }
+      line = line.slice(0, -1);  // remove the right border of rocks
       lines.push(line);
     }
+    lines.pop();  // remove the bottom row of rocks
 
     lines.push(Map.PARTIAL_BITS_HEADER);
     for (const row of this.partialBits) {
       let line = '';
       for (const bit of row) {
-        line += bit;  // write out all bits
+        line += (bit.toString(16).toUpperCase());  // write out all bits
       }
+      line = line.slice(0, -1);  // remove the right border of partialbits
       lines.push(line);
     }
+    lines.pop();  // remove the bottom row of partialbits
 
     lines.push(Map.PLAYER_NUM_HEADER);
     lines.push(String(this.players.length));    // convert player[] length to string
