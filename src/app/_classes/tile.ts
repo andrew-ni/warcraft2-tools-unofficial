@@ -1,12 +1,13 @@
+// DON'T REORDER!
 export const enum TileType {
-  DarkGrass,
-  LightGrass,
-  DarkDirt,
   LightDirt,
-  Rock,
+  DarkDirt,
   Forest,
-  DeepWater,
+  LightGrass,
+  DarkGrass,
   ShallowWater,
+  DeepWater,
+  Rock,
   MAX,
 }
 
