@@ -40,6 +40,15 @@ export class Map {
     this.tileSet = new Tileset('');
 
     this.iterateCalc();
+
+    // DEBUG
+    console.log(this.stringify());
+    this.transitionTiles(TileType.Rock, 10, 10, 1, 1);
+    this.transitionTiles(TileType.Rock, 22, 10, 1, 1);
+    this.transitionTiles(TileType.ShallowWater, 12, 19, 7, 3);
+    console.log(this.stringify());
+    this.iterateCalc();
+    console.log(this.mapLayer1.map((t) => t.map((t2) => t2.index)));
   }
 
   // by default, calculates indices for whole map
