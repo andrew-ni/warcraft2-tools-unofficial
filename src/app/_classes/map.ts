@@ -33,10 +33,20 @@ export class Map {
   constructor(mapData: string) {
     this.canSave = false;       // save state is not ready yet
     this.parseMapData(mapData);
-    // TODO: call calcTiles() for each tile to assign indices;
+    this.iterateCalc();
   }
 
-  private calcTiles(y = 0, x = 0, w = 1, h = 1): void {
+  // by default, calculates indices for whole map
+  // note: nitta's map is rendered [y][x], so we should match him for consistency TODO
+  public iterateCalc(x = 0, y = 0, w = this.width, h = this.height) {
+    for (let xpos = x; xpos < w; xpos++) {
+      for (let ypos = y; ypos < h; ypos++) {
+        this.calcTiles(xpos, ypos);
+      }
+    }
+  }
+
+  private calcTiles(y = 0, x= 0): void {
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
     const LL = this.mapLayer1[y + 1][x].tileType;
