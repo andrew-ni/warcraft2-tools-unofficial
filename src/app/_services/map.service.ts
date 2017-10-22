@@ -92,7 +92,7 @@ export class MapService {
 
     for (x = 0; x < this.map.mapLayer1.length - 1; x++) {
       for (y = 0; y < this.map.mapLayer1[x].length - 1; y++) {
-        this.drawImage(x, y, tileTypeToNum[this.map.mapLayer1[y][x].tileType]);
+        this.drawImage(x, y, this.map.mapLayer1[y][x].index);
       }
     }
   }
@@ -102,19 +102,3 @@ export class MapService {
     this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
   }
 }
-
-// Mapping from TileType to index in Terrain.png
-export const tileTypeToNum: TileType[] = [];
-// TileType.xxx within the square brackets will implicitly be cast to string
-// but the TileType.xxx being assigned will not be casted.
-// This allows for mapping from string to TileType
-tileTypeToNum[TileType.DarkGrass] = 17;
-tileTypeToNum[TileType.LightGrass] = 14;
-tileTypeToNum[TileType.DarkDirt] = 11;
-tileTypeToNum[TileType.LightDirt] = 8;
-tileTypeToNum[TileType.Rock] = 23;
-tileTypeToNum[TileType.RockPartial] = 23;
-tileTypeToNum[TileType.Forest] = 20;
-tileTypeToNum[TileType.ForestPartial] = 20;
-tileTypeToNum[TileType.ShallowWater] = 27;
-tileTypeToNum[TileType.DeepWater] = 0;
