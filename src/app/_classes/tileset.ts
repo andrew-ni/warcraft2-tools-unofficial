@@ -1,4 +1,4 @@
-import { TileType, strToNum } from 'tile';
+import { TileType, strToTileType } from 'tile';
 
 export class Tileset {
   constructor(datStr: string) {
@@ -22,7 +22,7 @@ export class Tileset {
       if (hex === 'UK') {
         continue;
       }
-      const index = strToNum[tileStr];
+      const index = strToTileType[tileStr];
       if (index) {
         this.tileset[index][parseInt(hex, 16)][parseInt(alt, 10)] = i;
       } else {
