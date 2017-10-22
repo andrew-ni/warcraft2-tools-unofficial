@@ -40,18 +40,28 @@ export class Map {
     // TODO load Terrain.dat
     this.tileSet = new Tileset('');
 
-    console.log(this.stringify());
 
     this.iterateCalc();   // pre-calculate the entire map's indices
 
-    console.log(this.stringify());
+    this.debugMap();
+  }
 
+  private debugMap() {
     // DEBUG
-    // this.transitionTiles(TileType.Rock, 10, 10, 1, 1);
-    // this.transitionTiles(TileType.Rock, 22, 10, 1, 1);
-    // this.transitionTiles(TileType.ShallowWater, 12, 19, 7, 3);
-    // this.iterateCalc();
-    console.log(this.mapLayer1.map((t) => t.map((t2) => t2.index)));
+    this.updateTiles(TileType.LightGrass, 3, 3, 100, 100);
+
+    // Test transitions
+    let x = 8;
+    let y = 8;
+    for (let t = 0; t < TileType.MAX; t++) {
+      this.updateTiles(Math.floor(Math.random() * TileType.MAX), y, 4, 1, 60);
+      this.updateTiles(Math.floor(Math.random() * TileType.MAX), 4, x, 60, 1);
+      x += 7;
+      y += 7;
+    }
+
+    // print the top left 50x50
+    console.log(this.mapLayer1.map((t) => t.map((t2) => numToChar[t2.tileType]).slice(0, 50).join('')).slice(0, 50).join('\n'));
   }
 
   // by default, calculates indices for whole map
