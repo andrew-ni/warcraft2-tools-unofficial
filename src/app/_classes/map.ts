@@ -61,7 +61,7 @@ export class Map {
     }
   }
 
-  private calcTiles(y = 0, x= 0): void {
+  private calcTiles(y = 0, x = 0): void {
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
     const LL = this.mapLayer1[y + 1][x].tileType;
