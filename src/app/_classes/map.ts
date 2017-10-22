@@ -41,7 +41,7 @@ export class Map {
 
     console.log(this.stringify());
 
-    this.iterateCalc();
+    this.iterateCalc();   // pre-calculate the entire map's indices
 
     console.log(this.stringify());
 
@@ -54,15 +54,16 @@ export class Map {
   }
 
   // by default, calculates indices for whole map
-  // note: nitta's map is rendered [y][x], so we should match him for consistency TODO
-  public iterateCalc(x = 0, y = 0, w = this.width, h = this.height) {
-    for (let xpos = x; xpos < w; xpos++) {
-      for (let ypos = y; ypos < h; ypos++) {
-        this.calcTiles(xpos, ypos);
+  public iterateCalc(y = 0, x = 0, w = this.width, h = this.height) {
+    for (let ypos = y; ypos < h; ypos++) {
+      for (let xpos = x; xpos < w; xpos++) {
+        this.calcTiles(ypos, xpos);
       }
     }
   }
 
+  // calcTiles() calculates tile orientation based on surrounding tiles
+  // This is the function that writes the proper index into the tiles
   private calcTiles(y = 0, x = 0): void {
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
@@ -138,11 +139,22 @@ export class Map {
     }
   }
 
-  public updateTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
-
+  // updateTiles() is the public function to call when applying a brush to the map (edit operation)
+  // updateTiles will:
+  // 1. update the "brushed" area with the selected tile type (bringing the map to an invalid state, with invalid transitions)
+  // 2. transition the tiles that were affected (bringing map to a valid state)
+  // 3. call calcTiles() on the affected region
+  // 4. return the affected region so that mapService can redraw
+  public updateTiles(tileType: TileType, y: number, x: number, width: number, height: number): void {
+    // for (let ypos = y; ypos < height; ypos++) {
+    //   for (let xpos = x; xpos < width; xpos++) {
+    //     this.mapLayer1[y][x]
+    //   }
+    // }
   }
 
-  private transitionTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
+  // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
+  private transitionTiles(tileType: TileType, y: number, x: number, width: number, height: number): void {
 
     // The top row indicates the current tile type
     // The left column indicates the new tile type being placed
@@ -211,6 +223,9 @@ export class Map {
     // When forests are separated by a single tile, the tile is forced to be lightGrass
   }
 
+
+  // SAVE LOGIC
+
   public stringify(): string {
     // convert the contents of this Map to a string which can be written as configuration
     if (!this.canSave) {
@@ -261,6 +276,10 @@ export class Map {
     return lines.join('\n');  // join all lines with newline
   }
 
+
+  // PARSE FUNCTIONS
+  // TODO: implement exception throwing in order to detect parse failure
+
   private parseMapData(mapData: string): void {
     const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
@@ -274,9 +293,6 @@ export class Map {
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
   }
-
-  // PARSE helper methods
-  // TODO: implement exception throwing in order to detect parse failure
 
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
