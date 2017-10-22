@@ -78,35 +78,35 @@ export class Map {
       typeIndex &= (TileType.DarkGrass === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.DarkGrass === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DarkGrass === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.DarkGrass;
+      tile.tileType = TileType.DarkGrass;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.DarkDirt === UL) || (TileType.DarkDirt === UR) || (TileType.DarkDirt === LL) || (TileType.DarkDirt === LR)) {
       typeIndex &= (TileType.DarkDirt === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.DarkDirt === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.DarkDirt === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DarkDirt === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.DarkDirt;
+      tile.tileType = TileType.DarkDirt;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.DeepWater === UL) || (TileType.DeepWater === UR) || (TileType.DeepWater === LL) || (TileType.DeepWater === LR)) {
       typeIndex &= (TileType.DeepWater === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.DeepWater === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.DeepWater === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DeepWater === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.DeepWater;
+      tile.tileType = TileType.DeepWater;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.ShallowWater === UL) || (TileType.ShallowWater === UR) || (TileType.ShallowWater === LL) || (TileType.ShallowWater === LR)) {
       typeIndex &= (TileType.ShallowWater === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.ShallowWater === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.ShallowWater === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.ShallowWater === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.ShallowWater;
+      tile.tileType = TileType.ShallowWater;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.Rock === UL) || (TileType.Rock === UR) || (TileType.Rock === LL) || (TileType.Rock === LR)) {
       typeIndex &= (TileType.Rock === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.Rock === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.Rock === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.Rock === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.Rock;
+      tile.tileType = TileType.Rock;
       // tile.tileType = typeIndex ? TileType.Rock : TileType.Rubble;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.Forest === UL) || (TileType.Forest === UR) || (TileType.Forest === LL) || (TileType.Forest === LR)) {
@@ -121,14 +121,14 @@ export class Map {
         // tile.tileType = TileType.Stump;
         // tile.index = ((TileType.Forest === UL) ? 0x1 : 0x0) | ((TileType.Forest === UR) ? 0x2 : 0x0) | ((TileType.Forest == LL) ? 0x4 : 0x0) | ((TileType.Forest == LR) ? 0x8 : 0x0);
       }
-      // tile.tileType = TileType.Forest;
+      tile.tileType = TileType.Forest;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.LightDirt === UL) || (TileType.LightDirt === UR) || (TileType.LightDirt === LL) || (TileType.LightDirt === LR)) {
       typeIndex &= (TileType.LightDirt === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.LightDirt === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.LightDirt === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.LightDirt === LR) ? 0xF : 0x7;
-      // tile.tileType = TileType.LightDirt;
+      tile.tileType = TileType.LightDirt;
       tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else {
       tile.tileType = TileType.LightGrass;
