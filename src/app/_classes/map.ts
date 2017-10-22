@@ -25,6 +25,7 @@ export class Map {
   width: number;
   height: number;
   mapLayer1: Tile[][];
+  drawLayer: Tile[][];
   partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
@@ -69,7 +70,7 @@ export class Map {
     const UR = this.mapLayer1[y][x + 1].tileType;
     const LL = this.mapLayer1[y + 1][x].tileType;
     const LR = this.mapLayer1[y + 1][x + 1].tileType;
-    const tile = this.mapLayer1[y][x];
+    const tile = this.drawLayer[y][x];
 
     let typeIndex = (((this.partialBits[y][x] & 0x8) >> 3) |
       ((this.partialBits[y][x + 1] & 0x4) >> 1) |
@@ -301,13 +302,16 @@ export class Map {
 
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
+    this.drawLayer = [];
     const rows = terrainData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
       terrain.push([]);
+      this.drawLayer.push([]);
 
       for (const tileLetter of row.split('')) {
         terrain[index].push(new Tile(charToTileType[tileLetter]));
+        this.drawLayer[index].push(new Tile(0));
       }
     }
 

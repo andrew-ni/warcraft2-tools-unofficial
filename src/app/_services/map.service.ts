@@ -71,7 +71,7 @@ export class MapService {
     const y: number = Math.floor(event.pageY / 32);
     console.log(x + ' ' + y);
     if (this.map !== undefined) {
-      console.log(this.map.mapLayer1[x][y].tileType);
+      console.log(this.map.drawLayer[x][y].tileType);
 
       // TEST CODE for updating tile
       // this.map.updateTiles(TileType.Rock, y, x, 1, 1);
@@ -93,10 +93,9 @@ export class MapService {
 
     let x: number;
     let y: number;
-
-    for (x = 0; x < this.map.mapLayer1.length - 1; x++) {
-      for (y = 0; y < this.map.mapLayer1[x].length - 1; y++) {
-        this.drawImage(x, y, this.map.mapLayer1[y][x].index);
+    for (x = 0; x < this.map.drawLayer.length - 1; x++) {
+      for (y = 0; y < this.map.drawLayer[x].length - 1; y++) {
+        this.drawImage(x, y, this.map.drawLayer[y][x].index);
       }
     }
   }
