@@ -112,6 +112,75 @@ export class Map {
 
   }
 
+  private transitionTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
+
+    // The top row indicates the current tile type
+    // The left column indicates the new tile type being placed
+    // Within a cell represents the transition sequence
+    // For example placing a ShallowWater tile (w) in a LightGrass field
+    // would result in a transition w[wd]g
+    // Read wiki for more info on transitions:
+    // https://github.com/UCDClassNitta/ECS160Tools/wiki/Tile-Transitions
+    /*
+    |   | d    | D    | F     | g     | G     | w    | W     | R    |
+    |---|------|------|-------|-------|-------|------|-------|------|
+    | d | []   | []   | [d]   | [d]   | [d]   | []   | [w]   | []   |
+    | D | [D]  | []   | [Dd]  | [Dd]  | [Dd]  | [D]  | [Dw]  | [D]  |
+    | F | [F]  | [Fd] | []    | [F]   | [F]   | [Fd] | [Fdw] | [Fd] |
+    | g | []   | [d]  | []    | []    | []    | [d]  | [dw]  | [d]  |
+    | G | [G]  | [Gd] | [G]   | [G]   | []    | [Gd] | [Gdw] | [Gd] |
+    | w | [w]  | [w]  | [wd]  | [wd]  | [wd]  | []   | []    | [w]  |
+    | W | [Ww] | [Ww] | [Wwd] | [Wwd] | [Wwd] | [W]  | []    | [Ww] |
+    | R | [R]  | [R]  | [Rd]  | [Rd]  | [Rd]  | [R]  | [Rw]  | []   |
+    */
+    const transitionTable: TileTypeChar[/*newTile*/][/*currentTile*/][/*iteration*/] =
+      [
+        [[], [], ['d'], ['d'], ['d'], [], ['w'], []],
+        [['D'], [], ['D', 'd'], ['D', 'd'], ['D', 'd'], ['D'], ['D', 'w'], ['D']],
+        [['F'], ['F', 'd'], [], ['F'], ['F'], ['F', 'd'], ['F', 'd', 'w'], ['F', 'd']],
+        [[], ['d'], [], [], [], ['d'], ['d', 'w'], ['d']],
+        [['G'], ['G', 'd'], ['G'], ['G'], [], ['G', 'd'], ['G', 'd', 'w'], ['G', 'd']],
+        [['w'], ['w'], ['w', 'd'], ['w', 'd'], ['w', 'd'], [], [], ['w']],
+        [['W', 'w'], ['W', 'w'], ['W', 'w', 'd'], ['W', 'w', 'd'], ['W', 'w', 'd'], ['W'], [], ['W', 'w']],
+        [['R'], ['R'], ['R', 'd'], ['R', 'd'], ['R', 'd'], ['R'], ['R', 'w'], []],
+      ];
+
+    for (let iteration = 0; iteration < 3 /*max*/; iteration++) {
+      let changed = false;
+
+      const applyTileTransition = (_x: number, _y: number) => {
+        const tile = this.mapLayer1[_y][_x];
+        const currentType = tile.tileType;
+        const tileChar = transitionTable[tileType][currentType][iteration];
+        if (tileChar) {
+          tile.tileType = charToTileType[tileChar];
+          changed = true;
+        }
+      };
+
+      const transitionEdge = (length: number, fx: (n: number) => number, fy: (n: number) => number) => {
+        for (let n = 0; n < length; n++) {
+          applyTileTransition(fx(n) + x, fy(n) + y);
+        }
+      };
+
+      // TODO: bound checking
+      transitionEdge(width + 1, (_x) => _x, () => -1); // Top
+      transitionEdge(height + 1, () => width, (_y) => _y); // Right
+      transitionEdge(width + 1, (_x) => width - _x - 1, () => height); // Bottom
+      transitionEdge(height + 1, () => - 1, (_y) => height - _y - 1); // Left
+
+      if (!changed) break;
+
+      x--; y--; width += 2; height += 2;
+    }
+
+    // TODO: there is a special case for rocks and forest
+    // RdR, FgF
+    // When rocks are separated by a single tile, the tile is forced to be lightDirt
+    // When forests are separated by a single tile, the tile is forced to be lightGrass
+  }
+
   public stringify(): string {
     // convert the contents of this Map to a string which can be written as configuration
     if (!this.canSave) {
