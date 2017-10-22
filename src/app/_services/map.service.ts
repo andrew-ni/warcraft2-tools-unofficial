@@ -90,9 +90,9 @@ export class MapService {
     let x: number;
     let y: number;
 
-    for (x = 0; x < this.map.mapLayer1.length; x++) {
-      for (y = 0; y < this.map.mapLayer1[x].length; y++) {
-        this.drawImage(x, y, tileTypeToNum[this.map.mapLayer1[x][y].tileType]);
+    for (x = 0; x < this.map.mapLayer1.length - 1; x++) {
+      for (y = 0; y < this.map.mapLayer1[x].length - 1; y++) {
+        this.drawImage(x, y, tileTypeToNum[this.map.mapLayer1[y][x].tileType]);
       }
     }
   }
