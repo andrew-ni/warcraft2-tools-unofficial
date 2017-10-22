@@ -1,6 +1,7 @@
 import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType, TileTypeChar } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
+import { Tileset } from './tileset';
 
 export class Map {
 
@@ -32,14 +33,14 @@ export class Map {
   constructor(mapData: string) {
     this.canSave = false;       // save state is not ready yet
     this.parseMapData(mapData);
-    this.calcTiles();
+    // TODO: call calcTiles() for each tile to assign indices;
   }
 
-  private calcTiles(y = 0, x = 0, w = this.width, h = this.height): void {
-    const UL = this.partialBits[y][x];
-    const UR = this.partialBits[y][x + 1];
-    const LL = this.partialBits[y + 1][x];
-    const LR = this.partialBits[y + 1][x + 1];
+  private calcTiles(y = 0, x = 0, w = 1, h = 1): void {
+    const UL = this.mapLayer1[y][x].tileType;
+    const UR = this.mapLayer1[y][x + 1].tileType;
+    const LL = this.mapLayer1[y + 1][x].tileType;
+    const LR = this.mapLayer1[y + 1][x + 1].tileType;
     // tslint:disable-next-line:no-bitwise
     let typeIndex = (((this.partialBits[y][x] & 0x8) >> 3) |
                       // tslint:disable-next-line:no-bitwise
