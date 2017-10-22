@@ -74,3 +74,7 @@ start();
 ipcMain.on('map:save', (event: Electron.IpcMessageEvent, data: string, filepath: string) => {
   IO.saveMap(data, filepath);
 });
+
+ipcMain.on('map:load', (event: Electron.IpcMessageEvent, filepath: string) => {
+  IO.loadMap(mainWindow.webContents, filepath);
+});

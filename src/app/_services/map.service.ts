@@ -64,6 +64,9 @@ export class MapService {
     this.context.scale(.6, .6);
 
     this.setClickListener();
+
+    // TEMP for testing
+    ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
