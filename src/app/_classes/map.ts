@@ -66,8 +66,8 @@ export class Map {
 
   // by default, calculates indices for whole map
   public iterateCalc(y = 0, x = 0, h = this.height, w = this.width) {
-    for (let ypos = y; ypos < h; ypos++) {
-      for (let xpos = x; xpos < w; xpos++) {
+    for (let ypos = y; ypos < y + h; ypos++) {
+      for (let xpos = x; xpos < x + w; xpos++) {
         this.calcTiles(ypos, xpos);
       }
     }
@@ -161,13 +161,13 @@ export class Map {
     width++;
     height++;
 
-    for (let ypos = y; ypos < height; ypos++) {
-      for (let xpos = x; xpos < width; xpos++) {
+    for (let ypos = y; ypos < y + height; ypos++) {
+      for (let xpos = x; xpos < x + width; xpos++) {
         this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
       }
     }
 
-    const [calcY, calcX, calcWidth, calcHeight] = this.transitionTiles(tileType, y, x, height, width);
+    const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
     this.iterateCalc(calcY, calcX, calcHeight, calcWidth);
   }
 
@@ -230,9 +230,8 @@ export class Map {
       transitionEdge(width + 1, (_x) => width - _x - 1, () => height); // Bottom
       transitionEdge(height + 1, () => - 1, (_y) => height - _y - 1); // Left
 
-      if (!changed) break;
-
       y--; x--; height += 2; width += 2;
+      if (!changed) break;
     }
 
     return [y, x, height, width];
