@@ -264,7 +264,6 @@ export class Map {
   // PARSE helper methods
   // TODO: implement exception throwing in order to detect parse failure
 
-  // surrounds right and lower bounds with rocks to prevent out of bounds array checks for calcTiles()
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
     const rows = terrainData.trim().split(/\r?\n/);
@@ -275,11 +274,6 @@ export class Map {
       for (const tileLetter of row.split('')) {
         terrain[index].push(new Tile(charToTileType[tileLetter]));
       }
-      terrain[index].push(new Tile(TileType.Rock));
-    }
-    terrain.push([]);
-    for (let i = 0; i < terrain[0].length; i++) {
-      terrain[terrain.length - 1].push(new Tile(TileType.Rock));
     }
 
     return terrain;
@@ -297,11 +291,6 @@ export class Map {
       for (const bit of row.split('')) {
         partialbits[index].push(parseInt(bit, 16));
       }
-      partialbits[index].push(0xF);
-    }
-    partialbits.push([]);
-    for (let i = 0; i < partialbits[0].length; i++) {
-      partialbits[partialbits.length - 1].push(0xF);
     }
 
     return partialbits;
