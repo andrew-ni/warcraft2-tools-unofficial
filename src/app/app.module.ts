@@ -9,6 +9,7 @@ import { MapService } from 'services/map.service';
 import { MapComponent } from './map/map.component';
 import { TileComponent } from './map/tile/tile.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { Map2Component } from './map2/map2.component';
 import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FooterComponent } from './footer/footer.component';
     TempComponent,
     TileComponent,
     SidebarComponent,
+    Map2Component,
     FooterComponent,
   ],
   imports: [
