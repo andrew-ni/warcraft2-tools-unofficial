@@ -72,6 +72,10 @@ export class MapService {
     console.log(x + ' ' + y);
     if (this.map !== undefined) {
       console.log(this.map.mapLayer1[x][y].tileType);
+
+      // TEST CODE for updating tile
+      // this.map.updateTiles(TileType.Rock, y, x, 1, 1);
+      // this.drawMap();
     }
   }
 

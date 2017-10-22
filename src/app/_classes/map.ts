@@ -54,7 +54,7 @@ export class Map {
   }
 
   // by default, calculates indices for whole map
-  public iterateCalc(y = 0, x = 0, w = this.width, h = this.height) {
+  public iterateCalc(y = 0, x = 0, h = this.height, w = this.width) {
     for (let ypos = y; ypos < h; ypos++) {
       for (let xpos = x; xpos < w; xpos++) {
         this.calcTiles(ypos, xpos);
@@ -145,16 +145,19 @@ export class Map {
   // 2. transition the tiles that were affected (bringing map to a valid state)
   // 3. call calcTiles() on the affected region
   // 4. return the affected region so that mapService can redraw
-  public updateTiles(tileType: TileType, y: number, x: number, width: number, height: number): void {
-    // for (let ypos = y; ypos < height; ypos++) {
-    //   for (let xpos = x; xpos < width; xpos++) {
-    //     this.mapLayer1[y][x]
-    //   }
-    // }
+  public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): void {
+    for (let ypos = y; ypos < height; ypos++) {
+      for (let xpos = x; xpos < width; xpos++) {
+        this.mapLayer1[y][x].tileType = tileType;   // set tiletype
+      }
+    }
+
+    const [calcY, calcX, calcWidth, calcHeight] = this.transitionTiles(tileType, y, x, height, width);
+    this.iterateCalc(calcY, calcX, calcHeight, calcWidth);
   }
 
   // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
-  private transitionTiles(tileType: TileType, y: number, x: number, width: number, height: number): void {
+  private transitionTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
 
     // The top row indicates the current tile type
     // The left column indicates the new tile type being placed
@@ -214,8 +217,10 @@ export class Map {
 
       if (!changed) break;
 
-      x--; y--; width += 2; height += 2;
+      y--; x--; height += 2; width += 2;
     }
+
+    return [y, x, height, width];
 
     // TODO: there is a special case for rocks and forest
     // RdR, FgF
