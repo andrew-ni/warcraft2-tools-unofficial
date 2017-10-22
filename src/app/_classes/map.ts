@@ -40,14 +40,10 @@ export class Map {
     const UR = this.partialBits[y][x + 1];
     const LL = this.partialBits[y + 1][x];
     const LR = this.partialBits[y + 1][x + 1];
-    // tslint:disable-next-line:no-bitwise
     let typeIndex = (((this.partialBits[y][x] & 0x8) >> 3) |
-                      // tslint:disable-next-line:no-bitwise
-                      ((this.partialBits[y][x + 1] & 0x4) >> 1) |
-                      // tslint:disable-next-line:no-bitwise
-                      ((this.partialBits[y + 1][x] & 0x2) << 1) |
-                      // tslint:disable-next-line:no-bitwise
-                      ((this.partialBits[y + 1][x + 1] & 0x1) << 3));
+      ((this.partialBits[y][x + 1] & 0x4) >> 1) |
+      ((this.partialBits[y + 1][x] & 0x2) << 1) |
+      ((this.partialBits[y + 1][x + 1] & 0x1) << 3));
 
     if ((TileType.DarkGrass === UL) || (TileType.DarkGrass === UR) || (TileType.DarkGrass === LL) || (TileType.DarkGrass === LR)) {
       typeIndex &= (TileType.DarkGrass === UL) ? 0xF : 0xE;
