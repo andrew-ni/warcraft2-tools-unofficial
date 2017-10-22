@@ -20,7 +20,9 @@ export class MapService {
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
       this.map = new Map(mapData);
-      this.drawMap();
+
+      // TEMP until canvas is properly redrawn
+      setInterval(() => this.drawMap(), 200);
     });
 
     // Event listener for saving a map
@@ -57,6 +59,10 @@ export class MapService {
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
+
+    // TEMP until zooming is implemented
+    this.context.scale(.6, .6);
+
     this.setClickListener();
   }
 
