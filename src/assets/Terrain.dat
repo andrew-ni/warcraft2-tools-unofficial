@@ -150,37 +150,37 @@ rock-C-0
 rock-C-1
 rock-D-0
 rock-E-0
-light-dirt-1-0 d/gSE
+light-dirt-1-0
 light-dirt-1-1
-light-dirt-2-0 d/gSW
+light-dirt-2-0
 light-dirt-2-1
-light-dirt-3-0 d/gS
+light-dirt-3-0
 light-dirt-3-1
 light-dirt-3-2
-light-dirt-4-0 d/gNE
+light-dirt-4-0
 light-dirt-4-1
-light-dirt-5-0 d/gE
+light-dirt-5-0
 light-dirt-5-1
 light-dirt-5-2
-light-dirt-6-0 d with g in NW SE corners
+light-dirt-6-0
 light-dirt-6-1
-light-dirt-7-0 d with g in SE corner
+light-dirt-7-0
 light-dirt-7-1
-light-dirt-8-0 d/gNW
+light-dirt-8-0
 light-dirt-8-1
-light-dirt-9-0 d with g in SW NE corners
+light-dirt-9-0
 light-dirt-9-1
-light-dirt-A-0 d/gW
+light-dirt-A-0
 light-dirt-A-1
 light-dirt-A-2
-light-dirt-B-0 d with g in SW corner
+light-dirt-B-0
 light-dirt-B-1
-light-dirt-C-0 d/gN
+light-dirt-C-0
 light-dirt-C-1
 light-dirt-C-2
-light-dirt-D-0 d with g in NE corner
+light-dirt-D-0
 light-dirt-D-1
-light-dirt-E-0 d with g in NW corner
+light-dirt-E-0
 light-dirt-E-1
 dark-grass-1-0
 dark-grass-1-1
@@ -214,15 +214,15 @@ dark-grass-D-0
 dark-grass-D-1
 dark-grass-E-0
 dark-grass-E-1
-forest-1-0 f/gSE
-forest-1-1 
-forest-2-0 f/gSW
+forest-1-0
+forest-1-1
+forest-2-0
 forest-2-1
-forest-3-0 f/gS
+forest-3-0
 forest-3-1
-forest-4-0 f/gNE
+forest-4-0
 forest-4-1
-forest-5-0 f/gE
+forest-5-0
 forest-5-1
 forest-6-0
 forest-6-1
