@@ -147,9 +147,13 @@ export class Map {
   // 3. call calcTiles() on the affected region
   // 4. return the affected region so that mapService can redraw
   public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): void {
+    // Changing a single tile in the editor actual results in a 2x2 change in the data
+    width++;
+    height++;
+
     for (let ypos = y; ypos < height; ypos++) {
       for (let xpos = x; xpos < width; xpos++) {
-        this.mapLayer1[y][x].tileType = tileType;   // set tiletype
+        this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
       }
     }
 
