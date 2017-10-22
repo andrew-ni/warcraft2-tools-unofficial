@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MapService } from 'services/map.service';
 
 @Component({
@@ -7,45 +7,40 @@ import { MapService } from 'services/map.service';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+
   constructor(
     private mapService: MapService,
   ) {
   }
 
   ngOnInit() {
-    const canvas: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
-    const context: CanvasRenderingContext2D = canvas.getContext('2d');
+    this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
+    this.context = this.canvas.getContext('2d');
 
-    // Start listening to resize events and
-    // draw canvas.
-    initialize();
-
-    function initialize() {
-      // Calls resizeCanvas() on window resize
-      window.addEventListener('resize', resizeCanvas, false);
-
-      // Draw canvas border for the first time.
-      resizeCanvas();
-    }
-
-    function redraw() {
-      context.strokeStyle = 'blue';
-      context.lineWidth = 5;
-      context.strokeRect(0, 0, window.innerWidth, window.innerHeight);
-    }
-
-    // Runs each time the DOM window resize event fires.
-    // Resets the canvas dimensions to match window,
-    // then draws the new borders accordingly.
-    function resizeCanvas() {
-      console.log('resize requested');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      redraw();
-    }
+    // Draw canvas for the first time.
+    this.resizeCanvas();
 
     // Pass canvas to map service for drawing
-    this.mapService.setCanvas(canvas, context);
+    this.mapService.setCanvas(this.canvas, this.context);
+  }
+
+  // Runs each time the DOM window resize event fires.
+  // Resets the canvas dimensions to match window,
+  // then draws the new borders accordingly.
+  @HostListener('window:resize', ['$event'])
+  private resizeCanvas() {
+    console.log('resize requested');
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.redraw();
+  }
+
+  private redraw() {
+    this.context.strokeStyle = 'blue';
+    this.context.lineWidth = 5;
+    this.context.strokeRect(0, 0, window.innerWidth, window.innerHeight);
   }
 }
 
