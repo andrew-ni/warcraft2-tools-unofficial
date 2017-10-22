@@ -323,7 +323,7 @@ export class Tileset {
         continue;
       }
       const index = strToTileType[tileStr];
-      if (index) {
+      if (index !== undefined) {
         this.tileset[index][parseInt(hex, 16)][parseInt(alt, 10)] = i;
       } else {
         // ERROR
