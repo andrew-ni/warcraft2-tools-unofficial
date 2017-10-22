@@ -25,7 +25,7 @@ export class Map {
   width: number;
   height: number;
   mapLayer1: Tile[][];
-  partialBits: number[][];
+  partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
 
@@ -219,7 +219,7 @@ export class Map {
     for (const row of this.partialBits) {
       let line = '';
       for (const bit of row) {
-        line += bit;  // write out all bits
+        line += bit.toString(16).toUpperCase();  // write out all bits
       }
       lines.push(line);
     }
@@ -275,18 +275,12 @@ export class Map {
     return terrain;
   }
 
-  private parsePartialBits(partialbitsData: string): number[][] {
-    // TODO: is string the best way to represent the partial bits? talk to Linux team and figure out what the hell partial bits are
-    // I'm guessing that using an actual bit to store this will be more beneficial. note: must be converted to string for stringify()
-    const partialbits: number[][] = [];
+  private parsePartialBits(partialbitsData: string) {
+    const partialbits: Uint8Array[] = [];
     const rows = partialbitsData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
-      partialbits.push([]);
-
-      for (const bit of row.split('')) {
-        partialbits[index].push(parseInt(bit, 16));
-      }
+      partialbits.push(Uint8Array.from(Array.from(row).map((hex) => parseInt(hex, 16))));
     }
 
     return partialbits;
