@@ -7,23 +7,23 @@ export const enum TileType {
   Forest,
   DeepWater,
   ShallowWater,
-  RockPartial,
-  ForestPartial,
   MAX,
 }
 
-export const strToNum: TileType[] = [];
+export const strToTileType: TileType[] = [];
 
-strToNum['shallow-water'] = TileType.ShallowWater;
-strToNum['deep-water'] = TileType.DeepWater;
-strToNum['dark-dirt'] = TileType.DarkDirt;
-strToNum['dark-grass'] = TileType.DarkGrass;
-strToNum['forest'] = TileType.Forest;
-strToNum['light-dirt'] = TileType.LightDirt;
-strToNum['light-grass'] = TileType.LightGrass;
-strToNum['rock'] = TileType.Rock;
+strToTileType['shallow-water'] = TileType.ShallowWater;
+strToTileType['deep-water'] = TileType.DeepWater;
+strToTileType['dark-dirt'] = TileType.DarkDirt;
+strToTileType['dark-grass'] = TileType.DarkGrass;
+strToTileType['forest'] = TileType.Forest;
+strToTileType['light-dirt'] = TileType.LightDirt;
+strToTileType['light-grass'] = TileType.LightGrass;
+strToTileType['rock'] = TileType.Rock;
 
-export const numToChar: string[] = [];
+
+export type TileTypeChar = 'd' | 'D' | 'F' | 'g' | 'G' | 'w' | 'W' | 'R';
+export const numToChar: TileTypeChar[] = [];
 
 numToChar[TileType.DarkGrass] = 'G';
 numToChar[TileType.LightGrass] = 'g';
@@ -34,20 +34,31 @@ numToChar[TileType.Forest] = 'F';
 numToChar[TileType.DeepWater] = 'W';
 numToChar[TileType.ShallowWater] = 'w';
 
+
 export const numToTileType: TileType[] = [];
 // TileType.xxx within the square brackets will implicitly be cast to number
 // but the TileType.xxx being assigned will not be casted.
 // This allows for mapping from number to TileType
-numToTileType[numToChar[TileType.DarkGrass]] = TileType.DarkGrass;
-numToTileType[numToChar[TileType.LightGrass]] = TileType.LightGrass;
-numToTileType[numToChar[TileType.DarkDirt]] = TileType.DarkDirt;
-numToTileType[numToChar[TileType.LightDirt]] = TileType.LightDirt;
-numToTileType[numToChar[TileType.Rock]] = TileType.Rock;
-numToTileType[numToChar[TileType.RockPartial]] = TileType.RockPartial;
-numToTileType[numToChar[TileType.Forest]] = TileType.Forest;
-numToTileType[numToChar[TileType.ForestPartial]] = TileType.ForestPartial;
-numToTileType[numToChar[TileType.ShallowWater]] = TileType.ShallowWater;
-numToTileType[numToChar[TileType.DeepWater]] = TileType.DeepWater;
+numToTileType[TileType.DarkGrass] = TileType.DarkGrass;
+numToTileType[TileType.LightGrass] = TileType.LightGrass;
+numToTileType[TileType.DarkDirt] = TileType.DarkDirt;
+numToTileType[TileType.LightDirt] = TileType.LightDirt;
+numToTileType[TileType.Rock] = TileType.Rock;
+numToTileType[TileType.Forest] = TileType.Forest;
+numToTileType[TileType.ShallowWater] = TileType.ShallowWater;
+numToTileType[TileType.DeepWater] = TileType.DeepWater;
+
+
+export const charToTileType: TileType[] = [];
+
+charToTileType[numToChar[TileType.DarkGrass]] = TileType.DarkGrass;
+charToTileType[numToChar[TileType.LightGrass]] = TileType.LightGrass;
+charToTileType[numToChar[TileType.DarkDirt]] = TileType.DarkDirt;
+charToTileType[numToChar[TileType.LightDirt]] = TileType.LightDirt;
+charToTileType[numToChar[TileType.Rock]] = TileType.Rock;
+charToTileType[numToChar[TileType.Forest]] = TileType.Forest;
+charToTileType[numToChar[TileType.ShallowWater]] = TileType.ShallowWater;
+charToTileType[numToChar[TileType.DeepWater]] = TileType.DeepWater;
 
 export class Tile {
   constructor(tileType: TileType) {

@@ -1,4 +1,4 @@
-import { TileType, Tile, numToTileType, strToNum, numToChar } from './tile';
+import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType, TileTypeChar } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
 
@@ -118,7 +118,7 @@ export class Map {
       terrain.push([]);
 
       for (const tileLetter of row.split('')) {
-        terrain[index].push(new Tile(numToTileType[tileLetter]));
+        terrain[index].push(new Tile(charToTileType[tileLetter]));
       }
     }
 
