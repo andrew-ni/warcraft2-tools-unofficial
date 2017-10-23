@@ -8,6 +8,9 @@ import { TempComponent } from './temp/temp.component';
 import { MapService } from 'services/map.service';
 import { MapComponent } from './map/map.component';
 import { TileComponent } from './map/tile/tile.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { Map2Component } from './map2/map2.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +18,9 @@ import { TileComponent } from './map/tile/tile.component';
     MapComponent,
     TempComponent,
     TileComponent,
+    SidebarComponent,
+    Map2Component,
+    FooterComponent,
   ],
   imports: [
     BrowserModule
