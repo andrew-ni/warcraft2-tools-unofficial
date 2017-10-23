@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
-import { Observer, Subscription } from 'rxjs/rx';
+import { Observer, Subscription } from 'rxjs/Rx';
 
 import { MapService } from 'services/map.service';
 
