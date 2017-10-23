@@ -33,9 +33,6 @@ export class MapService {
 
     // Event listener for saving a map
     ipcRenderer.on('menu:file:save', (event: Electron.IpcMessageEvent, filePath?: string) => {
-      // DEBUG: clean up console logs
-      console.log('save-map request received');
-
       if (this.map === undefined) {
         console.log('save-map rejected because Map was not created');
         return;
@@ -54,6 +51,7 @@ export class MapService {
         return; // return without making ipc call
       }
 
+      console.log('saving...');
       ipcRenderer.send('map:save', response, this._filePath);
     });
 
@@ -73,50 +71,43 @@ export class MapService {
     // TEMP until zooming is implemented
     // this.context.scale(.6, .6);
 
-    this.setClickListener();
+    this.setClickListeners();
 
     // TEMP for testing
     ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
-  private setClickListener() {
+  private setClickListeners() {
     this.canvas.addEventListener('mousedown', (event) => {
-      const x: number = Math.floor(event.pageX / 32);
-      const y: number = Math.floor(event.pageY / 32);
-      console.log(x + ' ' + y);
       if (this.map !== undefined) {
-        console.log(this.map.drawLayer[x][y].tileType);
-  
-        // TEST CODE for updating tile
+        const x: number = Math.floor(event.pageX / 32);
+        const y: number = Math.floor(event.pageY / 32);
         const [yStart, xStart, height, width] = this.map.updateTiles(TileType.Rock, y, x, 1, 1);
         this.drawMap(yStart, xStart, height, width);
+        // this.drawMap();
       }
     }, false);
   }
 
   // Draws Map when loaded from file.
   public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    if (yStart < 0) {
+    if (yStart < 0)
       yStart = 0;
-    }
-    if (xStart < 0) {
+    if (xStart < 0)
       xStart = 0;
-    }
-    if (yStart > this.map.height - 1) {
-      yStart = this.map.height - 1;
-    }
-    if (xStart > this.map.width - 1) {
-      xStart = this.map.width - 1;
-    }
-
+    if (yStart + height > this.map.height)
+      yStart = this.map.height - height;
+    if (xStart + width > this.map.width)
+      xStart = this.map.width - width;
+    
     for (let x = xStart; x < xStart + width; x++) {
       for (let y = yStart; y < yStart + height; y++) {
         this.drawImage(y, x, this.map.drawLayer[y][x].index);
       }
     }
   }
-
+  
   // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
   private drawImage(y: number, x: number, index: number): void {
     this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);

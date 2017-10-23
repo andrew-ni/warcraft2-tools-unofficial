@@ -40,7 +40,6 @@ export class Map {
     // TODO load Terrain.dat
     this.tileSet = new Tileset('');
 
-
     this.iterateCalc();   // pre-calculate the entire map's indices
 
     // this.debugMap();
@@ -164,15 +163,15 @@ export class Map {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
     width++;
     height++;
-
+    
     for (let ypos = y; ypos < y + height; ypos++) {
       for (let xpos = x; xpos < x + width; xpos++) {
         this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
       }
     }
-
+    
     const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
-    this.iterateCalc(calcY, calcX, calcHeight, calcWidth);
+    this.iterateCalc(calcY, calcX, calcHeight - 1, calcWidth - 1);    // NOTE: might need to change this if we need to print that extra border
 
     return [calcY, calcX, calcHeight, calcWidth];
   }
