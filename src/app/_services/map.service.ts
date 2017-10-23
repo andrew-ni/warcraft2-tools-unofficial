@@ -88,6 +88,19 @@ export class MapService {
 
   // Draws Map when loaded from file.
   public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+    if (yStart < 0) {
+      yStart = 0;
+    }
+    if (xStart < 0) {
+      xStart = 0;
+    }
+    if (yStart > this.map.height - 1) {
+      yStart = this.map.height - 1;
+    }
+    if (xStart > this.map.width - 1) {
+      xStart = this.map.width - 1;
+    }
+
     for (let x = xStart; x < xStart + width; x++) {
       for (let y = yStart; y < yStart + height; y++) {
         this.drawImage(y, x, this.map.drawLayer[y][x].index);

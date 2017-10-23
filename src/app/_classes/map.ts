@@ -76,7 +76,7 @@ export class Map {
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
   private calcTiles(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.height || x > this.width) {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) {
       return;
     }
 
