@@ -39,45 +39,20 @@ export class Map {
 
     // TODO load Terrain.dat
     this.tileSet = new Tileset('');
-
-    this.iterateCalc();   // pre-calculate the entire map's indices
-
-    // this.debugMap();
-  }
-
-  private debugMap() {
-    // DEBUG
-    this.updateTiles(TileType.LightGrass, 3, 3, 100, 100);
-
-    // Test transitions
-    let x = 8;
-    let y = 8;
-    for (let t = 0; t < TileType.MAX; t++) {
-      this.updateTiles(Math.floor(Math.random() * TileType.MAX), y, 4, 1, 60);
-      this.updateTiles(Math.floor(Math.random() * TileType.MAX), 4, x, 60, 1);
-      x += 7;
-      y += 7;
-    }
-
-    // print the top left 50x50
-    console.log(this.mapLayer1.map((t) => t.map((t2) => numToChar[t2.tileType]).slice(0, 50).join('')).slice(0, 50).join('\n'));
+    this.calcIndices();   // pre-calculate the entire map's indices
   }
 
   // by default, calculates indices for whole map
-  public iterateCalc(y = 0, x = 0, h = this.height, w = this.width) {
-    for (let ypos = y; ypos < y + h; ypos++) {
-      for (let xpos = x; xpos < x + w; xpos++) {
-        this.calcTiles(ypos, xpos);
-      }
-    }
+  public calcIndices(y = 0, x = 0, h = this.height, w = this.width) {
+    for (let ypos = y; ypos < y + h; ypos++)
+      for (let xpos = x; xpos < x + w; xpos++)
+        this.calcIndex(ypos, xpos);
   }
 
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
-  private calcTiles(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) {
-      return;
-    }
+  private calcIndex(y = 0, x = 0): void {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
 
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
@@ -164,14 +139,12 @@ export class Map {
     width++;
     height++;
 
-    for (let ypos = y; ypos < y + height; ypos++) {
-      for (let xpos = x; xpos < x + width; xpos++) {
+    for (let ypos = y; ypos < y + height; ypos++)
+      for (let xpos = x; xpos < x + width; xpos++)
         this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
-      }
-    }
 
     const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
-    this.iterateCalc(calcY, calcX, calcHeight - 1, calcWidth - 1);    // NOTE: might need to change this if we need to print that extra border
+    this.calcIndices(calcY, calcX, calcHeight - 1, calcWidth - 1);    // NOTE: might need to change this if we need to print that extra border
 
     return [calcY, calcX, calcHeight, calcWidth];
   }
