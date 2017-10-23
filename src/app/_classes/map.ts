@@ -25,6 +25,7 @@ export class Map {
   width: number;
   height: number;
   mapLayer1: Tile[][];
+  drawLayer: Tile[][];
   partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
@@ -38,37 +39,26 @@ export class Map {
 
     // TODO load Terrain.dat
     this.tileSet = new Tileset('');
-
-    console.log(this.stringify());
-
-    this.iterateCalc();
-
-    console.log(this.stringify());
-
-    // DEBUG
-    // this.transitionTiles(TileType.Rock, 10, 10, 1, 1);
-    // this.transitionTiles(TileType.Rock, 22, 10, 1, 1);
-    // this.transitionTiles(TileType.ShallowWater, 12, 19, 7, 3);
-    // this.iterateCalc();
-    console.log(this.mapLayer1.map((t) => t.map((t2) => t2.index)));
+    this.calcIndices();   // pre-calculate the entire map's indices
   }
 
   // by default, calculates indices for whole map
-  // note: nitta's map is rendered [y][x], so we should match him for consistency TODO
-  public iterateCalc(x = 0, y = 0, w = this.width, h = this.height) {
-    for (let xpos = x; xpos < w; xpos++) {
-      for (let ypos = y; ypos < h; ypos++) {
-        this.calcTiles(xpos, ypos);
-      }
-    }
+  public calcIndices(y = 0, x = 0, h = this.height, w = this.width) {
+    for (let ypos = y; ypos < y + h; ypos++)
+      for (let xpos = x; xpos < x + w; xpos++)
+        this.calcIndex(ypos, xpos);
   }
 
-  private calcTiles(y = 0, x = 0): void {
+  // calcTiles() calculates tile orientation based on surrounding tiles
+  // This is the function that writes the proper index into the tiles
+  private calcIndex(y = 0, x = 0): void {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
+
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
     const LL = this.mapLayer1[y + 1][x].tileType;
     const LR = this.mapLayer1[y + 1][x + 1].tileType;
-    const tile = this.mapLayer1[y][x];
+    const tile = this.drawLayer[y][x];
 
     let typeIndex = (((this.partialBits[y][x] & 0x8) >> 3) |
       ((this.partialBits[y][x + 1] & 0x4) >> 1) |
@@ -138,11 +128,29 @@ export class Map {
     }
   }
 
-  public updateTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
+  // updateTiles() is the public function to call when applying a brush to the map (edit operation)
+  // updateTiles will:
+  // 1. update the "brushed" area with the selected tile type (bringing the map to an invalid state, with invalid transitions)
+  // 2. transition the tiles that were affected (bringing map to a valid state)
+  // 3. call calcTiles() on the affected region
+  // 4. return the affected region so that mapService can redraw
+  public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
+    // Changing a single tile in the editor actual results in a 2x2 change in the data
+    width++;
+    height++;
 
+    for (let ypos = y; ypos < y + height; ypos++)
+      for (let xpos = x; xpos < x + width; xpos++)
+        this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
+
+    const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
+    this.calcIndices(calcY, calcX, calcHeight - 1, calcWidth - 1);    // NOTE: might need to change this if we need to print that extra border
+
+    return [calcY, calcX, calcHeight, calcWidth];
   }
 
-  private transitionTiles(tileType: TileType, x: number, y: number, width: number, height: number): void {
+  // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
+  private transitionTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
 
     // The top row indicates the current tile type
     // The left column indicates the new tile type being placed
@@ -152,33 +160,37 @@ export class Map {
     // Read wiki for more info on transitions:
     // https://github.com/UCDClassNitta/ECS160Tools/wiki/Tile-Transitions
     /*
-    |   | d    | D    | F     | g     | G     | w    | W     | R    |
-    |---|------|------|-------|-------|-------|------|-------|------|
-    | d | []   | []   | [d]   | [d]   | [d]   | []   | [w]   | []   |
-    | D | [D]  | []   | [Dd]  | [Dd]  | [Dd]  | [D]  | [Dw]  | [D]  |
-    | F | [F]  | [Fd] | []    | [F]   | [F]   | [Fd] | [Fdw] | [Fd] |
-    | g | []   | [d]  | []    | []    | []    | [d]  | [dw]  | [d]  |
-    | G | [G]  | [Gd] | [G]   | [G]   | []    | [Gd] | [Gdw] | [Gd] |
-    | w | [w]  | [w]  | [wd]  | [wd]  | [wd]  | []   | []    | [w]  |
-    | W | [Ww] | [Ww] | [Wwd] | [Wwd] | [Wwd] | [W]  | []    | [Ww] |
-    | R | [R]  | [R]  | [Rd]  | [Rd]  | [Rd]  | [R]  | [Rw]  | []   |
+    |   | d   | D    | F     | g    | G     | w    | W     | R    |
+    |---|-----|----- |-------|------|-------|------|-------|------|
+    | d | []  | []   | [g]   | []   | [g]   | []   | [w]   | []   |
+    | D | []  | []   | [dg]  | [d]  | [dg]  | [d]  | [dw]  | [d]  |
+    | F | [g] | [gd] | []    | []   | [g]   | [gd] | [gdw] | [gd] |
+    | g | []  | [d]  | []    | []   | []    | [d]  | [dw]  | [d]  |
+    | G | [g] | [gd] | [g]   | []   | []    | [gd] | [gdw] | [gd] |
+    | w | []  | [d]  | [dg]  | [d]  | [dg]  | []   | []    | [d]  |
+    | W | [w] | [wd] | [wdg] | [wd] | [wdg] | []   | []    | [wd] |
+    | R | []  | [d]  | [dg]  | [d]  | [dg]  | [d]  | [dw]  | []   |
     */
     const transitionTable: TileTypeChar[/*newTile*/][/*currentTile*/][/*iteration*/] =
       [
-        [[], [], ['d'], ['d'], ['d'], [], ['w'], []],
-        [['D'], [], ['D', 'd'], ['D', 'd'], ['D', 'd'], ['D'], ['D', 'w'], ['D']],
-        [['F'], ['F', 'd'], [], ['F'], ['F'], ['F', 'd'], ['F', 'd', 'w'], ['F', 'd']],
+        [[], [], ['g'], [], ['g'], [], ['w'], []],
+        [[], [], ['d', 'g'], ['d'], ['d', 'g'], ['d'], ['d', 'w'], ['d']],
+        [['g'], ['g', 'd'], [], [], ['g'], ['g', 'd'], ['g', 'd', 'w'], ['g', 'd']],
         [[], ['d'], [], [], [], ['d'], ['d', 'w'], ['d']],
-        [['G'], ['G', 'd'], ['G'], ['G'], [], ['G', 'd'], ['G', 'd', 'w'], ['G', 'd']],
-        [['w'], ['w'], ['w', 'd'], ['w', 'd'], ['w', 'd'], [], [], ['w']],
-        [['W', 'w'], ['W', 'w'], ['W', 'w', 'd'], ['W', 'w', 'd'], ['W', 'w', 'd'], ['W'], [], ['W', 'w']],
-        [['R'], ['R'], ['R', 'd'], ['R', 'd'], ['R', 'd'], ['R'], ['R', 'w'], []],
+        [['g'], ['g', 'd'], ['g'], [], [], ['g', 'd'], ['g', 'd', 'w'], ['g', 'd']],
+        [[], ['d'], ['d', 'g'], ['d'], ['d', 'g'], [], [], ['d']],
+        [['w'], ['w', 'd'], ['w', 'd', 'g'], ['w', 'd'], ['w', 'd', 'g'], [], [], ['w', 'd']],
+        [[], ['d'], ['d', 'g'], ['d'], ['d', 'g'], ['d'], ['d', 'w'], []],
       ];
 
     for (let iteration = 0; iteration < 3 /*max*/; iteration++) {
       let changed = false;
 
       const applyTileTransition = (_x: number, _y: number) => {
+        if (_y < 0 || _x < 0 || _y > this.height || _x > this.width) {
+          return;
+        }
+
         const tile = this.mapLayer1[_y][_x];
         const currentType = tile.tileType;
         const tileChar = transitionTable[tileType][currentType][iteration];
@@ -200,16 +212,20 @@ export class Map {
       transitionEdge(width + 1, (_x) => width - _x - 1, () => height); // Bottom
       transitionEdge(height + 1, () => - 1, (_y) => height - _y - 1); // Left
 
+      y--; x--; height += 2; width += 2;
       if (!changed) break;
-
-      x--; y--; width += 2; height += 2;
     }
+
+    return [y, x, height, width];
 
     // TODO: there is a special case for rocks and forest
     // RdR, FgF
     // When rocks are separated by a single tile, the tile is forced to be lightDirt
     // When forests are separated by a single tile, the tile is forced to be lightGrass
   }
+
+
+  // SAVE LOGIC
 
   public stringify(): string {
     // convert the contents of this Map to a string which can be written as configuration
@@ -261,6 +277,10 @@ export class Map {
     return lines.join('\n');  // join all lines with newline
   }
 
+
+  // PARSE FUNCTIONS
+  // TODO: implement exception throwing in order to detect parse failure
+
   private parseMapData(mapData: string): void {
     const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
@@ -275,18 +295,18 @@ export class Map {
     this.canSave = true;
   }
 
-  // PARSE helper methods
-  // TODO: implement exception throwing in order to detect parse failure
-
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
+    this.drawLayer = [];
     const rows = terrainData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
       terrain.push([]);
+      this.drawLayer.push([]);
 
       for (const tileLetter of row.split('')) {
         terrain[index].push(new Tile(charToTileType[tileLetter]));
+        this.drawLayer[index].push(new Tile(0));
       }
     }
 
