@@ -22,7 +22,8 @@ export class MapService {
       this.map = new Map(mapData);
 
       // TEMP until canvas is properly redrawn
-      setInterval(() => this.drawMap(), 200);
+      // setInterval(() => this.drawMap(), 200);
+      this.drawMap();
     });
 
     // Event listener for saving a map
@@ -61,7 +62,7 @@ export class MapService {
     this.context = ctx;
 
     // TEMP until zooming is implemented
-    this.context.scale(.6, .6);
+    // this.context.scale(.6, .6);
 
     this.setClickListener();
 
@@ -71,46 +72,31 @@ export class MapService {
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
   private setClickListener() {
-    this.canvas.addEventListener('mousedown', () => this.clicked(event), false);
-  }
-
-  // Fires everytime click occurs. Prints coords and tile info at click location.
-  private clicked(event) {
-    const x: number = Math.floor(event.pageX / 32);
-    const y: number = Math.floor(event.pageY / 32);
-    console.log(x + ' ' + y);
-    if (this.map !== undefined) {
-      console.log(this.map.drawLayer[x][y].tileType);
-
-      // TEST CODE for updating tile
-      // this.map.updateTiles(TileType.Rock, y, x, 1, 1);
-      // this.drawMap();
-    }
+    this.canvas.addEventListener('mousedown', (event) => {
+      const x: number = Math.floor(event.pageX / 32);
+      const y: number = Math.floor(event.pageY / 32);
+      console.log(x + ' ' + y);
+      if (this.map !== undefined) {
+        console.log(this.map.drawLayer[x][y].tileType);
+  
+        // TEST CODE for updating tile
+        const [yStart, xStart, height, width] = this.map.updateTiles(TileType.Rock, y, x, 1, 1);
+        this.drawMap(yStart, xStart, height, width);
+      }
+    }, false);
   }
 
   // Draws Map when loaded from file.
-  private drawMap(): void {
-    // this.drawImage(0, 0, 0);
-    // this.drawImage(2, 2, 10);
-    // this.drawImage(4, 4, 22);
-    // this.drawImage(6, 6, 252);
-    // let i: number;
-    // for (i = 0; i < 50; i++) {
-    //   this.context.fillText('' + i, 35, i * 32 + 10);
-    //   this.drawImage(0, i, i);
-    // }
-
-    let x: number;
-    let y: number;
-    for (x = 0; x < this.map.drawLayer.length - 1; x++) {
-      for (y = 0; y < this.map.drawLayer[x].length - 1; y++) {
-        this.drawImage(x, y, this.map.drawLayer[y][x].index);
+  public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+    for (let x = xStart; x < xStart + width; x++) {
+      for (let y = yStart; y < yStart + height; y++) {
+        this.drawImage(y, x, this.map.drawLayer[y][x].index);
       }
     }
   }
 
   // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
-  private drawImage(x: number, y: number, index: number): void {
+  private drawImage(y: number, x: number, index: number): void {
     this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
   }
 }

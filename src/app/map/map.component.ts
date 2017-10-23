@@ -34,13 +34,6 @@ export class MapComponent implements OnInit {
     console.log('resize requested');
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.redraw();
-  }
-
-  private redraw() {
-    this.context.strokeStyle = 'blue';
-    this.context.lineWidth = 5;
-    this.context.strokeRect(0, 0, window.innerWidth, window.innerHeight);
   }
 }
 

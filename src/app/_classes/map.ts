@@ -43,7 +43,7 @@ export class Map {
 
     this.iterateCalc();   // pre-calculate the entire map's indices
 
-    this.debugMap();
+    // this.debugMap();
   }
 
   private debugMap() {
@@ -76,6 +76,10 @@ export class Map {
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
   private calcTiles(y = 0, x = 0): void {
+    if (y < 0 || x < 0 || y > this.height || x > this.width) {
+      return;
+    }
+
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
     const LL = this.mapLayer1[y + 1][x].tileType;
@@ -156,7 +160,7 @@ export class Map {
   // 2. transition the tiles that were affected (bringing map to a valid state)
   // 3. call calcTiles() on the affected region
   // 4. return the affected region so that mapService can redraw
-  public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): void {
+  public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
     width++;
     height++;
@@ -169,6 +173,8 @@ export class Map {
 
     const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
     this.iterateCalc(calcY, calcX, calcHeight, calcWidth);
+
+    return [calcY, calcX, calcHeight, calcWidth];
   }
 
   // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
@@ -209,6 +215,10 @@ export class Map {
       let changed = false;
 
       const applyTileTransition = (_x: number, _y: number) => {
+        if (_y < 0 || _x < 0 || _y > this.height || _x > this.width) {
+          return;
+        }
+
         const tile = this.mapLayer1[_y][_x];
         const currentType = tile.tileType;
         const tileChar = transitionTable[tileType][currentType][iteration];
