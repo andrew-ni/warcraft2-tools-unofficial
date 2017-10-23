@@ -92,22 +92,18 @@ export class MapService {
 
   // Draws Map when loaded from file.
   public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    if (yStart < 0)
-      yStart = 0;
-    if (xStart < 0)
-      xStart = 0;
-    if (yStart + height > this.map.height)
-      yStart = this.map.height - height;
-    if (xStart + width > this.map.width)
-      xStart = this.map.width - width;
-    
+    if (yStart < 0) yStart = 0;
+    if (xStart < 0) xStart = 0;
+    if (yStart + height > this.map.height) yStart = this.map.height - height;
+    if (xStart + width > this.map.width) xStart = this.map.width - width;
+
     for (let x = xStart; x < xStart + width; x++) {
       for (let y = yStart; y < yStart + height; y++) {
         this.drawImage(y, x, this.map.drawLayer[y][x].index);
       }
     }
   }
-  
+
   // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
   private drawImage(y: number, x: number, index: number): void {
     this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
