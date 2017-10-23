@@ -11,6 +11,7 @@ import { TileComponent } from './map/tile/tile.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { Map2Component } from './map2/map2.component';
 import { FooterComponent } from './footer/footer.component';
+import { PropertiesComponent } from './properties/properties.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { FooterComponent } from './footer/footer.component';
     SidebarComponent,
     Map2Component,
     FooterComponent,
+    PropertiesComponent,
   ],
   imports: [
     BrowserModule

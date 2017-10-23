@@ -1,39 +1,192 @@
 div#sidebar {
   float: left;
-  width: 200px;
-  height: 100%;
+  width: 204px;
+  height: calc(100% - 30px);
   background: rgb(255, 255, 127);
   font-size: 18px;
 }
 
-div#terrain {
+div#properties {
   height: 200px;
+  background: rgb(32, 104, 32);
+}
+
+div#terrain {
+  height: 80px;
   background: rgb(127, 255, 127);
 }
 
 label.tile_container {
   float:left;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
+  margin-left: 5px;
 }
 
 div.tile_sprite {
-  width: 30px;
-  height: 30px;
-  background: rgb(255, 255, 0);
-  border-style: solid;
+  width: 32px;
+  height: 32px;
+  background: rgb(0, 0, 0);
 }
 
 input.tile:checked + div.tile_sprite {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background: rgb(0, 255, 0);
 }
 
 div#t_water {
-  background: rgb(127, 127, 0);  // insert sprite here
+  background-image: url("../../assets/frontend_icons/water_icon.png");  // insert sprite here
 }
 
+div#t_grass {
+  background-image: url("../../assets/frontend_icons/grass_icon.png");  // insert sprite here
+}
+
+div#t_rock {
+  background-image: url("../../assets/frontend_icons/rocks_icon.png");  // insert sprite here
+}
+
+div#t_dirt {
+  background-image: url("../../assets/frontend_icons/dirt_icon.png");  // insert sprite here
+}
+
+div#t_forest {
+  background-image: url("../../assets/frontend_icons/forest_icon.png");  // insert sprite here
+}
+
+
 input.tile:checked + div#t_water {
-  background: rgb(0, 127, 0);  // insert sprite here
+  background-color:black ;  // insert sprite here
+  background-image: url("../../assets/frontend_icons/water_icon.png");  // insert sprite here  
+  opacity: 0.5;  
+}
+
+input.tile:checked + div#t_grass {
+  background-color:black ;  // insert sprite here
+  background-image: url("../../assets/frontend_icons/grass_icon.png");  // insert sprite here  
+  opacity: 0.5;  
+}
+
+input.tile:checked + div#t_rock {
+  background-color:black ;  // insert sprite here
+  background-image: url("../../assets/frontend_icons/rocks_icon.png");  // insert sprite here  
+  opacity: 0.5;  
+}
+
+input.tile:checked + div#t_dirt {
+  background-color:black ;  // insert sprite here
+  background-image: url("../../assets/frontend_icons/dirt_icon.png");  // insert sprite here  
+  opacity: 0.5;  
+}
+
+input.tile:checked + div#t_forest {
+  background-color:black ;  // insert sprite here
+  background-image: url("../../assets/frontend_icons/forest_icon.png");  // insert sprite here  
+  opacity: 0.5;  
+}
+
+div#units {
+  height: calc(100% - 80px + 18px - 300px- 30px);
+  background: rgb(136, 173, 136);
+  margin-top: -18px;
+}
+
+.button{
+  background-color: rgb(156, 245, 156);
+  width:102px;
+  float:left;
+  border:none;
+}
+
+.button2{
+  background-color: rgb(83, 156, 83);
+  width:102px;
+  float:left;
+  border:none;
+}
+
+div#units2{
+  height: calc(100%);
+  background: rgb(156, 245, 156);
+}
+
+
+div#units3{
+  height: 120px;
+  background: rgb(169, 206, 169);
+}
+
+div#units4{
+  height: 180px;
+  background: rgb(84, 112, 84);
+  margin-top: -18px;
+}
+
+label.unit_container {
+  float:left;
+  width: 46px;
+  height: 38px;
+  margin-top:-26px;
+}
+
+div.unit_sprite {
+  width: 46px;
+  height: 38px;
+  background: rgb(0, 0, 0);
+}
+
+div#u_peasant {
+  background-image: url("../../assets/frontend_icons/peasant_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_archer {
+  background-image: url("../../assets/frontend_icons/archer_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_ranger {
+  background-image: url("../../assets/frontend_icons/ranger_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_footman {
+  background-image: url("../../assets/frontend_icons/footman_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_townhall {
+  background-image: url("../../assets/frontend_icons/townhall_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_barracks {
+  background-image: url("../../assets/frontend_icons/barracks_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_blacksmith {
+  background-image: url("../../assets/frontend_icons/blacksmith_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_lumbermill {
+  background-image: url("../../assets/frontend_icons/lumbermill_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_farm {
+  background-image: url("../../assets/frontend_icons/farm_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_tower {
+  background-image: url("../../assets/frontend_icons/tower_icon.png");  // insert sprite here
+  background-size:100%;
+}
+
+div#u_goldmine {
+  background-image: url("../../assets/frontend_icons/goldmine_icon.png");  // insert sprite here
+  background-size:100%;
 }
