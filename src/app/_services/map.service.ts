@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject, Observer } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
@@ -14,12 +15,16 @@ export class MapService {
   private _filePath: string;
   private terrainImg: HTMLImageElement;
 
+  private _mapLoaded = new Subject<{ width: number, height: number }>();
+
+
   constructor() {
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
       this.map = new Map(mapData);
+      this._mapLoaded.next({ width: this.map.width, height: this.map.height });
 
       // TEMP until canvas is properly redrawn
       // setInterval(() => this.drawMap(), 200);
@@ -54,6 +59,10 @@ export class MapService {
 
     this.terrainImg = new Image();
     this.terrainImg.src = 'assets/Terrain.png';
+  }
+
+  public subscribeToMapLoaded(observer: Observer<{ width: number, height: number }>) {
+    return this._mapLoaded.subscribe(observer);
   }
 
   // Save canvas context from map.component.ts
