@@ -58,6 +58,7 @@ export class Map {
 
 
   public init(mapData: string): void {
+    this.canSave = false;
     this.mapLayer1 = undefined;
     this.drawLayer = undefined;
     this.partialBits = undefined;
