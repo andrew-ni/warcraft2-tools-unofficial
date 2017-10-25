@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Observer, Subscription } from 'rxjs/Rx';
 
 import { MapService } from 'services/map.service';
-import { Dimension } from 'map';
+import { Dimension } from 'interfaces';
 
 @Component({
   selector: 'app-map',

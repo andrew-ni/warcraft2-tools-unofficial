@@ -3,7 +3,8 @@ import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
-import { Map, Dimension, Region } from 'map';
+import { Map } from 'map';
+import { Dimension, Region } from 'interfaces';
 
 @Injectable()
 export class MapService {

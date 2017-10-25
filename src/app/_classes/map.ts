@@ -3,6 +3,7 @@ import { Player } from './player';
 import { Asset } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
+import { Dimension, Region } from 'interfaces';
 
 export class Map {
 
