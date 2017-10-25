@@ -4,21 +4,6 @@ import { Asset } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 
-
-
-export interface Dimension {
-  width: number;
-  height: number;
-}
-
-export interface Coordinate {
-  x: number;
-  y: number;
-}
-
-export interface Region extends Dimension, Coordinate {
-}
-
 export class Map {
 
   // Headers are for stringify(), which needs them to output map comments
