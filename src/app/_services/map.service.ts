@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observer } from 'rxjs/Rx';
+import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
@@ -15,20 +15,14 @@ export class MapService {
   private _filePath: string;
   private terrainImg: HTMLImageElement;
 
-  private _mapLoaded = new Subject<{ width: number, height: number }>();
-
-
   constructor() {
+    this.map = new Map();
+
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
-      this.map = new Map(mapData);
-      this._mapLoaded.next({ width: this.map.width, height: this.map.height });
-
-      // TEMP until canvas is properly redrawn
-      // setInterval(() => this.drawMap(), 200);
-      this.drawMap();
+      this.map.init(mapData);
     });
 
     // Event listener for saving a map
@@ -57,10 +51,20 @@ export class MapService {
 
     this.terrainImg = new Image();
     this.terrainImg.src = 'assets/Terrain.png';
+
+    this.subscribeToTilesUpdated({
+      next: reg => this.drawMap(reg),
+      error: err => console.error(err),
+      complete: null
+    });
   }
 
-  public subscribeToMapLoaded(observer: Observer<{ width: number, height: number }>) {
-    return this._mapLoaded.subscribe(observer);
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this.map.subscribeToMapLoaded(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this.map.subscribeToTilesUpdated(observer);
   }
 
   // Save canvas context from map.component.ts
@@ -74,7 +78,7 @@ export class MapService {
     this.setClickListeners();
 
     // TEMP for testing
-    ipcRenderer.send('map:load', './src/assets/bay.map');
+    // ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.

@@ -2,6 +2,8 @@ import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType
 import { Player } from './player';
 import { Asset } from './asset';
 import { Tileset } from './tileset';
+import { Subject, Observer, Observable } from 'rxjs/Rx';
+
 
 
 export interface Dimension {
@@ -32,7 +34,7 @@ export class Map {
   static AI_SCRIPTS_HEADER = '# AI Scripts';
 
   // map status flags
-  canSave: boolean;
+  canSave = false; // save state is not ready yet
 
   // map detail fields
   name: string;
@@ -46,14 +48,36 @@ export class Map {
 
   tileSet: Tileset;
 
+  // Events
+  private _mapLoaded = new Subject<Dimension>();
+  private _tilesUpdated = new Subject<Region>();
+
+
   // `mapData` is the raw file contents
-  constructor(mapData: string) {
-    this.canSave = false;       // save state is not ready yet
+  constructor() { }
+
+
+  public init(mapData: string): void {
+    this.mapLayer1 = undefined;
+    this.drawLayer = undefined;
+    this.partialBits = undefined;
+    this.players = [];
+    this.assets = [];
+    this.tileSet = undefined;
+
     this.parseMapData(mapData);
 
     // TODO load Terrain.dat
     this.tileSet = new Tileset('');
     this.calcIndices();   // pre-calculate the entire map's indices
+  }
+
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this._mapLoaded.subscribe(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this._tilesUpdated.subscribe(observer);
   }
 
   // by default, calculates indices for whole map
@@ -63,12 +87,14 @@ export class Map {
         this.calcIndex(ypos, xpos);
       }
     }
+
+    this._tilesUpdated.next(reg);
   }
 
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
   private calcIndex(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) return;
 
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
@@ -309,6 +335,7 @@ export class Map {
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
+    this._mapLoaded.next({ width: this.width, height: this.height });
   }
 
   private parseTerrain(terrainData: string): Tile[][] {
