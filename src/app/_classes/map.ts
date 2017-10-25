@@ -25,6 +25,7 @@ export class Map {
   width: number;
   height: number;
   mapLayer1: Tile[][];
+  mapLayer2: Asset[][];
   drawLayer: Tile[][];
   partialBits: Uint8Array[];
   players: Player[] = [];
@@ -290,6 +291,7 @@ export class Map {
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
     this.players = this.parsePlayers(players.trim(), this.assets);
+    this.setMapLayer2(this.assets);
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
@@ -356,5 +358,26 @@ export class Map {
     }
 
     return parsedAssets;
+  }
+
+  private setMapLayer2(assets: Asset[]) {
+    for (var row = 0; row < this.height; row++) {
+      this.mapLayer2.push([]);
+      for (var column = 0; column < this.width; column++) {
+        // emptyAsset is a sentinel asset object that represents a cell with no assets in mapLayer2
+        let emptyAsset: Asset = new Asset(-1, 'None', column, row);
+        this.mapLayer2[row].push(emptyAsset);
+      }
+    }
+
+    for (const asset of this.assets) {
+      this.updateAssetPosition(asset);
+    }
+    console.log(this.mapLayer2);
+  }
+
+  private updateAssetPosition(asset: Asset) {
+    if (asset.y < 0 || asset.x < 0 || asset.y > this.height - 1 || asset.x > this.width - 1)  return;
+    this.mapLayer2[asset.y][asset.x] = asset;
   }
 }
