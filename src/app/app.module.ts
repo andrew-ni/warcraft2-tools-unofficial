@@ -12,6 +12,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { Map2Component } from './map2/map2.component';
 import { FooterComponent } from './footer/footer.component';
 import { PropertiesComponent } from './properties/properties.component';
+import { NewmapComponent } from './newmap/newmap.component';
+import { UploadmapComponent } from './uploadmap/uploadmap.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { PropertiesComponent } from './properties/properties.component';
     Map2Component,
     FooterComponent,
     PropertiesComponent,
+    NewmapComponent,
+    UploadmapComponent,
   ],
   imports: [
     BrowserModule
