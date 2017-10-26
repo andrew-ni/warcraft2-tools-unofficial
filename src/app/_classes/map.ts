@@ -2,6 +2,8 @@ import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType
 import { Player } from './player';
 import { Asset } from './asset';
 import { Tileset } from './tileset';
+import { Subject, Observer, Observable } from 'rxjs/Rx';
+import { Dimension, Region } from 'interfaces';
 
 export class Map {
 
@@ -18,7 +20,7 @@ export class Map {
   static AI_SCRIPTS_HEADER = '# AI Scripts';
 
   // map status flags
-  canSave: boolean;
+  canSave = false; // save state is not ready yet
 
   // map detail fields
   name: string;
@@ -32,9 +34,24 @@ export class Map {
 
   tileSet: Tileset;
 
+  // Events
+  private _mapLoaded = new Subject<Dimension>();
+  private _tilesUpdated = new Subject<Region>();
+
+
   // `mapData` is the raw file contents
-  constructor(mapData: string) {
-    this.canSave = false;       // save state is not ready yet
+  constructor() { }
+
+
+  public init(mapData: string): void {
+    this.canSave = false;
+    this.mapLayer1 = undefined;
+    this.drawLayer = undefined;
+    this.partialBits = undefined;
+    this.players = [];
+    this.assets = [];
+    this.tileSet = undefined;
+
     this.parseMapData(mapData);
 
     // TODO load Terrain.dat
@@ -42,17 +59,29 @@ export class Map {
     this.calcIndices();   // pre-calculate the entire map's indices
   }
 
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this._mapLoaded.subscribe(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this._tilesUpdated.subscribe(observer);
+  }
+
   // by default, calculates indices for whole map
-  public calcIndices(y = 0, x = 0, h = this.height, w = this.width) {
-    for (let ypos = y; ypos < y + h; ypos++)
-      for (let xpos = x; xpos < x + w; xpos++)
+  private calcIndices(reg: Region = { y: 0, x: 0, height: this.height, width: this.width }) {
+    for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
+      for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
         this.calcIndex(ypos, xpos);
+      }
+    }
+
+    this._tilesUpdated.next(reg);
   }
 
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
   private calcIndex(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) return;
 
     const UL = this.mapLayer1[y][x].tileType;
     const UR = this.mapLayer1[y][x + 1].tileType;
@@ -130,27 +159,27 @@ export class Map {
 
   // updateTiles() is the public function to call when applying a brush to the map (edit operation)
   // updateTiles will:
-  // 1. update the "brushed" area with the selected tile type (bringing the map to an invalid state, with invalid transitions)
+  // 1. update the "brushed" reg with the selected tile type (bringing the map to an invalid state, with invalid transitions)
   // 2. transition the tiles that were affected (bringing map to a valid state)
   // 3. call calcTiles() on the affected region
-  // 4. return the affected region so that mapService can redraw
-  public updateTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
+  // 4. emit the affected region so that mapService can redraw
+  public updateTiles(tileType: TileType, reg: Region) {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
-    width++;
-    height++;
+    reg.width++;
+    reg.height++;
 
-    for (let ypos = y; ypos < y + height; ypos++)
-      for (let xpos = x; xpos < x + width; xpos++)
+    for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
+      for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
         this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
+      }
+    }
 
-    const [calcY, calcX, calcHeight, calcWidth] = this.transitionTiles(tileType, y, x, height, width);
-    this.calcIndices(calcY, calcX, calcHeight - 1, calcWidth - 1);    // NOTE: might need to change this if we need to print that extra border
-
-    return [calcY, calcX, calcHeight, calcWidth];
+    const newArea = this.transitionTiles(tileType, reg);
+    this.calcIndices(newArea);    // NOTE: might need to change this if we need to print that extra border
   }
 
   // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
-  private transitionTiles(tileType: TileType, y: number, x: number, height: number, width: number): number[] {
+  private transitionTiles(tileType: TileType, reg: Region): Region {
 
     // The top row indicates the current tile type
     // The left column indicates the new tile type being placed
@@ -202,21 +231,21 @@ export class Map {
 
       const transitionEdge = (length: number, fx: (n: number) => number, fy: (n: number) => number) => {
         for (let n = 0; n < length; n++) {
-          applyTileTransition(fx(n) + x, fy(n) + y);
+          applyTileTransition(fx(n) + reg.x, fy(n) + reg.y);
         }
       };
 
       // TODO: bound checking
-      transitionEdge(width + 1, (_x) => _x, () => -1); // Top
-      transitionEdge(height + 1, () => width, (_y) => _y); // Right
-      transitionEdge(width + 1, (_x) => width - _x - 1, () => height); // Bottom
-      transitionEdge(height + 1, () => - 1, (_y) => height - _y - 1); // Left
+      transitionEdge(reg.width + 1, (_x) => _x, () => -1); // Top
+      transitionEdge(reg.height + 1, () => reg.width, (_y) => _y); // Right
+      transitionEdge(reg.width + 1, (_x) => reg.width - _x - 1, () => reg.height); // Bottom
+      transitionEdge(reg.height + 1, () => - 1, (_y) => reg.height - _y - 1); // Left
 
-      y--; x--; height += 2; width += 2;
+      reg.y--; reg.x--; reg.height += 2; reg.width += 2;
       if (!changed) break;
     }
 
-    return [y, x, height, width];
+    return reg;
 
     // TODO: there is a special case for rocks and forest
     // RdR, FgF
@@ -293,6 +322,7 @@ export class Map {
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
+    this._mapLoaded.next({ width: this.width, height: this.height });
   }
 
   private parseTerrain(terrainData: string): Tile[][] {
