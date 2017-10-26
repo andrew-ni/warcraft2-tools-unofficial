@@ -1,48 +1,88 @@
-<div id="sidebar">
-  <!--<p>sidebar works!</p>-->
-  <div id="properties">
-        <p align="left" style="height: 0; margin: 0 0 0 0">Map Properties</p>
-        <p align="left" style="margin-top: 25px; margin-left:5px; font-size:14px;">Map Name:</p>
-        <input type="text" name="map_name" style = "width:80%"><br>
-        <p align="left" style="margin-top: 25px; margin-left:5px; font-size:14px;">Dimensions:</p>
-        <input type="text" name="width" style="width:20%"> x
-        <input type="text" name="height" style = "width:20%"><br>
-        <p align="left" style="margin-top: 25px; margin-left:5px; font-size:14px; display:inline-block;">Number of Players:</p>        
-        <select align="left">
-            <option value="2player">2</option>
-            <option value="3player">3</option>
-            <option value="4player">4</option>
-            <option value="5player">5</option>
-            <option value="6player">6</option>
-            <option value="7player">7</option>
-            <option value="8player">8</option>
-        </select><br>
-  </div>
-  <div id="terrain">
-    <p align="left" style="height: 0; margin: 0 0 0 0">Terrain</p>
-    <label class="tile_container" style="margin-left: 12px;">
-        <input class="tile" type="radio" name="tile" value="water" style="visibility: hidden">
-        <div class="tile_sprite" id="t_water"></div>
+<div id="properties">
+    <p align="left"
+       style="height: 0; margin: 0 0 0 0">Map Properties</p>
+    <p align="left"
+       style="margin-top: 25px; margin-left:5px; font-size:14px;">Map Name:</p>
+    <input type="text"
+           name="map_name"
+           style="width:80%">
+    <br>
+    <p align="left"
+       style="margin-top: 25px; margin-left:5px; font-size:14px;">Dimensions:</p>
+    <input type="text"
+           name="width"
+           style="width:20%"> x
+    <input type="text"
+           name="height"
+           style="width:20%">
+    <br>
+    <p align="left"
+       style="margin-top: 25px; margin-left:5px; font-size:14px; display:inline-block;">Number of Players:</p>
+    <select align="left">
+        <option value="2player">2</option>
+        <option value="3player">3</option>
+        <option value="4player">4</option>
+        <option value="5player">5</option>
+        <option value="6player">6</option>
+        <option value="7player">7</option>
+        <option value="8player">8</option>
+    </select>
+    <br>
+</div>
+<div id="terrain">
+    <p align="left"
+       style="height: 0; margin: 0 0 0 0">Terrain</p>
+    <label class="tile_container"
+           style="margin-left: 12px;">
+        <input class="tile"
+               type="radio"
+               name="tile"
+               value="water"
+               style="visibility: hidden">
+        <div class="tile_sprite"
+             id="t_water"></div>
     </label>
     <label class="tile_container">
-        <input class="tile" type="radio" name="tile" value="dirt" style="visibility: hidden">
-        <div class="tile_sprite" id="t_dirt"></div>
+        <input class="tile"
+               type="radio"
+               name="tile"
+               value="dirt"
+               style="visibility: hidden">
+        <div class="tile_sprite"
+             id="t_dirt"></div>
     </label>
     <label class="tile_container">
-        <input class="tile" type="radio" name="tile" value="grass" style="visibility: hidden">
-        <div class="tile_sprite" id="t_grass"></div>
+        <input class="tile"
+               type="radio"
+               name="tile"
+               value="grass"
+               style="visibility: hidden">
+        <div class="tile_sprite"
+             id="t_grass"></div>
     </label>
     <label class="tile_container">
-        <input class="tile" type="radio" name="tile" value="tree" style="visibility: hidden">
-        <div class="tile_sprite" id="t_forest"></div>
+        <input class="tile"
+               type="radio"
+               name="tile"
+               value="tree"
+               style="visibility: hidden">
+        <div class="tile_sprite"
+             id="t_forest"></div>
     </label>
     <label class="tile_container">
-        <input class="tile" type="radio" name="tile" value="rock" style="visibility: hidden">
-        <div class="tile_sprite" id="t_rock"></div>
+        <input class="tile"
+               type="radio"
+               name="tile"
+               value="rock"
+               style="visibility: hidden">
+        <div class="tile_sprite"
+             id="t_rock"></div>
     </label>
-  </div>
-  <div id="units">
-    <p align="left" style="height: 0; margin: 0 0 0 0">Player Units</p> <br/>
+</div>
+<div id="units">
+    <p align="left"
+       style="height: 0; margin: 0 0 0 0">Player Units</p>
+    <br/>
     <div id="units2">
         <select>
             <option value="player1">Player 1</option>
@@ -52,61 +92,137 @@
             <option value="player5">Player 5</option>
             <option value="player6">Player 6</option>
             <option value="player7">Player 7</option>
-            <option value="player8">Player 8</option>            
+            <option value="player8">Player 8</option>
         </select>
-        <p align="left" style="margin-top: 25px; margin-left:5px; font-size:14px;">Starting Resources:</p>         
-        <input type="text" name="goldPlayer1" style = "width:50%"><img src = ":../../assets/frontend_icons/gold_icon.png"><br>
-        <input type="text" name="goldPlayer2" style = "width:50%"><img src= ":../../assets/frontend_icons/lumber_icon.png"><br>        
+        <p align="left"
+           style="margin-top: 25px; margin-left:5px; font-size:14px;">Starting Resources:</p>
+        <input type="text"
+               name="goldPlayer1"
+               style="width:50%">
+        <img src=":../../assets/frontend_icons/gold_icon.png">
+        <br>
+        <input type="text"
+               name="goldPlayer2"
+               style="width:50%">
+        <img src=":../../assets/frontend_icons/lumber_icon.png">
+        <br>
         <div id="units3">
-                <p align="left" style="margin-left:5px; font-size:14px;">Units:</p>                
-            <label class="unit_container" style="margin-left: 12px;">
-                <input class="unit" type="radio" name="unit" value="peasant" style="visibility: hidden">
-                <div class="unit_sprite" id="u_peasant"></div>
+            <p align="left"
+               style="margin-left:5px; font-size:14px;">Units:</p>
+            <label class="unit_container"
+                   style="margin-left: 12px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="peasant"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_peasant"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px;">
-                    <input class="unit" type="radio" name="unit" value="footman" style="visibility: hidden">
-                    <div class="unit_sprite" id="u_footman"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="footman"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_footman"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px;">
-                    <input class="unit" type="radio" name="unit" value="archer" style="visibility: hidden">
-                    <div class="unit_sprite" id="u_archer"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="archer"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_archer"></div>
             </label>
-            <label class="unit_container" style="margin-left: 12px; margin-top:5px">
-                    <input class="unit" type="radio" name="unit" value="ranger" style="visibility: hidden">
-                    <div class="unit_sprite" id="u_ranger"></div>
+            <label class="unit_container"
+                   style="margin-left: 12px; margin-top:5px">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="ranger"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_ranger"></div>
             </label>
         </div>
-        <div id = "units4">
-            <p align="left" style="margin-top: 25px; margin-left:5px; font-size:14px;">Structures:</p>                         
-            <label class="unit_container" style="margin-left: 12px;">
-                <input class="unit" type="radio" name="unit" value="townhall" style="visibility: hidden">
-                <div class="unit_sprite" id="u_townhall"></div>
+        <div id="units4">
+            <p align="left"
+               style="margin-top: 25px; margin-left:5px; font-size:14px;">Structures:</p>
+            <label class="unit_container"
+                   style="margin-left: 12px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="townhall"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_townhall"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px;">
-                <input class="unit" type="radio" name="unit" value="barracks" style="visibility: hidden">
-                <div class="unit_sprite" id="u_barracks"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="barracks"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_barracks"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px;">
-                    <input class="unit" type="radio" name="unit" value="blacksmith" style="visibility: hidden">
-                        <div class="unit_sprite" id="u_blacksmith"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px;">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="blacksmith"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_blacksmith"></div>
             </label>
-            <label class="unit_container" style="margin-left: 12px; margin-top:5px">
-                <input class="unit" type="radio" name="unit" value="lumbermill" style="visibility: hidden">
-                <div class="unit_sprite" id="u_lumbermill"></div>
+            <label class="unit_container"
+                   style="margin-left: 12px; margin-top:5px">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="lumbermill"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_lumbermill"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px; margin-top:5px">
-                <input class="unit" type="radio" name="unit" value="farm" style="visibility: hidden">
-                <div class="unit_sprite" id="u_farm"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px; margin-top:5px">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="farm"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_farm"></div>
             </label>
-            <label class="unit_container" style="margin-left: 20px; margin-top:5px">
-                <input class="unit" type="radio" name="unit" value="tower" style="visibility: hidden">
-                <div class="unit_sprite" id="u_tower"></div>
+            <label class="unit_container"
+                   style="margin-left: 20px; margin-top:5px">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="tower"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_tower"></div>
             </label>
-            <label class="unit_container" style="margin-left: 12px; margin-top:5px">
-                <input class="unit" type="radio" name="unit" value="goldmine" style="visibility: hidden">
-                <div class="unit_sprite" id="u_goldmine"></div>
+            <label class="unit_container"
+                   style="margin-left: 12px; margin-top:5px">
+                <input class="unit"
+                       type="radio"
+                       name="unit"
+                       value="goldmine"
+                       style="visibility: hidden">
+                <div class="unit_sprite"
+                     id="u_goldmine"></div>
             </label>
         </div>
     </div>
-  </div>
 </div>

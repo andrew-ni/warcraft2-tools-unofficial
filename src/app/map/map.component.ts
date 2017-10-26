@@ -35,8 +35,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.context = this.canvas.getContext('2d');
 
     // Draw canvas for the first time.
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    // this.canvas.width = window.innerWidth;
+    // this.canvas.height = window.innerHeight;
 
     this.mapLoadedSubscription = this.mapService.subscribeToMapLoaded(this.onMapLoaded);
 
