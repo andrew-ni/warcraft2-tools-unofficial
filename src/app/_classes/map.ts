@@ -1,6 +1,9 @@
-import { Tile, strToTileType } from './tile';
+import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType, TileTypeChar } from './tile';
 import { Player } from './player';
 import { Asset } from './asset';
+import { Tileset } from './tileset';
+import { Subject, Observer, Observable } from 'rxjs/Rx';
+import { Dimension, Region } from 'interfaces';
 
 export class Map {
 
@@ -17,22 +20,241 @@ export class Map {
   static AI_SCRIPTS_HEADER = '# AI Scripts';
 
   // map status flags
-  canSave: boolean;
+  canSave = false; // save state is not ready yet
 
   // map detail fields
   name: string;
   width: number;
   height: number;
   mapLayer1: Tile[][];
-  partialBits: string[][];
+  drawLayer: Tile[][];
+  partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
 
+  tileSet: Tileset;
+
+  // Events
+  private _mapLoaded = new Subject<Dimension>();
+  private _tilesUpdated = new Subject<Region>();
+
+
   // `mapData` is the raw file contents
-  constructor(mapData: string) {
-    this.canSave = false;       // save state is not ready yet
+  constructor() { }
+
+
+  public init(mapData: string): void {
+    this.canSave = false;
+    this.mapLayer1 = undefined;
+    this.drawLayer = undefined;
+    this.partialBits = undefined;
+    this.players = [];
+    this.assets = [];
+    this.tileSet = undefined;
+
     this.parseMapData(mapData);
+
+    // TODO load Terrain.dat
+    this.tileSet = new Tileset('');
+    this.calcIndices();   // pre-calculate the entire map's indices
   }
+
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this._mapLoaded.subscribe(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this._tilesUpdated.subscribe(observer);
+  }
+
+  // by default, calculates indices for whole map
+  private calcIndices(reg: Region = { y: 0, x: 0, height: this.height, width: this.width }) {
+    for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
+      for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
+        this.calcIndex(ypos, xpos);
+      }
+    }
+
+    this._tilesUpdated.next(reg);
+  }
+
+  // calcTiles() calculates tile orientation based on surrounding tiles
+  // This is the function that writes the proper index into the tiles
+  private calcIndex(y = 0, x = 0): void {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) return;
+
+    const UL = this.mapLayer1[y][x].tileType;
+    const UR = this.mapLayer1[y][x + 1].tileType;
+    const LL = this.mapLayer1[y + 1][x].tileType;
+    const LR = this.mapLayer1[y + 1][x + 1].tileType;
+    const tile = this.drawLayer[y][x];
+
+    let typeIndex = (((this.partialBits[y][x] & 0x8) >> 3) |
+      ((this.partialBits[y][x + 1] & 0x4) >> 1) |
+      ((this.partialBits[y + 1][x] & 0x2) << 1) |
+      ((this.partialBits[y + 1][x + 1] & 0x1) << 3));
+
+    if ((TileType.DarkGrass === UL) || (TileType.DarkGrass === UR) || (TileType.DarkGrass === LL) || (TileType.DarkGrass === LR)) {
+      typeIndex &= (TileType.DarkGrass === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.DarkGrass === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.DarkGrass === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.DarkGrass === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.DarkGrass;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.DarkDirt === UL) || (TileType.DarkDirt === UR) || (TileType.DarkDirt === LL) || (TileType.DarkDirt === LR)) {
+      typeIndex &= (TileType.DarkDirt === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.DarkDirt === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.DarkDirt === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.DarkDirt === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.DarkDirt;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.DeepWater === UL) || (TileType.DeepWater === UR) || (TileType.DeepWater === LL) || (TileType.DeepWater === LR)) {
+      typeIndex &= (TileType.DeepWater === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.DeepWater === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.DeepWater === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.DeepWater === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.DeepWater;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.ShallowWater === UL) || (TileType.ShallowWater === UR) || (TileType.ShallowWater === LL) || (TileType.ShallowWater === LR)) {
+      typeIndex &= (TileType.ShallowWater === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.ShallowWater === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.ShallowWater === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.ShallowWater === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.ShallowWater;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.Rock === UL) || (TileType.Rock === UR) || (TileType.Rock === LL) || (TileType.Rock === LR)) {
+      typeIndex &= (TileType.Rock === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.Rock === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.Rock === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.Rock === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.Rock;
+      // tile.tileType = typeIndex ? TileType.Rock : TileType.Rubble;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.Forest === UL) || (TileType.Forest === UR) || (TileType.Forest === LL) || (TileType.Forest === LR)) {
+      typeIndex &= (TileType.Forest === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.Forest === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.Forest === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.Forest === LR) ? 0xF : 0x7;
+      if (typeIndex) {
+        // tile.tileType = TileType.Forest;
+        tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      } else {
+        // tile.tileType = TileType.Stump;
+        // tile.index = ((TileType.Forest === UL) ? 0x1 : 0x0) | ((TileType.Forest === UR) ? 0x2 : 0x0) | ((TileType.Forest == LL) ? 0x4 : 0x0) | ((TileType.Forest == LR) ? 0x8 : 0x0);
+      }
+      tile.tileType = TileType.Forest;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else if ((TileType.LightDirt === UL) || (TileType.LightDirt === UR) || (TileType.LightDirt === LL) || (TileType.LightDirt === LR)) {
+      typeIndex &= (TileType.LightDirt === UL) ? 0xF : 0xE;
+      typeIndex &= (TileType.LightDirt === UR) ? 0xF : 0xD;
+      typeIndex &= (TileType.LightDirt === LL) ? 0xF : 0xB;
+      typeIndex &= (TileType.LightDirt === LR) ? 0xF : 0x7;
+      tile.tileType = TileType.LightDirt;
+      tile.index = this.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+    } else {
+      tile.tileType = TileType.LightGrass;
+      tile.index = 0xF;
+    }
+  }
+
+  // updateTiles() is the public function to call when applying a brush to the map (edit operation)
+  // updateTiles will:
+  // 1. update the "brushed" reg with the selected tile type (bringing the map to an invalid state, with invalid transitions)
+  // 2. transition the tiles that were affected (bringing map to a valid state)
+  // 3. call calcTiles() on the affected region
+  // 4. emit the affected region so that mapService can redraw
+  public updateTiles(tileType: TileType, reg: Region) {
+    // Changing a single tile in the editor actual results in a 2x2 change in the data
+    reg.width++;
+    reg.height++;
+
+    for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
+      for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
+        this.mapLayer1[ypos][xpos].tileType = tileType;   // set tiletype
+      }
+    }
+
+    const newArea = this.transitionTiles(tileType, reg);
+    this.calcIndices(newArea);    // NOTE: might need to change this if we need to print that extra border
+  }
+
+  // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
+  private transitionTiles(tileType: TileType, reg: Region): Region {
+
+    // The top row indicates the current tile type
+    // The left column indicates the new tile type being placed
+    // Within a cell represents the transition sequence
+    // For example placing a ShallowWater tile (w) in a LightGrass field
+    // would result in a transition w[wd]g
+    // Read wiki for more info on transitions:
+    // https://github.com/UCDClassNitta/ECS160Tools/wiki/Tile-Transitions
+    /*
+    |   | d   | D    | F     | g    | G     | w    | W     | R    |
+    |---|-----|----- |-------|------|-------|------|-------|------|
+    | d | []  | []   | [g]   | []   | [g]   | []   | [w]   | []   |
+    | D | []  | []   | [dg]  | [d]  | [dg]  | [d]  | [dw]  | [d]  |
+    | F | [g] | [gd] | []    | []   | [g]   | [gd] | [gdw] | [gd] |
+    | g | []  | [d]  | []    | []   | []    | [d]  | [dw]  | [d]  |
+    | G | [g] | [gd] | [g]   | []   | []    | [gd] | [gdw] | [gd] |
+    | w | []  | [d]  | [dg]  | [d]  | [dg]  | []   | []    | [d]  |
+    | W | [w] | [wd] | [wdg] | [wd] | [wdg] | []   | []    | [wd] |
+    | R | []  | [d]  | [dg]  | [d]  | [dg]  | [d]  | [dw]  | []   |
+    */
+    const transitionTable: TileTypeChar[/*newTile*/][/*currentTile*/][/*iteration*/] =
+      [
+        [[], [], ['g'], [], ['g'], [], ['w'], []],
+        [[], [], ['d', 'g'], ['d'], ['d', 'g'], ['d'], ['d', 'w'], ['d']],
+        [['g'], ['g', 'd'], [], [], ['g'], ['g', 'd'], ['g', 'd', 'w'], ['g', 'd']],
+        [[], ['d'], [], [], [], ['d'], ['d', 'w'], ['d']],
+        [['g'], ['g', 'd'], ['g'], [], [], ['g', 'd'], ['g', 'd', 'w'], ['g', 'd']],
+        [[], ['d'], ['d', 'g'], ['d'], ['d', 'g'], [], [], ['d']],
+        [['w'], ['w', 'd'], ['w', 'd', 'g'], ['w', 'd'], ['w', 'd', 'g'], [], [], ['w', 'd']],
+        [[], ['d'], ['d', 'g'], ['d'], ['d', 'g'], ['d'], ['d', 'w'], []],
+      ];
+
+    for (let iteration = 0; iteration < 3 /*max*/; iteration++) {
+      let changed = false;
+
+      const applyTileTransition = (_x: number, _y: number) => {
+        if (_y < 0 || _x < 0 || _y > this.height || _x > this.width) {
+          return;
+        }
+
+        const tile = this.mapLayer1[_y][_x];
+        const currentType = tile.tileType;
+        const tileChar = transitionTable[tileType][currentType][iteration];
+        if (tileChar) {
+          tile.tileType = charToTileType[tileChar];
+          changed = true;
+        }
+      };
+
+      const transitionEdge = (length: number, fx: (n: number) => number, fy: (n: number) => number) => {
+        for (let n = 0; n < length; n++) {
+          applyTileTransition(fx(n) + reg.x, fy(n) + reg.y);
+        }
+      };
+
+      // TODO: bound checking
+      transitionEdge(reg.width + 1, (_x) => _x, () => -1); // Top
+      transitionEdge(reg.height + 1, () => reg.width, (_y) => _y); // Right
+      transitionEdge(reg.width + 1, (_x) => reg.width - _x - 1, () => reg.height); // Bottom
+      transitionEdge(reg.height + 1, () => - 1, (_y) => reg.height - _y - 1); // Left
+
+      reg.y--; reg.x--; reg.height += 2; reg.width += 2;
+      if (!changed) break;
+    }
+
+    return reg;
+
+    // TODO: there is a special case for rocks and forest
+    // RdR, FgF
+    // When rocks are separated by a single tile, the tile is forced to be lightDirt
+    // When forests are separated by a single tile, the tile is forced to be lightGrass
+  }
+
+
+  // SAVE LOGIC
 
   public stringify(): string {
     // convert the contents of this Map to a string which can be written as configuration
@@ -51,7 +273,7 @@ export class Map {
     for (const yList of this.mapLayer1) {
       let line = '';
       for (const tile of yList) {
-        line += tile.tileType;  // write out all tile types
+        line += numToChar[tile.tileType];  // write out all tile types
       }
       lines.push(line);
     }
@@ -60,7 +282,7 @@ export class Map {
     for (const row of this.partialBits) {
       let line = '';
       for (const bit of row) {
-        line += bit;  // write out all bits
+        line += bit.toString(16).toUpperCase();  // write out all bits
       }
       lines.push(line);
     }
@@ -84,6 +306,10 @@ export class Map {
     return lines.join('\n');  // join all lines with newline
   }
 
+
+  // PARSE FUNCTIONS
+  // TODO: implement exception throwing in order to detect parse failure
+
   private parseMapData(mapData: string): void {
     const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
 
@@ -96,38 +322,33 @@ export class Map {
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
+    this._mapLoaded.next({ width: this.width, height: this.height });
   }
-
-  // PARSE helper methods
-  // TODO: implement exception throwing in order to detect parse failure
 
   private parseTerrain(terrainData: string): Tile[][] {
     const terrain: Tile[][] = [];
+    this.drawLayer = [];
     const rows = terrainData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
       terrain.push([]);
+      this.drawLayer.push([]);
 
       for (const tileLetter of row.split('')) {
-        terrain[index].push(new Tile(strToTileType[tileLetter]));
+        terrain[index].push(new Tile(charToTileType[tileLetter]));
+        this.drawLayer[index].push(new Tile(0));
       }
     }
 
     return terrain;
   }
 
-  private parsePartialBits(partialbitsData: string): string[][] {
-    // TODO: is string the best way to represent the partial bits? talk to Linux team and figure out what the hell partial bits are
-    // I'm guessing that using an actual bit to store this will be more beneficial. note: must be converted to string for stringify()
-    const partialbits: string[][] = [];
+  private parsePartialBits(partialbitsData: string) {
+    const partialbits: Uint8Array[] = [];
     const rows = partialbitsData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
-      partialbits.push([]);
-
-      for (const bit of row.split('')) {
-        partialbits[index].push(bit);
-      }
+      partialbits.push(Uint8Array.from(Array.from(row).map((hex) => parseInt(hex, 16))));
     }
 
     return partialbits;
