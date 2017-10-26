@@ -9,6 +9,10 @@ import { MapComponent } from './map/map.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
 import { PropertiesComponent } from './properties/properties.component';
+import { TerrainComponent } from './sidebar/terrain/terrain.component';
+import { UnitsComponent } from './sidebar/assets/units/units.component';
+import { StructuresComponent } from './sidebar/assets/structures/structures.component';
+import { AssetsComponent } from './sidebar/assets/assets.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +21,10 @@ import { PropertiesComponent } from './properties/properties.component';
     SidebarComponent,
     FooterComponent,
     PropertiesComponent,
+    TerrainComponent,
+    UnitsComponent,
+    StructuresComponent,
+    AssetsComponent,
   ],
   imports: [
     BrowserModule

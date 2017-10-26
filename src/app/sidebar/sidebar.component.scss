@@ -4,13 +4,15 @@
     font-size: 18px;
 }
 
+.section {
+    width: 100%;
+}
+
 div#properties {
-    height: 200px;
     background: rgb(32, 104, 32);
 }
 
 div#terrain {
-    height: 80px;
     background: rgb(127, 255, 127);
 }
 
