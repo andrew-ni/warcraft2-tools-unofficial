@@ -9,8 +9,6 @@ import { MapComponent } from './map/map.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
 import { PropertiesComponent } from './properties/properties.component';
-import { NewmapComponent } from './newmap/newmap.component';
-import { UploadmapComponent } from './uploadmap/uploadmap.component';
 
 @NgModule({
   declarations: [
@@ -19,8 +17,6 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     SidebarComponent,
     FooterComponent,
     PropertiesComponent,
-    NewmapComponent,
-    UploadmapComponent,
   ],
   imports: [
     BrowserModule
