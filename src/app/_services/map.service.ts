@@ -3,21 +3,21 @@ import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
-import { Map } from 'map';
+import { MapObject } from 'map';
 import { Dimension, Region } from 'interfaces';
 
 @Injectable()
 export class MapService {
   // const SPRITE_SIZE = 32;
 
-  public map: Map;
+  public map: MapObject;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
   private terrainImg: HTMLImageElement;
 
   constructor() {
-    this.map = new Map();
+    this.map = new MapObject();
 
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents

@@ -5,7 +5,7 @@ import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 import { Dimension, Region } from 'interfaces';
 
-export class Map {
+export class MapObject {
 
   // Headers are for stringify(), which needs them to output map comments
   static NAME_HEADER = '# Map Name';
@@ -264,12 +264,12 @@ export class Map {
 
     const lines: string[] = [];
 
-    lines.push(Map.NAME_HEADER);
+    lines.push(MapObject.NAME_HEADER);
     lines.push(this.name);
-    lines.push(Map.DIMENSION_HEADER);
+    lines.push(MapObject.DIMENSION_HEADER);
     lines.push(this.width + ' ' + this.height);
 
-    lines.push(Map.TERRAIN_HEADER);
+    lines.push(MapObject.TERRAIN_HEADER);
     for (const yList of this.mapLayer1) {
       let line = '';
       for (const tile of yList) {
@@ -278,7 +278,7 @@ export class Map {
       lines.push(line);
     }
 
-    lines.push(Map.PARTIAL_BITS_HEADER);
+    lines.push(MapObject.PARTIAL_BITS_HEADER);
     for (const row of this.partialBits) {
       let line = '';
       for (const bit of row) {
@@ -287,18 +287,18 @@ export class Map {
       lines.push(line);
     }
 
-    lines.push(Map.PLAYER_NUM_HEADER);
+    lines.push(MapObject.PLAYER_NUM_HEADER);
     lines.push(String(this.players.length));    // convert player[] length to string
 
-    lines.push(Map.PLAYER_RESOURCES_HEADER);
+    lines.push(MapObject.PLAYER_RESOURCES_HEADER);
     for (const player of this.players) {
       lines.push(player.id + ' ' + player.gold + ' ' + player.lumber);
     }
 
-    lines.push(Map.ASSET_NUM_HEADER);
+    lines.push(MapObject.ASSET_NUM_HEADER);
     lines.push(String(this.assets.length));
 
-    lines.push(Map.ASSET_DETAIL_HEADER);
+    lines.push(MapObject.ASSET_DETAIL_HEADER);
     for (const asset of this.assets) {
       lines.push(asset.type + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
     }
