@@ -12,4 +12,7 @@ export class UploadmapComponent implements OnInit {
   ngOnInit() {
   }
 
+  fun_close(event){
+    event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode);
+  }
 }
