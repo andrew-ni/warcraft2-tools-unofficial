@@ -1,4 +1,4 @@
-V1.0
+v1.0
 # Map Name
 Three ways to cross
 # Map Dimensions W x H
@@ -7,7 +7,7 @@ Three ways to cross
 Test map format v1.0
 # Map Tileset
 ./src/assets/Terrain.dat
-# Map Terrain Data
+# Map Terrain Dat
 gggggggggdRRddddRRRdRRRdggggggggGGGgGGGGGgggggFFgFFFFFFFFFFgggggGGGGgGGGGGggFFFFFFgggggGGGGGGGGgdRRRRRRRRRRRRRdgggggggggggdRRRRRR
 gggggggggdRRRRddRRRRRRRdggggggggGGGGGGGGGgggggFFFFFFFFFFFFFFFgggGGGGGGGGGGgggFFFFFFFgggGGGGGGGGgdRRRRRddRRRRRRdggggddgggggdRRRRRR
 gggggggggdddRddddRRRRRddggggggggGGGGGGGGggggggggFFFFFFFFFFgFgggggGGGGGGGGggggggggFFFFFggGGGGGGggddRRRddddRRRdddgdddddddgggdddRRRR
