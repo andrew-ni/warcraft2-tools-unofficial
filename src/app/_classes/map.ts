@@ -371,13 +371,29 @@ export class Map {
     }
 
     for (const asset of assets) {
-      this.updateAsset(asset);
+      this.placeAsset(asset);
     }
     console.log(this.mapLayer2);
   }
 
-  private updateAsset(asset: Asset) {
+  private placeAsset(asset: Asset) {
     if (asset.y < 0 || asset.x < 0 || asset.y > this.height - 1 || asset.x > this.width - 1)  return;
+
+    //checks if cells are occupied
+    for (var x = asset.x; x < asset.x + asset.width; x++) {
+      for (var y = asset.y; y < asset.y + asset.height; y++) {
+        if (this.mapLayer2[y][x] != null) { return; }
+      }
+    }
+
+    //placeholder for asset depending on its dimensions
+    for (var x = asset.x; x < asset.x + asset.width; x++) {
+      for (var y = asset.y; y < asset.y + asset.height; y++) {
+        this.mapLayer2[y][x] = new Asset(asset.owner, "Placeholder", x, y);
+      }
+    }
+
+    //positional reference point for asset
     this.mapLayer2[asset.y][asset.x] = asset;
   }
 }
