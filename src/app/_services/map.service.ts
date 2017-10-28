@@ -51,8 +51,6 @@ export class MapService {
     });
 
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
-      // this.tileSet = new Tileset(terrainData);
-      // this.calcIndices(); // pre-calculate the entire map's indices
       this.map.setTileSet(terrainData);
     });
 
