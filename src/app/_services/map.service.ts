@@ -50,6 +50,10 @@ export class MapService {
       ipcRenderer.send('map:save', response, this._filePath);
     });
 
+    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
+      this.map.setTileSet(terrainData);
+    });
+
     this.terrainImg = new Image();
     this.terrainImg.src = 'assets/Terrain.png';
 

@@ -4,6 +4,7 @@ import { Asset } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 import { Dimension, Region } from 'interfaces';
+import { ipcRenderer } from 'electron';
 
 export class MapObject {
 
@@ -18,10 +19,11 @@ export class MapObject {
   static ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
   static AI_NUM_HEADER = '# Number of scripts';
   static AI_SCRIPTS_HEADER = '# AI Scripts';
+  static DESCRIPTION_HEADER = '# Map Description';
+  static TILESET_HEADER = '# Map Tileset';
 
   // map status flags
   canSave = false; // save state is not ready yet
-
   // map detail fields
   name: string;
   width: number;
@@ -31,6 +33,9 @@ export class MapObject {
   partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
+  mapVersion: string;
+  mapDescription: string;
+  terrainPath: string;
 
   tileSet: Tileset;
 
@@ -40,6 +45,7 @@ export class MapObject {
 
 
   // `mapData` is the raw file contents
+  // TODO: move event listener to mapservice, add method to set tileset
   constructor() { }
 
 
@@ -51,12 +57,7 @@ export class MapObject {
     this.players = [];
     this.assets = [];
     this.tileSet = undefined;
-
     this.parseMapData(mapData);
-
-    // TODO load Terrain.dat
-    this.tileSet = new Tileset('');
-    this.calcIndices();   // pre-calculate the entire map's indices
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
@@ -264,11 +265,15 @@ export class MapObject {
 
     const lines: string[] = [];
 
+    lines.push(this.mapVersion)
     lines.push(MapObject.NAME_HEADER);
     lines.push(this.name);
     lines.push(MapObject.DIMENSION_HEADER);
     lines.push(this.width + ' ' + this.height);
-
+    lines.push(MapObject.DESCRIPTION_HEADER);
+    lines.push(this.mapDescription);
+    lines.push(MapObject.TILESET_HEADER);
+    lines.push(this.terrainPath);
     lines.push(MapObject.TERRAIN_HEADER);
     for (const yList of this.mapLayer1) {
       let line = '';
@@ -306,15 +311,22 @@ export class MapObject {
     return lines.join('\n');  // join all lines with newline
   }
 
+  public setTileSet(terrainData: string): void {
+    this.tileSet = new Tileset(terrainData);
+    this.calcIndices();
+  }
 
   // PARSE FUNCTIONS
   // TODO: implement exception throwing in order to detect parse failure
 
   private parseMapData(mapData: string): void {
-    const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
-
+    const [mapVersion, name, dimension, mapDescription, terrainPath, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
+    this.mapVersion = mapVersion.trim();
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
+    this.mapDescription = mapDescription.trim();
+    this.terrainPath = terrainPath.trim();
+    ipcRenderer.send('terrain:load', this.terrainPath);
     this.mapLayer1 = this.parseTerrain(terrain);
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
