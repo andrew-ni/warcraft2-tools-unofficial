@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MapService } from 'services/map.service';
+import { AssetsService } from 'services/assets.service';
 
 
 @Component({
@@ -11,6 +12,7 @@ export class AppComponent {
   title = 'ECS160 Tools';
 
   constructor(
-    mapService: MapService
+    mapService: MapService,
+    assetsService: AssetsService,
   ) { }
 }

@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 
 // Services
 import { MapService } from 'services/map.service';
+import { AssetsService } from 'services/assets.service';
 import { MapComponent } from './map/map.component';
 import { TileComponent } from './map/tile/tile.component';
 
@@ -19,6 +20,7 @@ import { TileComponent } from './map/tile/tile.component';
   ],
   providers: [
     MapService,
+    AssetsService,
   ],
   bootstrap: [AppComponent]
 })
