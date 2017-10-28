@@ -4,6 +4,7 @@ import { Asset } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 import { Dimension, Region } from 'interfaces';
+import { ipcRenderer } from 'electron';
 
 export class MapObject {
 
@@ -31,6 +32,9 @@ export class MapObject {
   partialBits: Uint8Array[];
   players: Player[] = [];
   assets: Asset[] = [];
+  mapVersion: string;
+  mapDescription: string;
+  terrainPath: string;
 
   tileSet: Tileset;
 
@@ -44,6 +48,10 @@ export class MapObject {
 
 
   public init(mapData: string): void {
+    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
+      this.tileSet = new Tileset(terrainData);
+      this.calcIndices(); // pre-calculate the entire map's indices
+    });
     this.canSave = false;
     this.mapLayer1 = undefined;
     this.drawLayer = undefined;
@@ -53,10 +61,6 @@ export class MapObject {
     this.tileSet = undefined;
 
     this.parseMapData(mapData);
-
-    // TODO load Terrain.dat
-    this.tileSet = new Tileset('');
-    this.calcIndices();   // pre-calculate the entire map's indices
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
@@ -311,10 +315,13 @@ export class MapObject {
   // TODO: implement exception throwing in order to detect parse failure
 
   private parseMapData(mapData: string): void {
-    const [, name, dimension, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
-
+    const [mapVersion, name, dimension, mapDescription, terrainPath, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
+    this.mapVersion = mapVersion.trim();
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
+    this.mapDescription = mapDescription;
+    this.terrainPath = terrainPath.trim();
+    ipcRenderer.send('terrain:load', this.terrainPath);
     this.mapLayer1 = this.parseTerrain(terrain);
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
