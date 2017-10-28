@@ -44,14 +44,15 @@ export class MapObject {
 
 
   // `mapData` is the raw file contents
-  constructor() { }
-
-
-  public init(mapData: string): void {
+  constructor() {
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
       this.tileSet = new Tileset(terrainData);
       this.calcIndices(); // pre-calculate the entire map's indices
     });
+   }
+
+
+  public init(mapData: string): void {
     this.canSave = false;
     this.mapLayer1 = undefined;
     this.drawLayer = undefined;
