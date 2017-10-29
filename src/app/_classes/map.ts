@@ -366,34 +366,48 @@ export class Map {
     for (var row = 0; row < this.height; row++) {
       var colIndex = 0;
       this.mapLayer2.push([]);
-      this.mapLayer2[row] = [];
-      while (colIndex < this.width) { this.mapLayer2[row][colIndex++] = null; }
+      this.mapLayer2[row] = new Array(this.width);
     }
 
     for (const asset of assets) {
-      this.placeAsset(asset);
+      this.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
     }
     console.log(this.mapLayer2);
   }
 
-  private placeAsset(asset: Asset) {
-    if (asset.y < 0 || asset.x < 0 || asset.y > this.height - 1 || asset.x > this.width - 1)  return;
+  private placeAsset(owner: number, type: string, x: number, y: number, init: boolean) {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
 
+    let asset: Asset = new Asset(owner, type, x, y);
     //checks if cells are occupied
-    for (var x = asset.x; x < asset.x + asset.width; x++) {
-      for (var y = asset.y; y < asset.y + asset.height; y++) {
-        if (this.mapLayer2[y][x] != null) { return; }
+    for (var xpos = x; xpos < x + asset.width; xpos++) {
+      for (var ypos = y; ypos < y + asset.height; ypos++) {
+        if (this.mapLayer2[ypos][xpos] != undefined) { return; }
       }
     }
 
     //placeholder for asset depending on its dimensions
-    for (var x = asset.x; x < asset.x + asset.width; x++) {
-      for (var y = asset.y; y < asset.y + asset.height; y++) {
-        this.mapLayer2[y][x] = new Asset(asset.owner, "Placeholder", x, y);
+    for (var xpos = x; xpos < x + asset.width; xpos++) {
+      for (var ypos = y; ypos < y + asset.height; ypos++) {
+        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, "Placeholder", xpos, ypos);
       }
     }
 
     //positional reference point for asset
     this.mapLayer2[asset.y][asset.x] = asset;
+  }
+
+  private removeAsset(x: number, y: number) {
+    if (this.mapLayer2[y][x] === undefined) {
+      return;
+    }
+
+    let assetToBeRemoved = this.mapLayer2[y][x];
+
+    for (var xpos = x; xpos < x + assetToBeRemoved.width; xpos++) {
+      for (var ypos = y; ypos < y + assetToBeRemoved.height; ypos++) {
+        this.mapLayer2[ypos][xpos] = undefined;
+      }
+    }
   }
 }

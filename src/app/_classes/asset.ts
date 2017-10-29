@@ -9,7 +9,6 @@ export class Asset {
   y: number;
   height: number;
   width: number;
-  canBeSelected: boolean;
 
   constructor(owner: number, type: string, x: number, y: number) {
     this.owner = owner;
@@ -19,12 +18,6 @@ export class Asset {
     this.height = dimensionMap.get(type);
     this.width = dimensionMap.get(type);
 
-    //only reference point x,y of asset is selectable
-    if (type === "Placeholder") {
-      this.canBeSelected = false;
-    } else {
-      this.canBeSelected = true;
-    }
   }
 }
 
