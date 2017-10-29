@@ -23,7 +23,7 @@ export class MapService {
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
-      this.map.init(mapData);
+      this.map.init(mapData, filePath);
     });
 
     // Event listener for saving a map

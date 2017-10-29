@@ -49,7 +49,7 @@ export class MapObject {
   constructor() { }
 
 
-  public init(mapData: string): void {
+  public init(mapData: string, filePath = ''): void {
     this.canSave = false;
     this.mapLayer1 = undefined;
     this.drawLayer = undefined;
@@ -58,6 +58,7 @@ export class MapObject {
     this.assets = [];
     this.tileSet = undefined;
     this.parseMapData(mapData);
+    ipcRenderer.send('terrain:load', this.terrainPath, filePath);
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
@@ -326,7 +327,6 @@ export class MapObject {
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
     this.mapDescription = mapDescription.trim();
     this.terrainPath = terrainPath.trim();
-    ipcRenderer.send('terrain:load', this.terrainPath);
     this.mapLayer1 = this.parseTerrain(terrain);
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
