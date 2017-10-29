@@ -30,12 +30,12 @@ export class TerrainComponent implements OnInit {
     {
       name: 'Shallow Water',
       imgSrc: './assets/frontend_icons/water_icon.png',
-      tileType: TileType.LightDirt,
+      tileType: TileType.ShallowWater,
     },
     {
       name: 'Forest',
       imgSrc: './assets/frontend_icons/forest_icon.png',
-      tileType: TileType.LightDirt,
+      tileType: TileType.Forest,
     },
     {
       name: 'Dark Grass',
