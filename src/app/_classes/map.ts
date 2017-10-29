@@ -265,7 +265,7 @@ export class MapObject {
 
     const lines: string[] = [];
 
-    lines.push(this.mapVersion)
+    lines.push(this.mapVersion);
     lines.push(MapObject.NAME_HEADER);
     lines.push(this.name);
     lines.push(MapObject.DIMENSION_HEADER);
