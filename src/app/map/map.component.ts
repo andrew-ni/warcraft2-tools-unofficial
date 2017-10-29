@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Observer, Subscription } from 'rxjs/Rx';
 
 import { MapService } from 'services/map.service';
+import { Dimension } from 'interfaces';
 
 @Component({
   selector: 'app-map',
@@ -12,10 +13,11 @@ export class MapComponent implements OnInit, OnDestroy {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
 
-  onMapLoaded: Observer<{ width: number, height: number }> = {
+  onMapLoaded: Observer<Dimension> = {
     next: dim => {
       this.canvas.width = dim.width * 32;
       this.canvas.height = dim.height * 32;
+      console.log('Canvas Resized', dim.width, dim.height);
     },
     error: error => console.error(error),
     complete: null
@@ -33,8 +35,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.context = this.canvas.getContext('2d');
 
     // Draw canvas for the first time.
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    // this.canvas.width = window.innerWidth;
+    // this.canvas.height = window.innerHeight;
 
     this.mapLoadedSubscription = this.mapService.subscribeToMapLoaded(this.onMapLoaded);
 

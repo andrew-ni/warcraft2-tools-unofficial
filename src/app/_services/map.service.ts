@@ -1,34 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observer } from 'rxjs/Rx';
+import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
-import { Map } from 'map';
+import { MapObject } from 'map';
+import { Dimension, Region } from 'interfaces';
 
 @Injectable()
 export class MapService {
-  // const SPRITE_SIZE = 32;
+  private SPRITE_SIZE = 32;
 
-  public map: Map;
+  public map: MapObject;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
   private terrainImg: HTMLImageElement;
 
-  private _mapLoaded = new Subject<{ width: number, height: number }>();
-
-
   constructor() {
+    this.map = new MapObject();
+
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
-      this.map = new Map(mapData);
-      this._mapLoaded.next({ width: this.map.width, height: this.map.height });
-
-      // TEMP until canvas is properly redrawn
-      // setInterval(() => this.drawMap(), 200);
-      this.drawMap();
+      this.map.init(mapData, filePath);
     });
 
     // Event listener for saving a map
@@ -55,12 +50,26 @@ export class MapService {
       ipcRenderer.send('map:save', response, this._filePath);
     });
 
+    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
+      this.map.setTileSet(terrainData);
+    });
+
     this.terrainImg = new Image();
-    this.terrainImg.src = 'assets/Terrain.png';
+    this.terrainImg.src = 'assets/img/Terrain.png';
+
+    this.subscribeToTilesUpdated({
+      next: reg => this.drawMap(reg),
+      error: err => console.error(err),
+      complete: null
+    });
   }
 
-  public subscribeToMapLoaded(observer: Observer<{ width: number, height: number }>) {
-    return this._mapLoaded.subscribe(observer);
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this.map.subscribeToMapLoaded(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this.map.subscribeToTilesUpdated(observer);
   }
 
   // Save canvas context from map.component.ts
@@ -74,31 +83,29 @@ export class MapService {
     this.setClickListeners();
 
     // TEMP for testing
-    ipcRenderer.send('map:load', './src/assets/bay.map');
+    // ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
   private setClickListeners() {
     this.canvas.addEventListener('mousedown', (event) => {
-      if (this.map !== undefined) {
-        const x: number = Math.floor(event.pageX / 32);
-        const y: number = Math.floor(event.pageY / 32);
-        const [yStart, xStart, height, width] = this.map.updateTiles(TileType.Rock, y, x, 1, 1);
-        this.drawMap(yStart, xStart, height, width);
-        // this.drawMap();
+      if (this.map !== undefined && this.map.canSave) {
+        const x: number = Math.floor(event.offsetX / 32);
+        const y: number = Math.floor(event.offsetY / 32);
+        this.map.updateTiles(TileType.Rock, { x, y, width: 1, height: 1 });
       }
     }, false);
   }
 
   // Draws Map when loaded from file.
-  public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    if (yStart < 0) yStart = 0;
-    if (xStart < 0) xStart = 0;
-    if (yStart + height > this.map.height) yStart = this.map.height - height;
-    if (xStart + width > this.map.width) xStart = this.map.width - width;
+  public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.y = this.map.height - reg.height;
+    if (reg.x + reg.width > this.map.width) reg.x = this.map.width - reg.width;
 
-    for (let x = xStart; x < xStart + width; x++) {
-      for (let y = yStart; y < yStart + height; y++) {
+    for (let x = reg.x; x < reg.x + reg.width; x++) {
+      for (let y = reg.y; y < reg.y + reg.width; y++) {
         this.drawImage(y, x, this.map.drawLayer[y][x].index);
       }
     }

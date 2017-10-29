@@ -1,0 +1,15 @@
+<h5>Player Units</h5>
+<select>
+  <option *ngFor="let i of [1,2,3,4,5,5,6,7,8]"
+          [value]="i">Player {{i}}</option>
+</select>
+<label>Starting Resources:</label>
+<input type="text"
+       name="gold">
+<img src=":../../assets/frontend_icons/gold_icon.png">
+<input type="text"
+       name="wood">
+<img src=":../../assets/frontend_icons/lumber_icon.png">
+
+<app-units class="section"></app-units>
+<app-structures class="section"></app-structures>
