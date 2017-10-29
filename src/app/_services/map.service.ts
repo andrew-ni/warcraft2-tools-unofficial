@@ -5,6 +5,7 @@ import { TileType } from '../_classes/tile';
 
 import { MapObject } from 'map';
 import { Dimension, Region } from 'interfaces';
+import { readdir } from 'fs';
 
 @Injectable()
 export class MapService {
@@ -14,10 +15,17 @@ export class MapService {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
-  private terrainImg: HTMLImageElement;
+  private assetMap: Map<string, HTMLImageElement>;
+  private fs;
+  private path;
 
   constructor() {
     this.map = new MapObject();
+    // Load assets before, and independently of map:loaded.
+    this.fs = require('fs');
+    this.path = require('path');
+    this.assetMap = new Map<string, HTMLImageElement>();
+    this.loadAssets();
 
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
@@ -52,10 +60,8 @@ export class MapService {
 
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
       this.map.setTileSet(terrainData);
+      this.drawAssets(); // drawAssets only after terrain is loaded
     });
-
-    this.terrainImg = new Image();
-    this.terrainImg.src = 'assets/img/Terrain.png';
 
     this.subscribeToTilesUpdated({
       next: reg => this.drawMap(reg),
@@ -88,13 +94,60 @@ export class MapService {
 
   // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
   private setClickListeners() {
-    this.canvas.addEventListener('mousedown', (event) => {
-      if (this.map !== undefined) {
+    const self = this; // trying to find way around this. will ask ben
+    let curXPos = 0;
+    let curYPos = 0;
+
+
+    function drawTile(event) {
+      if (self.map !== undefined) {
         const x: number = Math.floor(event.offsetX / 32);
         const y: number = Math.floor(event.offsetY / 32);
-        this.map.updateTiles(TileType.Rock, { x, y, width: 1, height: 1 });
+        self.map.updateTiles(TileType.Rock, {y, x, width: 1, height: 1});
       }
-    }, false);
+    }
+
+    // https://stackoverflow.com/a/34030504
+    function pan(event) {
+      // console.log(document.body.scrollLeft + (curXPos - event.offsetX));
+      // console.log(document.body.scrollTop + (curYPos - event.offsetY));
+      if (self.map !== undefined) {
+      }
+      window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
+    }
+
+    // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
+    // 0 = left click, 1 = middle, 2 = right click
+    this.canvas.addEventListener('mousedown', (event) => {
+      curYPos = event.offsetY;
+      curXPos = event.offsetX;
+      if (event.button === 0) { this.canvas.addEventListener('mousemove', drawTile, false); }
+      if (event.button === 2) { console.log('right click pressed'); this.canvas.addEventListener('mousemove', pan, false); }
+    });
+
+    this.canvas.addEventListener('mouseup', (event) => {
+      this.canvas.removeEventListener('mousemove', drawTile, false);
+      this.canvas.removeEventListener('mousemove', pan, false);
+    });
+  }
+
+  // TODO: clean this up with regexp?
+  // loops through .dat files in /assets/img/, and replaces .dat with .png, creates Image() for each
+  // then inserts (string, image) into assetMap.
+  private loadAssets() {
+    const myPath = './src/assets/img/';
+    const myFiles = this.fs.readdirSync(myPath);
+
+    for (const i in myFiles) {
+      if (this.path.extname(myFiles[i]) === '.dat') {
+        const temp = String(myFiles[i]);
+        const temp2 = temp.substring(0, temp.length - 4);
+
+        const tempImage = new Image();
+        tempImage.src = 'assets/img/' + temp2 + '.png';
+        this.assetMap.set(temp2, tempImage);
+      }
+    }
   }
 
   // Draws Map when loaded from file.
@@ -103,16 +156,26 @@ export class MapService {
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.y = this.map.height - reg.height;
     if (reg.x + reg.width > this.map.width) reg.x = this.map.width - reg.width;
-
+    const terrain = this.assetMap.get('Terrain');
     for (let x = reg.x; x < reg.x + reg.width; x++) {
       for (let y = reg.y; y < reg.y + reg.width; y++) {
-        this.drawImage(y, x, this.map.drawLayer[y][x].index);
+        this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
       }
     }
   }
 
-  // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
-  private drawImage(y: number, x: number, index: number): void {
-    this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
+  // Draws Assets
+  public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+    console.log('drawAssets: ' + this.map.assets);
+    for (const asset of this.map.assets) {
+      const img = this.assetMap.get(asset.type);
+      this.drawImage(img, img.width, asset.y, asset.x, 0);
+    }
+  }
+
+  // PARMS: image, width, y, x, index
+  // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+  private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
+    this.context.drawImage(image, 0, index * width, width, width, x * this.SPRITE_SIZE, y * this.SPRITE_SIZE, width, width);
   }
 }
