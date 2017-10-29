@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 // Module is like a namespace so we don't polute the global space
 export module IO {
@@ -26,10 +27,12 @@ export module IO {
     fs.writeFile(filepath, data, () => { });
   }
 
-  export async function loadTerrain(window: Electron.WebContents, filename: string) {
+  export async function loadTerrain(window: Electron.WebContents, terrainFilePath: string, mapFilePath: string) {
     console.log('loadTerrain');
 
-    fs.readFile(filename, 'utf8', (err: Error, data: string) => {
+    terrainFilePath = path.join(path.parse(mapFilePath).dir, terrainFilePath);
+
+    fs.readFile(terrainFilePath, 'utf8', (err: Error, data: string) => {
       if (err) {
         console.log(err);
       } else {
