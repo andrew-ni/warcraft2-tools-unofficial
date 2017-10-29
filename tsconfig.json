@@ -16,6 +16,9 @@
       "services/*": [
         "app/_services/*"
       ],
+      "interfaces": [
+        "app/_interfaces/index.ts"
+      ],
       "*": [
         "app/_classes/*"
       ]

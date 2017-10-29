@@ -1,7 +1,12 @@
+v1.0
 # Map Name
 Nowhere to run, nowhere to hide
 # Map Dimensions W x H
 32 32
+# Map Description
+Test map format v1.0
+# Map Tileset
+./src/assets/Terrain.dat
 # Map Terrain Data
 ggggggggggggFFFFFFFgggggggGGGGGgg
 ggggggggggggFFFFFFFggggGGGGGGGGgg

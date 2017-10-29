@@ -2,16 +2,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { TempComponent } from './temp/temp.component';
 
 // Services
 import { MapService } from 'services/map.service';
 import { MapComponent } from './map/map.component';
-import { TileComponent } from './map/tile/tile.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { Map2Component } from './map2/map2.component';
 import { FooterComponent } from './footer/footer.component';
-import { PropertiesComponent } from './properties/properties.component';
+import { TerrainComponent } from './sidebar/terrain/terrain.component';
+import { UnitsComponent } from './sidebar/assets/units/units.component';
+import { StructuresComponent } from './sidebar/assets/structures/structures.component';
+import { AssetsComponent } from './sidebar/assets/assets.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
 
@@ -19,12 +19,12 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
   declarations: [
     AppComponent,
     MapComponent,
-    TempComponent,
-    TileComponent,
     SidebarComponent,
-    Map2Component,
     FooterComponent,
-    PropertiesComponent,
+    TerrainComponent,
+    UnitsComponent,
+    StructuresComponent,
+    AssetsComponent,
     NewmapComponent,
     UploadmapComponent,
   ],

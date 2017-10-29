@@ -25,4 +25,16 @@ export module IO {
     console.log('saveMap');
     fs.writeFile(filepath, data, () => { });
   }
+
+  export async function loadTerrain(window: Electron.WebContents, filename: string) {
+    console.log('loadTerrain');
+
+    fs.readFile(filename, 'utf8', (err: Error, data: string) => {
+      if (err) {
+        console.log(err);
+      } else {
+        window.send('terrain:loaded', data);
+      }
+    });
+  }
 }

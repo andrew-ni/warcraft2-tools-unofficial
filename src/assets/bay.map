@@ -1,7 +1,12 @@
+v1.0
 # Map Name
 Three ways to cross
 # Map Dimensions W x H
 128 128
+# Map Description
+Test map format v1.0
+# Map Tileset
+./src/assets/Terrain.dat
 # Map Terrain Data
 gggggggggdRRddddRRRdRRRdggggggggGGGgGGGGGgggggFFgFFFFFFFFFFgggggGGGGgGGGGGggFFFFFFgggggGGGGGGGGgdRRRRRRRRRRRRRdgggggggggggdRRRRRR
 gggggggggdRRRRddRRRRRRRdggggggggGGGGGGGGGgggggFFFFFFFFFFFFFFFgggGGGGGGGGGGgggFFFFFFFgggGGGGGGGGgdRRRRRddRRRRRRdggggddgggggdRRRRRR
