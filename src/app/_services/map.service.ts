@@ -5,6 +5,7 @@ import { TileType } from '../_classes/tile';
 
 import { MapObject } from 'map';
 import { Dimension, Region } from 'interfaces';
+import { UserService } from 'services/user.service';
 
 @Injectable()
 export class MapService {
@@ -16,7 +17,7 @@ export class MapService {
   private _filePath: string;
   private terrainImg: HTMLImageElement;
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.map = new MapObject();
 
     // Event listener for when a map has been loaded from a file.
@@ -92,7 +93,7 @@ export class MapService {
       if (this.map !== undefined && this.map.canSave) {
         const x: number = Math.floor(event.offsetX / 32);
         const y: number = Math.floor(event.offsetY / 32);
-        this.map.updateTiles(TileType.Rock, { x, y, width: 1, height: 1 });
+        this.map.updateTiles(this.userService.selectedTerrain, { x, y, width: 1, height: 1 });
       }
     }, false);
   }
