@@ -112,8 +112,9 @@ export class MapService {
       // console.log(document.body.scrollLeft + (curXPos - event.offsetX));
       // console.log(document.body.scrollTop + (curYPos - event.offsetY));
       if (self.map !== undefined) {
+        document.body.style.cursor = 'move';
+        window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
       }
-      window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
@@ -126,6 +127,7 @@ export class MapService {
     });
 
     this.canvas.addEventListener('mouseup', (event) => {
+      document.body.style.cursor = 'auto';
       this.canvas.removeEventListener('mousemove', drawTile, false);
       this.canvas.removeEventListener('mousemove', pan, false);
     });
