@@ -12,6 +12,9 @@ import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { UnitsComponent } from './sidebar/assets/units/units.component';
 import { StructuresComponent } from './sidebar/assets/structures/structures.component';
 import { AssetsComponent } from './sidebar/assets/assets.component';
+import { NewmapComponent } from './newmap/newmap.component';
+import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { UserService } from 'services/user.service';
 
 @NgModule({
   declarations: [
@@ -23,12 +26,15 @@ import { AssetsComponent } from './sidebar/assets/assets.component';
     UnitsComponent,
     StructuresComponent,
     AssetsComponent,
+    NewmapComponent,
+    UploadmapComponent,
   ],
   imports: [
     BrowserModule
   ],
   providers: [
     MapService,
+    UserService,
   ],
   bootstrap: [AppComponent]
 })

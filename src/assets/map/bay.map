@@ -6,7 +6,7 @@ Three ways to cross
 # Map Description
 Test map format v1.0
 # Map Tileset
-./src/assets/img/Terrain.dat
+../img/Terrain.dat
 # Map Terrain Data
 gggggggggdRRddddRRRdRRRdggggggggGGGgGGGGGgggggFFgFFFFFFFFFFgggggGGGGgGGGGGggFFFFFFgggggGGGGGGGGgdRRRRRRRRRRRRRdgggggggggggdRRRRRR
 gggggggggdRRRRddRRRRRRRdggggggggGGGGGGGGGgggggFFFFFFFFFFFFFFFgggGGGGGGGGGGgggFFFFFFFgggGGGGGGGGgdRRRRRddRRRRRRdggggddgggggdRRRRRR

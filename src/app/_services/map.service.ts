@@ -6,6 +6,7 @@ import { TileType } from '../_classes/tile';
 import { MapObject } from 'map';
 import { Dimension, Region } from 'interfaces';
 import { readdir } from 'fs';
+import { UserService } from 'services/user.service';
 
 @Injectable()
 export class MapService {
@@ -19,7 +20,7 @@ export class MapService {
   private fs;
   private path;
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.map = new MapObject();
     // Load assets before, and independently of map:loaded.
     this.fs = require('fs');
@@ -31,7 +32,7 @@ export class MapService {
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
-      this.map.init(mapData);
+      this.map.init(mapData, filePath);
     });
 
     // Event listener for saving a map
@@ -103,7 +104,7 @@ export class MapService {
       if (self.map !== undefined) {
         const x: number = Math.floor(event.offsetX / 32);
         const y: number = Math.floor(event.offsetY / 32);
-        self.map.updateTiles(TileType.Rock, {y, x, width: 1, height: 1});
+        self.map.updateTiles(self.userService.selectedTerrain, {y, x, width: 1, height: 1});
       }
     }
 
