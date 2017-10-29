@@ -14,6 +14,7 @@ import { StructuresComponent } from './sidebar/assets/structures/structures.comp
 import { AssetsComponent } from './sidebar/assets/assets.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { UserService } from 'services/user.service';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
   ],
   providers: [
     MapService,
+    UserService,
   ],
   bootstrap: [AppComponent]
 })
