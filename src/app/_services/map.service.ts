@@ -8,7 +8,7 @@ import { Dimension, Region } from 'interfaces';
 
 @Injectable()
 export class MapService {
-  // const SPRITE_SIZE = 32;
+  private SPRITE_SIZE = 32;
 
   public map: MapObject;
   private canvas: HTMLCanvasElement;
@@ -55,7 +55,7 @@ export class MapService {
     });
 
     this.terrainImg = new Image();
-    this.terrainImg.src = 'assets/Terrain.png';
+    this.terrainImg.src = 'assets/img/Terrain.png';
 
     this.subscribeToTilesUpdated({
       next: reg => this.drawMap(reg),
