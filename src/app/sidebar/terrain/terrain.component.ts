@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TileType } from 'tile';
+import { UserService } from 'services/user.service';
 
 
 interface TerrainButton {
@@ -24,12 +25,44 @@ export class TerrainComponent implements OnInit {
     {
       name: 'Light Dirt',
       imgSrc: './assets/frontend_icons/dirt_icon.png',
-      tileType: TileType.LightGrass,
+      tileType: TileType.LightDirt,
+    },
+    {
+      name: 'Shallow Water',
+      imgSrc: './assets/frontend_icons/water_icon.png',
+      tileType: TileType.LightDirt,
+    },
+    {
+      name: 'Forest',
+      imgSrc: './assets/frontend_icons/forest_icon.png',
+      tileType: TileType.LightDirt,
+    },
+    {
+      name: 'Dark Grass',
+      imgSrc: './assets/frontend_icons/grass_icon.png',
+      tileType: TileType.DarkGrass,
+    },
+    {
+      name: 'Dark Dirt',
+      imgSrc: './assets/frontend_icons/dirt_icon.png',
+      tileType: TileType.DarkDirt,
+    },
+    {
+      name: 'Deep Water',
+      imgSrc: './assets/frontend_icons/water_icon.png',
+      tileType: TileType.DeepWater,
+    },
+    {
+      name: 'Rock',
+      imgSrc: './assets/frontend_icons/rocks_icon.png',
+      tileType: TileType.Rock,
     },
   ];
 
 
-  constructor() { }
+  constructor(
+    private userService: UserService,
+  ) { }
 
   ngOnInit() {
   }

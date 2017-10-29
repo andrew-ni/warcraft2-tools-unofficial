@@ -1,5 +1,11 @@
 <h5>Terrain</h5>
-<div *ngFor="let button of terrainButtons">
-  <img [src]="button.imgSrc"
-       (click)="null">
+<div class="row">
+  <img *ngFor="let button of terrainButtons | slice:0:4"
+       [src]="button.imgSrc"
+       (click)="userService.selectedTerrain = button.tileType">
+</div>
+<div class="row">
+  <img *ngFor="let button of terrainButtons | slice:4"
+       [src]="button.imgSrc"
+       (click)="userService.selectedTerrain = button.tileType">
 </div>
