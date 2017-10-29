@@ -90,8 +90,8 @@ export class MapService {
   private setClickListeners() {
     this.canvas.addEventListener('mousedown', (event) => {
       if (this.map !== undefined) {
-        const x: number = Math.floor(event.pageX / 32);
-        const y: number = Math.floor(event.pageY / 32);
+        const x: number = Math.floor(event.offsetX / 32);
+        const y: number = Math.floor(event.offsetY / 32);
         this.map.updateTiles(TileType.Rock, { x, y, width: 1, height: 1 });
       }
     }, false);
