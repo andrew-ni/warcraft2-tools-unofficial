@@ -1,5 +1,7 @@
 .modal {
-  display: hidden;
+  display: hidden;  // display property doesn't have hidden value
+  // to make hidden, use visibility property
+  // visibility: hidden;
   position: fixed;
   z-index: 1;
   left: 0;

@@ -12,5 +12,11 @@ export class NewmapComponent implements OnInit {
   ngOnInit() {
   }
 
+  fun_close(){
+    document.getElementById('newMapModal').setAttribute("style", "display: none;");
+  }
 }
 
+require('electron').ipcRenderer.on('menu:file:new', () => {
+  document.getElementById('newMapModal').setAttribute("style", "display: inline;");
+})
