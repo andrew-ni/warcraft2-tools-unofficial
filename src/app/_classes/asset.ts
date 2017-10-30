@@ -12,10 +12,20 @@ export class Asset {
   }
 }
 
+export enum UnitType {
+  Peasant,
+  Footman,
+}
+
 export class Unit extends Asset {
   constructor(owner: number, type: string, x: number, y: number) {
     super(owner, type, x, y);
   }
+}
+
+export enum StructureType {
+  Townhall,
+  Barracks,
 }
 
 export class Structure extends Asset {

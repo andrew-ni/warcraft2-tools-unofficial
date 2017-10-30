@@ -1,5 +1,5 @@
 <h5>Units</h5>
 <div *ngFor="let button of unitButtons">
   <img [src]="button.imgSrc"
-       (click)="null">
+       (click)="userService.changeUnit(button.unitType)">
 </div>

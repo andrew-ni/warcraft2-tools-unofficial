@@ -94,7 +94,15 @@ export class MapService {
       if (this.map !== undefined) {
         const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
         const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
-        this.map.updateTiles(this.userService.selectedTerrain, { y, x, width: 1, height: 1 });
+        this.map.updateTiles(this.userService.getPalette(), { y, x, width: 1, height: 1 });
+      }
+    };
+
+    const placeAssetAtCursor = (event: MouseEvent) => {
+      if (this.map !== undefined) {
+        const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
+        const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
+        this.map.placeAssets(this.userService.getPalette(), { y, x, width: 1, height: 1 });
       }
     };
 
@@ -120,7 +128,10 @@ export class MapService {
     this.canvas.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { placeTileAtCursor(event); this.canvas.addEventListener('mousemove', placeTileAtCursor, false); }
+      if (event.button === 0) { 
+        if (this.userService.getState() === 0) {placeTileAtCursor(event); this.canvas.addEventListener('mousemove', placeTileAtCursor, false); }
+        if (this.userService.getState() === 1) {placeAssetAtCursor(event); this.canvas.addEventListener('mousemove', placeAssetAtCursor, false);}
+      }
       if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
     });
 

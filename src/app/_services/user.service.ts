@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { TileType } from 'tile';
-import { Unit, Structure } from 'asset';
+import { Unit, UnitType, Structure, Asset } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
 
 // User Service is a repository for user state, all services / components
@@ -9,15 +9,56 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 // service)
 @Injectable()
 export class UserService {
-  public selectedTerrain = TileType.Rock;
-  public selectedUnit: Unit;
-  public selectedStructure: Structure;
+  // 0 = terrain, 1 = units, 2 = structures
+  private state: number;
+  private selectedTerrain: TileType;
+  private selectedUnit: UnitType;
+  private selectedStructure: Structure;
 
-  public newMapName: string;      // used during new map creation (might not be necessary)
-  public newMapDimensions: Dimension;
+  private newMapName: string;      // used during new map creation (might not be necessary)
+  private newMapDimensions: Dimension;
 
   constructor() {
-    // set default unit and structure here
+    // Set default brush to Terrain and use TileType.Rock
+    this.state = 0;
+    this.selectedTerrain = TileType.Rock;
   }
+
+  // Classes that inject the User Service call these functions in order to change the current palette.
+  // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
+  public changeTerrain(selected: TileType): void {
+    this.state = 0;
+    this.selectedTerrain = selected;
+  }
+
+  public changeUnit(selected: UnitType): void {
+    this.state = 1;
+    this.selectedUnit = selected;
+  }
+
+  public changeStructure(selected: Structure): void {
+    this.state = 2;
+    this.selectedStructure = selected;
+  }
+
+  // Call this function to get the current palette.
+  public getPalette(): any {
+    switch (this.state) {
+      case 0: {
+        return this.selectedTerrain;
+      }
+      case 1: {
+        return this.selectedUnit;
+      }
+      case 2: {
+        return this.selectedStructure;
+      }
+    }
+  }
+
+  public getState(): number {
+    return this.state;
+  }
+
 
 }
