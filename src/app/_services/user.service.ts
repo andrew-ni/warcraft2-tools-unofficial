@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TileType } from 'tile';
-import { Unit, Structure } from 'asset';
+import { UnitType, Structure } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
 
 // User Service is a repository for user state, all services / components
@@ -10,7 +10,7 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 @Injectable()
 export class UserService {
   public selectedTerrain = TileType.Rock;
-  public selectedUnit: string;
+  public selectedUnit: UnitType;
   public selectedStructure: Structure;
 
   public newMapName: string;      // used during new map creation (might not be necessary)
