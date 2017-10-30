@@ -1,4 +1,5 @@
-// hard-coding dimensions for peasant and goldmine for now
+import { PlayerColor, numToColor } from 'player';
+
 const dimensionMap: Map<string, number> = new Map([
   ['Archer', 1],
   ['Footman', 1],
