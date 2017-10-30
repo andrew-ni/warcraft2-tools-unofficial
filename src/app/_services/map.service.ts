@@ -4,13 +4,13 @@ import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
 import { MapObject } from 'map';
-import { Dimension, Region } from 'interfaces';
+import { Dimension, Region, Coordinate } from 'interfaces';
 import { readdir } from 'fs';
 import { UserService } from 'services/user.service';
 
 @Injectable()
 export class MapService {
-  private TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
+  private readonly TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
 
   public map: MapObject;
   private canvas: HTMLCanvasElement;
@@ -88,48 +88,46 @@ export class MapService {
 
   // Handles clickEvents like clickdrag and panning.
   private setClickListeners() {
-    const self = this;
-    let curXPos = 0;
-    let curYPos = 0;
+    let clickPos: Coordinate;
 
-    function drawTile(event) {
-      if (self.map !== undefined) {
-        const x: number = Math.floor(event.offsetX / 32);
-        const y: number = Math.floor(event.offsetY / 32);
-        self.map.updateTiles(self.userService.selectedTerrain, { y, x, width: 1, height: 1 });
+    const placeTileAtCursor = (event: MouseEvent) => {
+      if (this.map !== undefined) {
+        const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
+        const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
+        this.map.updateTiles(this.userService.selectedTerrain, { y, x, width: 1, height: 1 });
       }
-    }
+    };
 
     // https://stackoverflow.com/a/34030504
-    function pan(event) {
-      if (self.map !== undefined) {
+    const pan = (event: MouseEvent) => {
+      if (this.map !== undefined) {
         document.body.style.cursor = 'move';
-        window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
+        this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
+        this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
       }
-    }
+    };
 
     // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
-    function removeListeners(event) {
+    const removeListeners = () => {
       document.body.style.cursor = 'auto';
-      self.canvas.removeEventListener('mousemove', drawTile, false);
-      self.canvas.removeEventListener('mousemove', pan, false);
-    }
+      this.canvas.removeEventListener('mousemove', placeTileAtCursor, false);
+      this.canvas.removeEventListener('mousemove', pan, false);
+    };
 
     // On mousedown, route to appropriate function (clickdrag or pan)
     // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
     // 0 = left click, 1 = middle click, 2 = right click
     this.canvas.addEventListener('mousedown', (event) => {
-      curYPos = event.offsetY;
-      curXPos = event.offsetX;
+      clickPos = { x: event.offsetX, y: event.offsetY };
       this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { drawTile(event); this.canvas.addEventListener('mousemove', drawTile, false); }
+      if (event.button === 0) { placeTileAtCursor(event); this.canvas.addEventListener('mousemove', placeTileAtCursor, false); }
       if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
     });
 
     // On mouseup, remove listeners
     this.canvas.addEventListener('mouseup', (event) => {
-      removeListeners(event);
-      this.canvas.removeEventListener('mouseleave', function() { }, false);
+      removeListeners();
+      this.canvas.removeEventListener('mouseleave', function () { }, false);
     });
   }
 
