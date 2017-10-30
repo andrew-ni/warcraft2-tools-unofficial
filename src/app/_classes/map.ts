@@ -61,6 +61,40 @@ export class MapObject {
     ipcRenderer.send('terrain:load', this.terrainPath, filePath);
   }
 
+  public initNew(name: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+    this.canSave = false;
+    this.name = name;
+    this.width = width;
+    this.height = height;
+
+    const terrain: Tile[][] = [];
+    const partialbits: Uint8Array[] = [];
+    this.drawLayer = [];
+
+    for (let y = 0; y < height + 1; y++) {
+      terrain.push([]);
+      this.drawLayer.push([]);
+
+      partialbits.push(Uint8Array.from(new Array(width).fill(0xF)));
+
+      for (let x = 0; x < width + 1; x++) {
+        terrain[y].push(new Tile(fillTile));
+        this.drawLayer[y].push(new Tile(0));
+      }
+    }
+    this.mapLayer1 = terrain;
+    this.partialBits = partialbits;
+
+    this.players = players;
+    this.assets = [];
+    this.tileSet = undefined;
+    this.terrainPath = '../img/Terrain.dat';
+    ipcRenderer.send('terrain:load', this.terrainPath, '');
+
+    this.canSave = true;
+    this._mapLoaded.next({ width: this.width, height: this.height });
+  }
+
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
     return this._mapLoaded.subscribe(observer);
   }
