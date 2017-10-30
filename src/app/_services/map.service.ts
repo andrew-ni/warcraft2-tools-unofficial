@@ -129,7 +129,7 @@ export class MapService {
     // On mouseup, remove listeners
     this.canvas.addEventListener('mouseup', (event) => {
       removeListeners(event);
-      this.canvas.removeEventListener('mouseleave', function (){}, false);
+      this.canvas.removeEventListener('mouseleave', function() { }, false);
     });
   }
 
