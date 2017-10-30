@@ -2,10 +2,10 @@
 <div class="row">
   <img *ngFor="let button of terrainButtons | slice:0:4"
        [src]="button.imgSrc"
-       (click)="userService.changeTerrain(button.tileType)">
+       (click)="userService.selectedTerrain = button.tileType">
 </div>
 <div class="row">
   <img *ngFor="let button of terrainButtons | slice:4"
        [src]="button.imgSrc"
-       (click)="userService.changeTerrain(button.tileType)">
+       (click)="userService.selectedTerrain = button.tileType">
 </div>

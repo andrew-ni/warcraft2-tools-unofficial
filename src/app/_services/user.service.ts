@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { TileType } from 'tile';
-import { Unit, AssetType, Structure, Asset } from 'asset';
+import { AssetType } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
 
 // User Service is a repository for user state, all services / components
@@ -9,56 +9,56 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 // service)
 @Injectable()
 export class UserService {
-  // 0 = terrain, 1 = units, 2 = structures
-  private state: number;
-  private selectedTerrain: TileType;
-  private selectedUnit: AssetType;
-  private selectedStructure: AssetType;
+  private _state = State.noSelection;
+  private _selectedTerrain: TileType;
+  private _selectedUnit: AssetType;
+  private _selectedStructure: AssetType;
+  private _selectedMapElement: TileType | AssetType;
 
   private newMapName: string;      // used during new map creation (might not be necessary)
   private newMapDimensions: Dimension;
 
   constructor() {
     // Set default brush to Terrain and use TileType.Rock
-    this.state = 0;
     this.selectedTerrain = TileType.Rock;
   }
 
   // Classes that inject the User Service call these functions in order to change the current palette.
   // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
-  public changeTerrain(selected: TileType): void {
-    this.state = 0;
-    this.selectedTerrain = selected;
+  get selectMapElement() { return this._selectedMapElement; }
+  get selectedTerrain() { return this._selectedTerrain; }
+  get selectedUnit() { return this._selectedUnit; }
+  get selectedStructure() { return this._selectedStructure; }
+
+  set selectedTerrain(tileType) {
+    this._selectedMapElement = this._selectedTerrain = tileType;
+    this._state = State.terrainSelected;
   }
 
-  public changeUnit(selected: AssetType): void {
-    this.state = 1;
-    this.selectedUnit = selected;
+  set selectedUnit(unitType) {
+    this._selectedMapElement = this._selectedUnit = unitType;
+    this._state = State.unitSelected;
   }
 
-  public changeStructure(selected: AssetType): void {
-    this.state = 2;
-    this.selectedStructure = selected;
+  set selectedStructure(structureType) {
+    this._selectedMapElement = this._selectedStructure = structureType;
+    this._state = State.structureSelected;
   }
 
-  // Call this function to get the current palette.
-  public getPalette(): any {
-    switch (this.state) {
-      case 0: {
-        return this.selectedTerrain;
-      }
-      case 1: {
-        return this.selectedUnit;
-      }
-      case 2: {
-        return this.selectedStructure;
-      }
+  applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void ) {
+    switch (this._state) {
+      case State.terrainSelected: applyTerrain(this._selectedTerrain); return;
+      case State.unitSelected: applyAsset(this._selectedMapElement as AssetType); return;
+
+      default:
+        break;
     }
   }
+}
 
-  public getState(): number {
-    return this.state;
-  }
-
-
+enum State {
+  noSelection,
+  terrainSelected,
+  unitSelected,
+  structureSelected,
 }
