@@ -156,8 +156,8 @@ export class MapService {
   public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
-    if (reg.y + reg.height > this.map.height) reg.y = this.map.height - reg.height;
-    if (reg.x + reg.width > this.map.width) reg.x = this.map.width - reg.width;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     const terrain = this.assetMap.get('Terrain');
     for (let x = reg.x; x < reg.x + reg.width; x++) {
       for (let y = reg.y; y < reg.y + reg.width; y++) {
