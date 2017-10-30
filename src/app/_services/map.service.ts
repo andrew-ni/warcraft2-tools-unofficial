@@ -10,7 +10,7 @@ import { UserService } from 'services/user.service';
 
 @Injectable()
 export class MapService {
-  private SPRITE_SIZE = 32;
+  private TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
 
   public map: MapObject;
   private canvas: HTMLCanvasElement;
@@ -83,66 +83,59 @@ export class MapService {
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
-
-    // TEMP until zooming is implemented
-    // this.context.scale(.6, .6);
-
     this.setClickListeners();
-
-    // TEMP for testing
-    // ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
-  // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
+  // Handles clickEvents like clickdrag and panning.
   private setClickListeners() {
-    const self = this; // trying to find way around this. will ask ben
+    const self = this;
     let curXPos = 0;
     let curYPos = 0;
-
 
     function drawTile(event) {
       if (self.map !== undefined) {
         const x: number = Math.floor(event.offsetX / 32);
         const y: number = Math.floor(event.offsetY / 32);
-        self.map.updateTiles(self.userService.selectedTerrain, {y, x, width: 1, height: 1});
+        self.map.updateTiles(self.userService.selectedTerrain, { y, x, width: 1, height: 1 });
       }
     }
 
     // https://stackoverflow.com/a/34030504
     function pan(event) {
-      // console.log(document.body.scrollLeft + (curXPos - event.offsetX));
-      // console.log(document.body.scrollTop + (curYPos - event.offsetY));
       if (self.map !== undefined) {
         document.body.style.cursor = 'move';
         window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
       }
     }
 
+    // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
+    function removeListeners(event) {
+      document.body.style.cursor = 'auto';
+      self.canvas.removeEventListener('mousemove', drawTile, false);
+      self.canvas.removeEventListener('mousemove', pan, false);
+    }
+
+    // On mousedown, route to appropriate function (clickdrag or pan)
     // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
-    // 0 = left click, 1 = middle, 2 = right click
+    // 0 = left click, 1 = middle click, 2 = right click
     this.canvas.addEventListener('mousedown', (event) => {
       curYPos = event.offsetY;
       curXPos = event.offsetX;
-      if (event.button === 0) {
-        drawTile(event);
-        this.canvas.addEventListener('mousemove', drawTile, false);
-      }
-      if (event.button === 2) {
-        console.log('right click pressed');
-        this.canvas.addEventListener('mousemove', pan, false);
-      }
+      this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
+      if (event.button === 0) { drawTile(event); this.canvas.addEventListener('mousemove', drawTile, false); }
+      if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
     });
 
+    // On mouseup, remove listeners
     this.canvas.addEventListener('mouseup', (event) => {
-      document.body.style.cursor = 'auto';
-      this.canvas.removeEventListener('mousemove', drawTile, false);
-      this.canvas.removeEventListener('mousemove', pan, false);
+      removeListeners(event);
+      this.canvas.removeEventListener('mouseleave', function (){}, false);
     });
   }
 
-  // TODO: clean this up with regexp?
-  // loops through .dat files in /assets/img/, and replaces .dat with .png, creates Image() for each
-  // then inserts (string, image) into assetMap.
+  // TODO: read the .dat files for more information, filter readdir()
+  // Finds files in /assets/img/, and replaces .dat with .png.
+  // Creates Image() for each then inserts <string, image> into assetMap.
   private loadAssets() {
     const myPath = './src/assets/img/';
     const myFiles = this.fs.readdirSync(myPath);
@@ -173,18 +166,16 @@ export class MapService {
     }
   }
 
-  // Draws Assets
+  // Draws Assets layer using Assets[] array from map.ts
   public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    console.log('drawAssets: ' + this.map.assets);
     for (const asset of this.map.assets) {
       const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
   }
 
-  // PARMS: image, width, y, x, index
-  // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+  // PARMS: image (assetMap.get(imgName), width (use image.width), y, x (in 32x32 pixels), index (position on spritesheet)
   private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
-    this.context.drawImage(image, 0, index * width, width, width, x * this.SPRITE_SIZE, y * this.SPRITE_SIZE, width, width);
+    this.context.drawImage(image, 0, index * width, width, width, x * this.TERRAIN_SIZE, y * this.TERRAIN_SIZE, width, width);
   }
 }
