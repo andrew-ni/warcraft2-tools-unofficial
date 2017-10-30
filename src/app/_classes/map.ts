@@ -71,6 +71,9 @@ export class MapObject {
 
   // by default, calculates indices for whole map
   private calcIndices(reg: Region = { y: 0, x: 0, height: this.height, width: this.width }) {
+    // Need to additionally calculate one row above and one column to the left of changed tiles
+    reg.y--; reg.x--; reg.height++; reg.width++;
+
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
         this.calcIndex(ypos, xpos);
@@ -248,11 +251,6 @@ export class MapObject {
     }
 
     return reg;
-
-    // TODO: there is a special case for rocks and forest
-    // RdR, FgF
-    // When rocks are separated by a single tile, the tile is forced to be lightDirt
-    // When forests are separated by a single tile, the tile is forced to be lightGrass
   }
 
 
