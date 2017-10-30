@@ -30,14 +30,21 @@ export module IO {
   export async function loadTerrain(window: Electron.WebContents, terrainFilePath: string, mapFilePath: string) {
     console.log('loadTerrain');
 
+    const readTerrainFile = (filepath: string, onError: (Error) => void) => {
+      fs.readFile(filepath, 'utf8', (err: Error, data: string) => {
+        if (err) {
+          onError(err);
+        } else {
+          window.send('terrain:loaded', data);
+        }
+      });
+    };
+
     terrainFilePath = path.join(path.parse(mapFilePath).dir, terrainFilePath);
 
-    fs.readFile(terrainFilePath, 'utf8', (err: Error, data: string) => {
-      if (err) {
-        console.log(err);
-      } else {
-        window.send('terrain:loaded', data);
-      }
+    readTerrainFile(terrainFilePath, (err) => {
+      console.warn('Could not find ', terrainFilePath, '- Loading default TileSet');
+      readTerrainFile('./src/assets/img/Terrain.dat', (err2) => console.error(err2));
     });
   }
 }
