@@ -425,12 +425,13 @@ export class MapObject {
     // checks if cells are occupied
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
-        if (this.mapLayer2[ypos][xpos] !== undefined) { return; }
+        if (this.mapLayer2[ypos][xpos] !== undefined) { console.log('collision'); return; }
       }
     }
 
     if (!init) {
       this.assets.push(asset);
+      console.log('pushed');
     }
 
     // placeholder for asset depending on its dimensions

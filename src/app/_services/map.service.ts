@@ -100,10 +100,12 @@ export class MapService {
     };
 
     const placeAssetAtCursor = (event: MouseEvent) => {
+      console.log('placeAssetAtCursor');
       if (this.map !== undefined) {
         const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
         const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
         this.map.placeAsset(1, 'Peasant', x, y, false);
+        this.drawAssets();
       }
     };
 
@@ -120,6 +122,7 @@ export class MapService {
     const removeListeners = () => {
       document.body.style.cursor = 'auto';
       this.canvas.removeEventListener('mousemove', placeTileAtCursor, false);
+      this.canvas.removeEventListener('mousemove', placeAssetAtCursor, false);
       this.canvas.removeEventListener('mousemove', pan, false);
     };
 
@@ -129,9 +132,9 @@ export class MapService {
     this.canvas.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { 
+      if (event.button === 0) {
         if (this.userService.getState() === 0) {placeTileAtCursor(event); this.canvas.addEventListener('mousemove', placeTileAtCursor, false); }
-        if (this.userService.getState() === 1) {placeAssetAtCursor(event); this.canvas.addEventListener('mousemove', placeAssetAtCursor, false);}
+        if (this.userService.getState() === 1) {placeAssetAtCursor(event); this.canvas.addEventListener('mousemove', placeAssetAtCursor, false); }
       }
       if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
     });
