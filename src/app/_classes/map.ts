@@ -26,6 +26,7 @@ export class MapObject {
   canSave = false; // save state is not ready yet
   // map detail fields
   name: string;
+  description: string;
   width: number;
   height: number;
   mapLayer1: Tile[][];
@@ -35,7 +36,6 @@ export class MapObject {
   players: Player[] = [];
   assets: Asset[] = [];
   mapVersion: string;
-  mapDescription: string;
   terrainPath: string;
 
   tileSet: Tileset;
@@ -62,6 +62,41 @@ export class MapObject {
     this.parseMapData(mapData);
     ipcRenderer.send('terrain:load', this.terrainPath, filePath);
     // ipcRenderer.send('assets:load', )
+  }
+
+  public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+    this.canSave = false;
+    this.name = name;
+    this.description = description;
+    this.width = width;
+    this.height = height;
+
+    const terrain: Tile[][] = [];
+    const partialbits: Uint8Array[] = [];
+    this.drawLayer = [];
+
+    for (let y = 0; y < height + 1; y++) {
+      terrain.push([]);
+      this.drawLayer.push([]);
+
+      partialbits.push(Uint8Array.from(new Array(width).fill(0xF)));
+
+      for (let x = 0; x < width + 1; x++) {
+        terrain[y].push(new Tile(fillTile));
+        this.drawLayer[y].push(new Tile(0));
+      }
+    }
+    this.mapLayer1 = terrain;
+    this.partialBits = partialbits;
+
+    this.players = players;
+    this.assets = [];
+    this.tileSet = undefined;
+    this.terrainPath = '../img/Terrain.dat';
+    ipcRenderer.send('terrain:load', this.terrainPath, '');
+
+    this.canSave = true;
+    this._mapLoaded.next({ width: this.width, height: this.height });
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
@@ -273,7 +308,7 @@ export class MapObject {
     lines.push(MapObject.DIMENSION_HEADER);
     lines.push(this.width + ' ' + this.height);
     lines.push(MapObject.DESCRIPTION_HEADER);
-    lines.push(this.mapDescription);
+    lines.push(this.description);
     lines.push(MapObject.TILESET_HEADER);
     lines.push(this.terrainPath);
     lines.push(MapObject.TERRAIN_HEADER);
@@ -295,7 +330,7 @@ export class MapObject {
     }
 
     lines.push(MapObject.PLAYER_NUM_HEADER);
-    lines.push(String(this.players.length));    // convert player[] length to string
+    lines.push(String(this.players.length - 1));    // convert player[] length to string
 
     lines.push(MapObject.PLAYER_RESOURCES_HEADER);
     for (const player of this.players) {
@@ -326,7 +361,7 @@ export class MapObject {
     this.mapVersion = mapVersion.trim();
     this.name = name.trim();
     [this.width, this.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
-    this.mapDescription = mapDescription.trim();
+    this.description = mapDescription.trim();
     this.terrainPath = terrainPath.trim();
     this.mapLayer1 = this.parseTerrain(terrain);
     this.partialBits = this.parsePartialBits(partialbits);
