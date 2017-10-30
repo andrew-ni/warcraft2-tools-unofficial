@@ -11,8 +11,7 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 export class UserService {
   private _state = State.noSelection;
   private _selectedTerrain: TileType;
-  private _selectedUnit: AssetType;
-  private _selectedStructure: AssetType;
+  private _selectedAsset: AssetType;
   private _selectedMapElement: TileType | AssetType;
   private _selectedPlayer: number;
 
@@ -28,8 +27,7 @@ export class UserService {
   // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
   get selectMapElement() { return this._selectedMapElement; }
   get selectedTerrain() { return this._selectedTerrain; }
-  get selectedUnit() { return this._selectedUnit; }
-  get selectedStructure() { return this._selectedStructure; }
+  get selectedAsset() { return this._selectedAsset; }
   get selectedPlayer() { return this._selectedPlayer; }
 
   set selectedTerrain(tileType) {
@@ -37,14 +35,9 @@ export class UserService {
     this._state = State.terrainSelected;
   }
 
-  set selectedUnit(unitType) {
-    this._selectedMapElement = this._selectedUnit = unitType;
-    this._state = State.unitSelected;
-  }
-
-  set selectedStructure(structureType) {
-    this._selectedMapElement = this._selectedStructure = structureType;
-    this._state = State.structureSelected;
+  set selectedAsset(assetType) {
+    this._selectedMapElement = this._selectedAsset = assetType;
+    this._state = State.assetSelected;
   }
 
   set selectedPlayer(id) {
@@ -55,7 +48,7 @@ export class UserService {
   applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void ) {
     switch (this._state) {
       case State.terrainSelected: applyTerrain(this._selectedTerrain); return;
-      case State.unitSelected: applyAsset(this._selectedMapElement as AssetType); return;
+      case State.assetSelected: applyAsset(this._selectedAsset); return;
 
       default:
         break;
@@ -66,6 +59,5 @@ export class UserService {
 enum State {
   noSelection,
   terrainSelected,
-  unitSelected,
-  structureSelected,
+  assetSelected,
 }
