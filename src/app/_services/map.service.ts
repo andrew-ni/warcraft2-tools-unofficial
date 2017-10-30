@@ -102,7 +102,8 @@ export class MapService {
     const pan = (event: MouseEvent) => {
       if (this.map !== undefined) {
         document.body.style.cursor = 'move';
-        window.scrollTo(document.body.scrollLeft + (clickPos.x - event.offsetX), document.body.scrollTop + (clickPos.y - event.offsetY));
+        this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
+        this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
       }
     };
 
