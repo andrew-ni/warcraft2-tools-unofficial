@@ -14,6 +14,7 @@ export class UserService {
   private _selectedUnit: AssetType;
   private _selectedStructure: AssetType;
   private _selectedMapElement: TileType | AssetType;
+  private _selectedPlayer: number;
 
   private newMapName: string;      // used during new map creation (might not be necessary)
   private newMapDimensions: Dimension;
@@ -29,6 +30,7 @@ export class UserService {
   get selectedTerrain() { return this._selectedTerrain; }
   get selectedUnit() { return this._selectedUnit; }
   get selectedStructure() { return this._selectedStructure; }
+  get selectedPlayer() { return this._selectedPlayer; }
 
   set selectedTerrain(tileType) {
     this._selectedMapElement = this._selectedTerrain = tileType;
@@ -43,6 +45,11 @@ export class UserService {
   set selectedStructure(structureType) {
     this._selectedMapElement = this._selectedStructure = structureType;
     this._state = State.structureSelected;
+  }
+
+  set selectedPlayer(id) {
+    this._selectedPlayer = id;
+    console.log('player number = ', id);
   }
 
   applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void ) {
