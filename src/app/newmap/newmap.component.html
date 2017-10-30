@@ -27,7 +27,7 @@
       <input type="text" id="WidthField" name="width" style="width:40px; margin-top:5px;"> x
       <input type="text" id="HeightField" name="height" style="width:40px;"> <br><br>
       
-      <select id="numPlayers" name = "numPlayersName">
+      <select id="NumPlayersField" name = "numPlayersName">
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
@@ -38,11 +38,11 @@
       </select><br><br><br><br>
       
       <div style = "float:left; margin-top: 8px">
-          <div *ngFor="let n of currentPlayers">
+          <div *ngFor="let n of currentPlayers; let i = index">
             <img src = ":../../assets/frontend_icons/gold_icon.png">
-            <input type="number" name="goldPlayer1" style="width:100px;;">
+            <input type="number" [(ngModel)]="currentPlayers[i].gold" style="width:100px;;">
             <img src = ":../../assets/frontend_icons/lumber_icon.png">
-            <input type="number" name="lumberPlayer1" style="width:100px;;">
+            <input type="number" [(ngModel)]="currentPlayers[i].lumber" style="width:100px;;">
             <br><br>
           </div>
       </div> 
