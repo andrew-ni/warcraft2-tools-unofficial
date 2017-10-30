@@ -98,7 +98,6 @@ export class Asset {
   constructor(owner: number, type: AssetType, x: number, y: number, referenceAsset?: Asset) {
     this.owner = owner;
     this.assetType = type;
-    this.assetType = strToAssetType[type];
     this.x = x;
     this.y = y;
     this.height = dimensionMap.get(type);
