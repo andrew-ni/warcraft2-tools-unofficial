@@ -7,10 +7,10 @@ const dimensionMap: Map<string, number> = new Map([
   ['Barracks', 3],
   ['Blacksmith', 3],
   ['Farm', 2],
-  ['CannonTower', 3], // ? not sure actual height/width
+  ['CannonTower', 2],
   ['Castle', 3], // ?
   ['GoldMine', 3],
-  ['GuardTower', 3], // ?
+  ['GuardTower', 2],
   ['Keep', 3], // ?
   ['LumberMill', 3],
   ['ScoutTower', 2],
