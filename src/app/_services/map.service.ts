@@ -7,6 +7,7 @@ import { MapObject } from 'map';
 import { Dimension, Region, Coordinate } from 'interfaces';
 import { readdir } from 'fs';
 import { UserService } from 'services/user.service';
+import { PlayerColor, numToColor } from 'player';
 
 @Injectable()
 export class MapService {
@@ -102,7 +103,7 @@ export class MapService {
       if (this.map !== undefined) {
         const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
         const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
-        this.map.placeAssets(this.userService.getPalette(), { y, x, width: 1, height: 1 });
+        this.map.placeAsset(1, 'Peasant', x, y, false);
       }
     };
 
@@ -177,6 +178,7 @@ export class MapService {
 
   // Draws Assets layer using Assets[] array from map.ts
   public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+    console.log(this.map.mapLayer2);
     for (const asset of this.map.assets) {
       const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
