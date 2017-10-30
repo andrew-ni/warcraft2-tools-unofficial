@@ -1,34 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observer } from 'rxjs/Rx';
+import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
 import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
-import { Map } from 'map';
+import { MapObject } from 'map';
+import { Dimension, Region } from 'interfaces';
+import { readdir } from 'fs';
+import { UserService } from 'services/user.service';
 
 @Injectable()
 export class MapService {
-  // const SPRITE_SIZE = 32;
+  private TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
 
-  public map: Map;
+  public map: MapObject;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
-  private terrainImg: HTMLImageElement;
+  private assetMap: Map<string, HTMLImageElement>;
+  private fs;
+  private path;
 
-  private _mapLoaded = new Subject<{ width: number, height: number }>();
+  constructor(private userService: UserService) {
+    this.map = new MapObject();
+    // Load assets before, and independently of map:loaded.
+    this.fs = require('fs');
+    this.path = require('path');
+    this.assetMap = new Map<string, HTMLImageElement>();
+    this.loadAssets();
 
-
-  constructor() {
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._filePath = filePath;
-      this.map = new Map(mapData);
-      this._mapLoaded.next({ width: this.map.width, height: this.map.height });
-
-      // TEMP until canvas is properly redrawn
-      // setInterval(() => this.drawMap(), 200);
-      this.drawMap();
+      this.map.init(mapData, filePath);
     });
 
     // Event listener for saving a map
@@ -55,57 +59,123 @@ export class MapService {
       ipcRenderer.send('map:save', response, this._filePath);
     });
 
-    this.terrainImg = new Image();
-    this.terrainImg.src = 'assets/Terrain.png';
+    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
+      this.map.setTileSet(terrainData);
+      this.drawAssets(); // drawAssets only after terrain is loaded
+    });
+
+    this.subscribeToTilesUpdated({
+      next: reg => this.drawMap(reg),
+      error: err => console.error(err),
+      complete: null
+    });
   }
 
-  public subscribeToMapLoaded(observer: Observer<{ width: number, height: number }>) {
-    return this._mapLoaded.subscribe(observer);
+  public subscribeToMapLoaded(observer: Observer<Dimension>) {
+    return this.map.subscribeToMapLoaded(observer);
+  }
+
+  public subscribeToTilesUpdated(observer: Observer<Region>) {
+    return this.map.subscribeToTilesUpdated(observer);
   }
 
   // Save canvas context from map.component.ts
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
-
-    // TEMP until zooming is implemented
-    // this.context.scale(.6, .6);
-
     this.setClickListeners();
-
-    // TEMP for testing
-    ipcRenderer.send('map:load', './src/assets/bay.map');
   }
 
-  // Listen for clicks on canvas. Uses () => to avoid scope issues. event contains x,y coordinates.
+  // Handles clickEvents like clickdrag and panning.
   private setClickListeners() {
-    this.canvas.addEventListener('mousedown', (event) => {
-      if (this.map !== undefined) {
-        const x: number = Math.floor(event.pageX / 32);
-        const y: number = Math.floor(event.pageY / 32);
-        const [yStart, xStart, height, width] = this.map.updateTiles(TileType.Rock, y, x, 1, 1);
-        this.drawMap(yStart, xStart, height, width);
-        // this.drawMap();
+    const self = this;
+    let curXPos = 0;
+    let curYPos = 0;
+
+    function drawTile(event) {
+      if (self.map !== undefined) {
+        const x: number = Math.floor(event.offsetX / 32);
+        const y: number = Math.floor(event.offsetY / 32);
+        self.map.updateTiles(self.userService.selectedTerrain, { y, x, width: 1, height: 1 });
       }
-    }, false);
+    }
+
+    // https://stackoverflow.com/a/34030504
+    function pan(event) {
+      if (self.map !== undefined) {
+        document.body.style.cursor = 'move';
+        window.scrollTo(document.body.scrollLeft + (curXPos - event.offsetX), document.body.scrollTop + (curYPos - event.offsetY));
+      }
+    }
+
+    // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
+    function removeListeners(event) {
+      document.body.style.cursor = 'auto';
+      self.canvas.removeEventListener('mousemove', drawTile, false);
+      self.canvas.removeEventListener('mousemove', pan, false);
+    }
+
+    // On mousedown, route to appropriate function (clickdrag or pan)
+    // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
+    // 0 = left click, 1 = middle click, 2 = right click
+    this.canvas.addEventListener('mousedown', (event) => {
+      curYPos = event.offsetY;
+      curXPos = event.offsetX;
+      this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
+      if (event.button === 0) { drawTile(event); this.canvas.addEventListener('mousemove', drawTile, false); }
+      if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
+    });
+
+    // On mouseup, remove listeners
+    this.canvas.addEventListener('mouseup', (event) => {
+      removeListeners(event);
+      this.canvas.removeEventListener('mouseleave', function (){}, false);
+    });
   }
 
-  // Draws Map when loaded from file.
-  public drawMap(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    if (yStart < 0) yStart = 0;
-    if (xStart < 0) xStart = 0;
-    if (yStart + height > this.map.height) yStart = this.map.height - height;
-    if (xStart + width > this.map.width) xStart = this.map.width - width;
+  // TODO: read the .dat files for more information, filter readdir()
+  // Finds files in /assets/img/, and replaces .dat with .png.
+  // Creates Image() for each then inserts <string, image> into assetMap.
+  private loadAssets() {
+    const myPath = './src/assets/img/';
+    const myFiles = this.fs.readdirSync(myPath);
 
-    for (let x = xStart; x < xStart + width; x++) {
-      for (let y = yStart; y < yStart + height; y++) {
-        this.drawImage(y, x, this.map.drawLayer[y][x].index);
+    for (const i in myFiles) {
+      if (this.path.extname(myFiles[i]) === '.dat') {
+        const temp = String(myFiles[i]);
+        const temp2 = temp.substring(0, temp.length - 4);
+
+        const tempImage = new Image();
+        tempImage.src = 'assets/img/' + temp2 + '.png';
+        this.assetMap.set(temp2, tempImage);
       }
     }
   }
 
-  // Draws a single tile in an (x,y) coordinate, using an index to Terrain.png
-  private drawImage(y: number, x: number, index: number): void {
-    this.context.drawImage(this.terrainImg, 0, index * 32, 32, 32, x * 32, y * 32, 32, 32);
+  // Draws Map when loaded from file.
+  public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.y = this.map.height - reg.height;
+    if (reg.x + reg.width > this.map.width) reg.x = this.map.width - reg.width;
+    const terrain = this.assetMap.get('Terrain');
+    for (let x = reg.x; x < reg.x + reg.width; x++) {
+      for (let y = reg.y; y < reg.y + reg.width; y++) {
+        this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
+      }
+    }
+  }
+
+  // Draws Assets layer using Assets[] array from map.ts
+  public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+    for (const asset of this.map.assets) {
+      const img = this.assetMap.get(asset.type);
+      this.drawImage(img, img.width, asset.y, asset.x, 0);
+    }
+  }
+
+  // PARMS: image (assetMap.get(imgName), width (use image.width), y, x (in 32x32 pixels), index (position on spritesheet)
+  private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
+    this.context.drawImage(image, 0, index * width, width, width, x * this.TERRAIN_SIZE, y * this.TERRAIN_SIZE, width, width);
   }
 }
