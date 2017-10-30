@@ -123,8 +123,14 @@ export class MapService {
     this.canvas.addEventListener('mousedown', (event) => {
       curYPos = event.offsetY;
       curXPos = event.offsetX;
-      if (event.button === 0) { this.canvas.addEventListener('mousemove', drawTile, false); }
-      if (event.button === 2) { console.log('right click pressed'); this.canvas.addEventListener('mousemove', pan, false); }
+      if (event.button === 0) {
+        drawTile(event);
+        this.canvas.addEventListener('mousemove', drawTile, false);
+      }
+      if (event.button === 2) {
+        console.log('right click pressed');
+        this.canvas.addEventListener('mousemove', pan, false);
+      }
     });
 
     this.canvas.addEventListener('mouseup', (event) => {
