@@ -26,6 +26,11 @@ export class StructuresComponent implements OnInit {
       imgSrc: './assets/frontend_icons/barracks_icon.png',
       structureType: StructureType.Barracks,
     },
+    {
+      name: 'GoldMine',
+      imgSrc: './assets/frontend_icons/goldmine_icon.png',
+      structureType: StructureType.GoldMine,
+    },
   ];
 
   constructor(

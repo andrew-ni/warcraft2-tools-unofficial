@@ -1,6 +1,6 @@
 import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType, TileTypeChar } from './tile';
 import { Player } from './player';
-import { Asset } from './asset';
+import { Asset, Unit, Structure, AssetType, strToAssetType } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 import { Dimension, Region } from 'interfaces';
@@ -396,7 +396,7 @@ export class MapObject {
     for (const line of lines) {
       const [type, owner, x, y] = line.split(' ');
       // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset(parseInt(owner, 10), type, parseInt(x, 10), parseInt(y, 10)));
+      parsedAssets.push(new Asset(parseInt(owner, 10), strToAssetType[type], parseInt(x, 10), parseInt(y, 10)));
     }
 
     return parsedAssets;
@@ -412,13 +412,13 @@ export class MapObject {
     }
 
     for (const asset of assets) {
-      this.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
+      this.placeAsset(asset.owner, asset.assetType, asset.x, asset.y, true);
     }
 
     console.log(this.mapLayer2);
   }
 
-  public placeAsset(owner: number, type: string, x: number, y: number, init: boolean = false) {
+  public placeAsset(owner: number, type: AssetType, x: number, y: number, init: boolean = false) {
     if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) return;
 
     const asset: Asset = new Asset(owner, type, x, y);
@@ -437,7 +437,7 @@ export class MapObject {
     // placeholder for asset depending on its dimensions
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
-        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, 'Placeholder', xpos, ypos, asset);
+        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, strToAssetType['Placeholder'], xpos, ypos, asset);
       }
     }
 

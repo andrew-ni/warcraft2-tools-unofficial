@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { TileType } from 'tile';
-import { Unit, UnitType, Structure, Asset } from 'asset';
+import { Unit, AssetType, Structure, Asset } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
 
 // User Service is a repository for user state, all services / components
@@ -12,8 +12,8 @@ export class UserService {
   // 0 = terrain, 1 = units, 2 = structures
   private state: number;
   private selectedTerrain: TileType;
-  private selectedUnit: UnitType;
-  private selectedStructure: Structure;
+  private selectedUnit: AssetType;
+  private selectedStructure: AssetType;
 
   private newMapName: string;      // used during new map creation (might not be necessary)
   private newMapDimensions: Dimension;
@@ -31,12 +31,12 @@ export class UserService {
     this.selectedTerrain = selected;
   }
 
-  public changeUnit(selected: UnitType): void {
+  public changeUnit(selected: AssetType): void {
     this.state = 1;
     this.selectedUnit = selected;
   }
 
-  public changeStructure(selected: Structure): void {
+  public changeStructure(selected: AssetType): void {
     this.state = 2;
     this.selectedStructure = selected;
   }

@@ -104,7 +104,7 @@ export class MapService {
       if (this.map !== undefined) {
         const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
         const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
-        this.map.placeAsset(1, 'Peasant', x, y, false);
+        this.map.placeAsset(1, this.userService.getPalette(), x, y, false);
         this.drawAssets();
       }
     };
