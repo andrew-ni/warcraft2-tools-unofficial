@@ -7,6 +7,7 @@ import { MapObject } from 'map';
 import { Dimension, Region, Coordinate } from 'interfaces';
 import { readdir } from 'fs';
 import { UserService } from 'services/user.service';
+import { PlayerColor, numToColor } from 'player';
 
 @Injectable()
 export class MapService {

@@ -1,5 +1,24 @@
-// hard-coding dimensions for peasant and goldmine for now
-const dimensionMap: Map<string, number> = new Map([['Peasant', 2], ['GoldMine', 3], ['Placeholder', 0]]);
+import { PlayerColor, numToColor } from 'player';
+
+const dimensionMap: Map<string, number> = new Map([
+  ['Archer', 1],
+  ['Footman', 1],
+  ['Peasant', 1],
+  ['Ranger', 1],
+  ['Barracks', 3],
+  ['Blacksmith', 3],
+  ['Farm', 2],
+  ['CannonTower', 2],
+  ['Castle', 3], // ?
+  ['GoldMine', 3],
+  ['GuardTower', 2],
+  ['Keep', 3], // ?
+  ['LumberMill', 3],
+  ['ScoutTower', 2],
+  ['TownHall', 4],
+  ['Wall', 1], // probably have to do something special with Wall
+  ['Placeholder', 0]
+]);
 
 export class Asset {
   owner: number;
@@ -28,19 +47,16 @@ export class Asset {
   }
 }
 
-export enum UnitType {
-  Peasant,
-  Footman,
-}
+// export class Unit extends Asset {
+//   constructor(owner: number, type: string, x: number, y: number) {
+//     super(owner, type, x, y);
+//   }
+// }
 
-export class Unit extends Asset {
-  constructor(owner: number, type: string, x: number, y: number) {
-    super(owner, type, x, y);
-  }
-}
+// export class Structure extends Asset {
+//   constructor(owner: number, type: string, x: number, y: number) {
+//     super(owner, type, x, y);
+//   }
+// }
 
-export class Structure extends Asset {
-  constructor(owner: number, type: string, x: number, y: number) {
-    super(owner, type, x, y);
-  }
-}
+

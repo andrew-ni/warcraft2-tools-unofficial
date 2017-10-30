@@ -53,6 +53,7 @@ export class MapObject {
   public init(mapData: string, filePath = ''): void {
     this.canSave = false;
     this.mapLayer1 = undefined;
+    this.mapLayer2 = undefined;
     this.drawLayer = undefined;
     this.partialBits = undefined;
     this.players = [];
@@ -60,6 +61,7 @@ export class MapObject {
     this.tileSet = undefined;
     this.parseMapData(mapData);
     ipcRenderer.send('terrain:load', this.terrainPath, filePath);
+    // ipcRenderer.send('assets:load', )
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
