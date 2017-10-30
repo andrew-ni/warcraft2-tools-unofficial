@@ -414,10 +414,11 @@ export class MapObject {
     for (const asset of assets) {
       this.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
     }
+
     console.log(this.mapLayer2);
   }
 
-  private placeAsset(owner: number, type: string, x: number, y: number, init: boolean) {
+  private placeAsset(owner: number, type: string, x: number, y: number, init: boolean = false) {
     if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1)  return;
 
     let asset: Asset = new Asset(owner, type, x, y);
@@ -428,10 +429,14 @@ export class MapObject {
       }
     }
 
+    if (!init) {
+      this.assets.push(asset);
+    }
+
     //placeholder for asset depending on its dimensions
     for (var xpos = x; xpos < x + asset.width; xpos++) {
       for (var ypos = y; ypos < y + asset.height; ypos++) {
-        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, "Placeholder", xpos, ypos);
+        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, "Placeholder", xpos, ypos, asset);
       }
     }
 
@@ -444,10 +449,12 @@ export class MapObject {
       return;
     }
 
-    let assetToBeRemoved = this.mapLayer2[y][x];
+    let assetToBeRemoved = this.mapLayer2[y][x].referenceAsset;
 
-    for (var xpos = x; xpos < x + assetToBeRemoved.width; xpos++) {
-      for (var ypos = y; ypos < y + assetToBeRemoved.height; ypos++) {
+    this.assets.splice(this.assets.indexOf(assetToBeRemoved), 1);
+
+    for (var xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
+      for (var ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
         this.mapLayer2[ypos][xpos] = undefined;
       }
     }

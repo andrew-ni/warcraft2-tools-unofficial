@@ -9,14 +9,21 @@ export class Asset {
   y: number;
   height: number;
   width: number;
+  referenceAsset: Asset;
 
-  constructor(owner: number, type: string, x: number, y: number) {
+  constructor(owner: number, type: string, x: number, y: number, referenceAsset: Asset = undefined) {
     this.owner = owner;
     this.type = type;
     this.x = x;
     this.y = y;
     this.height = dimensionMap.get(type);
     this.width = dimensionMap.get(type);
+
+    if (type === "Placeholder") {
+      this.referenceAsset = referenceAsset;
+    } else {
+      this.referenceAsset = this;
+    }
 
   }
 }
