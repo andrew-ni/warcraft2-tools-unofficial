@@ -10,7 +10,7 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 @Injectable()
 export class UserService {
   public selectedTerrain = TileType.Rock;
-  public selectedUnit: Unit;
+  public selectedUnit: string;
   public selectedStructure: Structure;
 
   public newMapName: string;      // used during new map creation (might not be necessary)
