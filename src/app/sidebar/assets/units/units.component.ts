@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { UnitType } from 'asset';
+import { AssetType } from 'asset';
 import { UserService } from 'services/user.service';
 
 interface UnitButton {
   name: string;
   imgSrc: string;
-  unitType: UnitType;
+  unitType: AssetType;
 }
 
 @Component({
@@ -19,12 +19,12 @@ export class UnitsComponent implements OnInit {
     {
       name: 'Peasant',
       imgSrc: './assets/frontend_icons/peasant_icon.png',
-      unitType: UnitType.Peasant,
+      unitType: AssetType.Peasant,
     },
     {
       name: 'Footman',
       imgSrc: './assets/frontend_icons/footman_icon.png',
-      unitType: UnitType.Footman,
+      unitType: AssetType.Footman,
     },
   ];
 

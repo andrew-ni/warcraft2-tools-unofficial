@@ -8,6 +8,7 @@ import { Dimension, Region, Coordinate } from 'interfaces';
 import { readdir } from 'fs';
 import { UserService } from 'services/user.service';
 import { PlayerColor, numToColor } from 'player';
+import { AssetType, strToAssetType } from 'asset';
 
 @Injectable()
 export class MapService {
@@ -17,7 +18,7 @@ export class MapService {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private _filePath: string;
-  private assetMap: Map<string, HTMLImageElement>;
+  private assetMap = new Map<AssetType, HTMLImageElement>();
   private fs;
   private path;
 
@@ -26,7 +27,6 @@ export class MapService {
     // Load assets before, and independently of map:loaded.
     this.fs = require('fs');
     this.path = require('path');
-    this.assetMap = new Map<string, HTMLImageElement>();
     this.loadAssets();
 
     // Event listener for when a map has been loaded from a file.
@@ -149,7 +149,7 @@ export class MapService {
 
         const tempImage = new Image();
         tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(temp2, tempImage);
+        this.assetMap.set(strToAssetType[temp2], tempImage);
       }
     }
   }
@@ -160,7 +160,7 @@ export class MapService {
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    const terrain = this.assetMap.get('Terrain');
+    const terrain = this.assetMap.get(AssetType.Terrain);
     for (let x = reg.x; x < reg.x + reg.width; x++) {
       for (let y = reg.y; y < reg.y + reg.width; y++) {
         this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
@@ -172,7 +172,7 @@ export class MapService {
   public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
     console.log(this.map.mapLayer2);
     for (const asset of this.map.assets) {
-      const img = this.assetMap.get(asset.type);
+      const img = this.assetMap.get(asset.assetType);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
   }

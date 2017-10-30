@@ -18,6 +18,7 @@ export enum AssetType {
   TownHall,
   Wall,
   Placeholder,
+  Terrain,
 }
 
 // export enum UnitType {
@@ -81,6 +82,7 @@ strToAssetType['ScoutTower'] = AssetType.ScoutTower;
 strToAssetType['TownHall'] = AssetType.TownHall;
 strToAssetType['Wall'] = AssetType.Wall;
 strToAssetType['Placeholder'] = AssetType.Placeholder;
+strToAssetType['Terrain'] = AssetType.Terrain;
 
 export class Asset {
   owner: number;
