@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 // Services
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
 
@@ -40,6 +41,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
   providers: [
     MapService,
     SerializeService,
+    TerrainService,
     UserService,
   ],
   bootstrap: [AppComponent]
