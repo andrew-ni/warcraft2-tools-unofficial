@@ -6,6 +6,10 @@ import { AppComponent } from './app.component';
 
 // Services
 import { MapService } from 'services/map.service';
+import { SerializeService } from 'services/serialize.service';
+import { UserService } from 'services/user.service';
+
+
 import { MapComponent } from './map/map.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
@@ -15,7 +19,6 @@ import { StructuresComponent } from './sidebar/assets/structures/structures.comp
 import { AssetsComponent } from './sidebar/assets/assets.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
-import { UserService } from 'services/user.service';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,7 @@ import { UserService } from 'services/user.service';
   ],
   providers: [
     MapService,
+    SerializeService,
     UserService,
   ],
   bootstrap: [AppComponent]
