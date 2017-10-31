@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 
 // Services
+import { CanvasService } from 'services/canvas.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
@@ -39,6 +40,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     FormsModule,
   ],
   providers: [
+    CanvasService,
     MapService,
     SerializeService,
     TerrainService,
