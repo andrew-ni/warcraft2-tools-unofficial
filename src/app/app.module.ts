@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 
 // Services
 import { CanvasService } from 'services/canvas.service';
+import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
@@ -41,6 +42,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
   ],
   providers: [
     CanvasService,
+    IOService,
     MapService,
     SerializeService,
     TerrainService,
