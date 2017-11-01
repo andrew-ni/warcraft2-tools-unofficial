@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
-import { MapService } from './map.service';
+import { MapService } from 'services/map.service';
 import { MapObject } from 'map';
+import { TerrainService } from 'services/terrain.service';
 
 @Injectable()
 export class IOService {
@@ -9,7 +10,10 @@ export class IOService {
   private _mapFilePath: string;
   private map: MapObject;
 
-  constructor(private mapService: MapService)
+  constructor(
+    private mapService: MapService,
+    private terrainService: TerrainService,
+  )
   {
     this.map = this.mapService.map;
     // Event listener for when a map has been loaded from a file.

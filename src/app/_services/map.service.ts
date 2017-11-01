@@ -4,21 +4,18 @@ import { TileType } from '../_classes/tile';
 
 import { MapObject } from 'map';
 import { Dimension, Region, Coordinate } from 'interfaces';
-import { readdir } from 'fs';
 import { UserService } from 'services/user.service';
 import { PlayerColor, numToColor } from 'player';
 import { AssetType, strToAssetType } from 'asset';
 
 @Injectable()
 export class MapService {
-  private readonly TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
-
   public map: MapObject;
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
-  private assetMap = new Map<AssetType, HTMLImageElement>();
-  private fs;
-  private path;
+
+
+  // Events
+  public mapLoaded = new Subject<Dimension>();
+  public tilesUpdated = new Subject<Region>();
 
   constructor(private userService: UserService) {
     this.map = new MapObject();
@@ -28,68 +25,7 @@ export class MapService {
     this.loadAssets();
   }
 
-  public subscribeToMapLoaded(observer: Observer<Dimension>) {
-    return this.map.subscribeToMapLoaded(observer);
-  }
 
-  public subscribeToTilesUpdated(observer: Observer<Region>) {
-    return this.map.subscribeToTilesUpdated(observer);
-  }
-
-  // Save canvas context from map.component.ts
-  public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
-    this.canvas = c;
-    this.context = ctx;
-    this.setClickListeners();
-  }
-
-  // Handles clickEvents like clickdrag and panning.
-  private setClickListeners() {
-    let clickPos: Coordinate;
-
-    const placeMapElementAtCursor = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
-        const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
-        this.userService.applySelectedType(
-          (tileType) => this.map.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-          (assetType) => { this.map.placeAsset(1, assetType, x, y, false); this.drawAssets(); },
-        );
-      }
-    };
-
-    // https://stackoverflow.com/a/34030504
-    const pan = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        document.body.style.cursor = 'move';
-        this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
-        this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
-      }
-    };
-
-    // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
-    const removeListeners = () => {
-      document.body.style.cursor = 'auto';
-      this.canvas.removeEventListener('mousemove', placeMapElementAtCursor, false);
-      this.canvas.removeEventListener('mousemove', pan, false);
-    };
-
-    // On mousedown, route to appropriate function (clickdrag or pan)
-    // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
-    // 0 = left click, 1 = middle click, 2 = right click
-    this.canvas.addEventListener('mousedown', (event) => {
-      clickPos = { x: event.offsetX, y: event.offsetY };
-      this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { placeMapElementAtCursor(event); this.canvas.addEventListener('mousemove', placeMapElementAtCursor, false); }
-      if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
-    });
-
-    // On mouseup, remove listeners
-    this.canvas.addEventListener('mouseup', (event) => {
-      removeListeners();
-      this.canvas.removeEventListener('mouseleave', function () { }, false);
-    });
-  }
 
   // TODO: read the .dat files for more information, filter readdir()
   // Finds files in /assets/img/, and replaces .dat with .png.
