@@ -8,7 +8,7 @@ import { UserService } from 'services/user.service';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
   }

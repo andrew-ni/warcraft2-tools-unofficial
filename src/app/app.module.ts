@@ -5,13 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 
 // Services
+import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
-
 
 import { MapComponent } from './map/map.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -41,6 +41,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     FormsModule,
   ],
   providers: [
+    AssetsService,
     CanvasService,
     IOService,
     MapService,

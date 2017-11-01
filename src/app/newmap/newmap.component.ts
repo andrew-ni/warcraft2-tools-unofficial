@@ -15,15 +15,15 @@ export class NewmapComponent implements OnInit {
   constructor(private mapService: MapService) { }
 
   ngOnInit() {
-    this.allPlayerInfo = [{'id': 0, 'gold': 0, 'lumber': 0, 'assets': []},  // set default game assets
-    {'id': 1, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 2, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 3, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 4, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 5, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 6, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 7, 'gold': 0, 'lumber': 0, 'assets': []},
-    {'id': 8, 'gold': 0, 'lumber': 0, 'assets': []}];
+    this.allPlayerInfo = [new Player(0, 0, 0),  // set default game assets
+    new Player(1, 0, 0),
+    new Player(2, 0, 0),
+    new Player(3, 0, 0),
+    new Player(4, 0, 0),
+    new Player(5, 0, 0),
+    new Player(6, 0, 0),
+    new Player(7, 0, 0),
+    new Player(8, 0, 0)];
 
     this.updateNumPlayers(2);
     this.setListeners();

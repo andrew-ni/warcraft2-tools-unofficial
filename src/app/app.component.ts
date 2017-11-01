@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { MapService } from 'services/map.service';
 import { IOService } from 'services/io.service';
+import { AssetsService } from 'services/assets.service';
+
 
 @Component({
   selector: 'app-root',
@@ -11,7 +13,8 @@ export class AppComponent {
   title = 'ECS160 Tools';
 
   constructor(
-    ioService: IOService
-
+    ioService: IOService,
+    mapService: MapService,
+    assetsService: AssetsService,
   ) { }
 }
