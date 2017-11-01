@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
-import { ipcRenderer } from 'electron';
 import { TileType } from '../_classes/tile';
 
 import { MapObject } from 'map';
@@ -15,7 +14,6 @@ export class MapService {
   public map: MapObject;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  private _filePath: string;
   private assetMap: Map<string, HTMLImageElement>;
   private fs;
   private path;
@@ -27,48 +25,6 @@ export class MapService {
     this.path = require('path');
     this.assetMap = new Map<string, HTMLImageElement>();
     this.loadAssets();
-
-    // Event listener for when a map has been loaded from a file.
-    // `mapData` is the raw file contents
-    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
-      this._filePath = filePath;
-      this.map.init(mapData, filePath);
-    });
-
-    // Event listener for saving a map
-    ipcRenderer.on('menu:file:save', (event: Electron.IpcMessageEvent, filePath?: string) => {
-      if (this.map === undefined) {
-        console.log('save-map rejected because Map was not created');
-        return;
-      }
-
-      if (filePath) {
-        this._filePath = filePath;    // update our save location
-      }
-
-      const response: string = this.map.stringify();
-
-      if (response === undefined) {
-        console.warn('save-map rejected because Map returned null');
-        // TODO: add save-failed message
-
-        return; // return without making ipc call
-      }
-
-      console.log('saving...');
-      ipcRenderer.send('map:save', response, this._filePath);
-    });
-
-    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
-      this.map.setTileSet(terrainData);
-      this.drawAssets(); // drawAssets only after terrain is loaded
-    });
-
-    this.subscribeToTilesUpdated({
-      next: reg => this.drawMap(reg),
-      error: err => console.error(err),
-      complete: null
-    });
   }
 
   public subscribeToMapLoaded(observer: Observer<Dimension>) {
