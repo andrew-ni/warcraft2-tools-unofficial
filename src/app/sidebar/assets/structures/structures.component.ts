@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { AssetType } from 'asset';
+import { UserService } from 'services/user.service';
 
 interface StructureButton {
   name: string;
   imgSrc: string;
-  // structure type;
+  structureType: AssetType;
 }
 
 @Component({
@@ -17,14 +19,23 @@ export class StructuresComponent implements OnInit {
     {
       name: 'Townhall',
       imgSrc: './assets/frontend_icons/townhall_icon.png',
+      structureType: AssetType.TownHall,
     },
     {
       name: 'Barracks',
       imgSrc: './assets/frontend_icons/barracks_icon.png',
+      structureType: AssetType.Barracks,
+    },
+    {
+      name: 'GoldMine',
+      imgSrc: './assets/frontend_icons/goldmine_icon.png',
+      structureType: AssetType.GoldMine,
     },
   ];
 
-  constructor() { }
+  constructor(
+    private userService: UserService,
+  ) { }
 
   ngOnInit() {
   }

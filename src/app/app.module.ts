@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 
 // Services
 import { MapService } from 'services/map.service';
+import { AssetsService } from 'services/assets.service';
 import { MapComponent } from './map/map.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
@@ -36,6 +37,7 @@ import { UserService } from 'services/user.service';
   ],
   providers: [
     MapService,
+    AssetsService,
     UserService,
   ],
   bootstrap: [AppComponent]

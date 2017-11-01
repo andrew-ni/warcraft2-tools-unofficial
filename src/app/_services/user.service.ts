@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { TileType } from 'tile';
-import { Unit, Structure } from 'asset';
+import { AssetType } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
 
 // User Service is a repository for user state, all services / components
@@ -9,15 +9,55 @@ import { Dimension } from '../_interfaces/dimension';   // is this the right way
 // service)
 @Injectable()
 export class UserService {
-  public selectedTerrain = TileType.Rock;
-  public selectedUnit: Unit;
-  public selectedStructure: Structure;
+  private _state = State.noSelection;
+  private _selectedTerrain: TileType;
+  private _selectedAsset: AssetType;
+  private _selectedMapElement: TileType | AssetType;
+  private _selectedPlayer: number;
 
-  public newMapName: string;      // used during new map creation (might not be necessary)
-  public newMapDimensions: Dimension;
+  private newMapName: string;      // used during new map creation (might not be necessary)
+  private newMapDimensions: Dimension;
 
   constructor() {
-    // set default unit and structure here
+    // Set default brush to Terrain and use TileType.Rock
+    this.selectedTerrain = TileType.Rock;
   }
 
+  // Classes that inject the User Service call these functions in order to change the current palette.
+  // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
+  get selectMapElement() { return this._selectedMapElement; }
+  get selectedTerrain() { return this._selectedTerrain; }
+  get selectedAsset() { return this._selectedAsset; }
+  get selectedPlayer() { return this._selectedPlayer; }
+
+  set selectedTerrain(tileType) {
+    this._selectedMapElement = this._selectedTerrain = tileType;
+    this._state = State.terrainSelected;
+  }
+
+  set selectedAsset(assetType) {
+    this._selectedMapElement = this._selectedAsset = assetType;
+    this._state = State.assetSelected;
+  }
+
+  set selectedPlayer(id) {
+    this._selectedPlayer = id;
+    console.log('player number = ', id);
+  }
+
+  applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void ) {
+    switch (this._state) {
+      case State.terrainSelected: applyTerrain(this._selectedTerrain); return;
+      case State.assetSelected: applyAsset(this._selectedAsset); return;
+
+      default:
+        break;
+    }
+  }
+}
+
+enum State {
+  noSelection,
+  terrainSelected,
+  assetSelected,
 }

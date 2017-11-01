@@ -1,6 +1,6 @@
 import { TileType, Tile, numToTileType, strToTileType, numToChar, charToTileType, TileTypeChar } from './tile';
 import { Player } from './player';
-import { Asset } from './asset';
+import { Asset, Unit, Structure, AssetType, strToAssetType } from './asset';
 import { Tileset } from './tileset';
 import { Subject, Observer, Observable } from 'rxjs/Rx';
 import { Dimension, Region } from 'interfaces';
@@ -30,6 +30,7 @@ export class MapObject {
   width: number;
   height: number;
   mapLayer1: Tile[][];
+  mapLayer2: Asset[][];
   drawLayer: Tile[][];
   partialBits: Uint8Array[];
   players: Player[] = [];
@@ -52,6 +53,7 @@ export class MapObject {
   public init(mapData: string, filePath = ''): void {
     this.canSave = false;
     this.mapLayer1 = undefined;
+    this.mapLayer2 = undefined;
     this.drawLayer = undefined;
     this.partialBits = undefined;
     this.players = [];
@@ -59,6 +61,7 @@ export class MapObject {
     this.tileSet = undefined;
     this.parseMapData(mapData);
     ipcRenderer.send('terrain:load', this.terrainPath, filePath);
+    // ipcRenderer.send('assets:load', )
   }
 
   public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
@@ -364,6 +367,7 @@ export class MapObject {
     this.partialBits = this.parsePartialBits(partialbits);
     this.assets = this.parseAssets(assets.trim());
     this.players = this.parsePlayers(players.trim(), this.assets);
+    this.initMapLayer2(this.assets);
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.canSave = true;
@@ -427,9 +431,68 @@ export class MapObject {
     for (const line of lines) {
       const [type, owner, x, y] = line.split(' ');
       // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset(parseInt(owner, 10), type, parseInt(x, 10), parseInt(y, 10)));
+      parsedAssets.push(new Asset(parseInt(owner, 10), strToAssetType[type], parseInt(x, 10), parseInt(y, 10)));
     }
 
     return parsedAssets;
+  }
+
+  private initMapLayer2(assets: Asset[]) {
+    this.mapLayer2 = [];
+
+    for (let row = 0; row < this.height; row++) {
+      const colIndex = 0;
+      this.mapLayer2.push([]);
+      this.mapLayer2[row] = new Array(this.width);
+    }
+
+    for (const asset of assets) {
+      this.placeAsset(asset.owner, asset.assetType, asset.x, asset.y, true);
+    }
+
+    console.log(this.mapLayer2);
+  }
+
+  public placeAsset(owner: number, type: AssetType, x: number, y: number, init: boolean = false) {
+    if (y < 0 || x < 0 || y > this.height - 1 || x > this.width - 1) return;
+
+    const asset: Asset = new Asset(owner, type, x, y);
+    // checks if cells are occupied
+    for (let xpos = x; xpos < x + asset.width; xpos++) {
+      for (let ypos = y; ypos < y + asset.height; ypos++) {
+        if (this.mapLayer2[ypos][xpos] !== undefined) { console.log('collision'); return; }
+      }
+    }
+
+    if (!init) {
+      this.assets.push(asset);
+      console.log('pushed');
+    }
+
+    // placeholder for asset depending on its dimensions
+    for (let xpos = x; xpos < x + asset.width; xpos++) {
+      for (let ypos = y; ypos < y + asset.height; ypos++) {
+        this.mapLayer2[ypos][xpos] = new Asset(asset.owner, strToAssetType['Placeholder'], xpos, ypos, asset);
+      }
+    }
+
+    // positional reference point for asset
+    this.mapLayer2[asset.y][asset.x] = asset;
+  }
+
+  private removeAsset(x: number, y: number) {
+    if (this.mapLayer2[y][x] === undefined) {
+      return;
+    }
+
+    const assetToBeRemoved = this.mapLayer2[y][x].referenceAsset;
+
+    this.assets.splice(this.assets.indexOf(assetToBeRemoved), 1);
+
+    for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
+      for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
+        this.mapLayer2[ypos][xpos] = undefined;
+      }
+    }
   }
 }

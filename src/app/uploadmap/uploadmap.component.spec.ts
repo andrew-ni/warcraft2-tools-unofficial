@@ -8,9 +8,9 @@ describe('UploadmapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UploadmapComponent ]
+      declarations: [UploadmapComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
