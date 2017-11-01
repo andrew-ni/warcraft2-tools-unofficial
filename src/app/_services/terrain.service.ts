@@ -5,10 +5,17 @@ import { TileType, TileTypeChar, charToTileType } from 'tile';
 import { MapObject } from 'map';
 import { Tileset } from 'tileset';
 
+interface IMap {
+  width: number;
+  height: number;
+  terrainLayer: TileType[][];
+  tileSet: Tileset;
+}
+
 @Injectable()
 export class TerrainService {
 
-  private map: MapObject;
+  private map: IMap;
 
   constructor(private mapService: MapService) {
     this.map = mapService.map;
