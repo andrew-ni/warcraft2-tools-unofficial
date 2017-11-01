@@ -15,7 +15,7 @@ export class NewmapComponent implements OnInit {
   constructor(private mapService: MapService) { }
 
   ngOnInit() {
-    this.allPlayerInfo = [new Player(0, 0, 0), ,  // set default game assets
+    this.allPlayerInfo = [new Player(0, 0, 0),  // set default game assets
     new Player(1, 0, 0),
     new Player(2, 0, 0),
     new Player(3, 0, 0),
