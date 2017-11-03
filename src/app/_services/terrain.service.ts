@@ -139,11 +139,11 @@ export class TerrainService {
   private transitionTiles(reg: Region): Region {
 
     /**
-     * The top row indicates the current tile type
-     * The left column indicates the new tile type being placed
-     * Within a cell represents the transition sequence
+     * The top row indicates the current tile type.
+     * The left column indicates the new tile type being placed.
+     * Within a cell represents the transition sequence.
      * For example placing a ShallowWater tile (w) in a LightGrass (g) field
-     * would result in a transition w[wd]g
+     * would result in a transition w[wd]g.
      *
      * |   | d   | D    | F     | g    | G     | w    | W     | R    |
      * |---|-----|----- |-------|------|-------|------|-------|------|
