@@ -1,4 +1,4 @@
-import { Menu, dialog } from 'electron';
+import { dialog, Menu } from 'electron';
 import { IO } from './fileIO';
 
 const options = {

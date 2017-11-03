@@ -1,11 +1,25 @@
 import { Injectable } from '@angular/core';
-import { AssetType, strToAssetType } from 'asset';
-import { Region } from 'interfaces';
-import { MapService } from 'services/map.service';
-import { UserService } from 'services/user.service';
-import { TerrainService } from 'services/terrain.service';
-import { AssetsService } from 'services/assets.service';
+import { Subject } from 'rxjs/Rx';
 
+import { Asset, AssetType, strToAssetType } from 'asset';
+import { Dimension, Region } from 'interfaces';
+import { AssetsService } from 'services/assets.service';
+import { MapService } from 'services/map.service';
+import { TerrainService } from 'services/terrain.service';
+import { UserService } from 'services/user.service';
+import { Tile } from 'tile';
+import { Tileset } from 'tileset';
+
+interface IMap {
+  width: number;
+  height: number;
+  assetLayer: Asset[][];
+  drawLayer: Tile[][];
+  assets: Asset[];
+  tileSet: Tileset;
+  mapResized: Subject<Dimension>;
+  tilesUpdated: Subject<Region>;
+}
 
 @Injectable()
 export class CanvasService {
@@ -16,10 +30,10 @@ export class CanvasService {
   private fs;
   private path;
 
-  private map: MapService;
+  private map: IMap;
 
   constructor(
-    private mapService: MapService,
+    mapService: MapService,
     private userService: UserService,
     private terrainService: TerrainService,
     private assetService: AssetsService,
@@ -29,14 +43,14 @@ export class CanvasService {
     this.fs = require('fs');
     this.path = require('path');
 
-    this.mapService.tilesUpdated.subscribe({
+    this.map.tilesUpdated.subscribe({
       next: reg => { this.drawMap(reg); console.log('tilesupdated'); }
       ,
       error: err => console.error(err),
       complete: null
     });
 
-    this.mapService.mapResized.subscribe({
+    this.map.mapResized.subscribe({
       next: dim => {
         if (this.canvas) {
           this.canvas.width = dim.width * 32;

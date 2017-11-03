@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { TileType } from 'tile';
 import { UserService } from 'services/user.service';
+import { TileType } from 'tile';
 
 
 interface TerrainButton {

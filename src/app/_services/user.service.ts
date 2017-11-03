@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
-import { TileType } from 'tile';
 import { AssetType } from 'asset';
-import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
+import { Dimension } from 'interfaces';   // is this the right way to do this
+import { TileType } from 'tile';
+
+enum State {
+  noSelection,
+  terrainSelected,
+  assetSelected,
+}
 
 // User Service is a repository for user state, all services / components
 // that depend on it should read from an injected instance of this service
@@ -56,8 +62,3 @@ export class UserService {
   }
 }
 
-enum State {
-  noSelection,
-  terrainSelected,
-  assetSelected,
-}

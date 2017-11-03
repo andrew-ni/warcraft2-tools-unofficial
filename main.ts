@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
-import { buildMenu } from './main/menubar';
 import { IO } from './main/fileIO';
+import { buildMenu } from './main/menubar';
 
 const url = require('url');
 

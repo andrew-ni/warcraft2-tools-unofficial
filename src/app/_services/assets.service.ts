@@ -1,10 +1,22 @@
 import { Injectable } from '@angular/core';
+
+import { Asset, AssetType, strToAssetType } from 'asset';
+import { Player } from 'player';
 import { MapService } from 'services/map.service';
-import { Asset, AssetType, strToAssetType } from '../_classes/asset';
+import { TileType } from 'tile';
+
+interface IMap {
+  width: number;
+  height: number;
+  terrainLayer: TileType[][];
+  assetLayer: Asset[][];
+  players: Player[];
+  assets: Asset[];
+}
 
 @Injectable()
 export class AssetsService {
-  private map: MapService;
+  private map: IMap;
 
   constructor(
     mapService: MapService,

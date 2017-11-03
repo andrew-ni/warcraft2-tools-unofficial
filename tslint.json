@@ -72,7 +72,7 @@
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
-    "no-unused-variable": true,
+    "no-unused-variable": false,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
@@ -141,6 +141,7 @@
     "directive-class-suffix": true,
     "invoke-injectable": true,
     "prefer-for-of": true,
-    "space-before-function-paren": false
+    "space-before-function-paren": false,
+    "ordered-imports": true
   }
 }

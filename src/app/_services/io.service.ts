@@ -1,21 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
+import { Subject } from 'rxjs/Rx';
+
 import { MapService } from 'services/map.service';
-import { TerrainService } from 'services/terrain.service';
 import { SerializeService } from 'services/serialize.service';
+import { TerrainService } from 'services/terrain.service';
+
+interface IMap {
+  mapLoaded: Subject<void>;
+}
 
 @Injectable()
 export class IOService {
 
   private _mapFilePath: string;
-  private map: MapService;
+  private map: IMap;
 
   constructor(
-    private mapService: MapService,
+    mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
   ) {
-    this.map = this.mapService;
+    this.map = mapService;
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
@@ -25,11 +31,6 @@ export class IOService {
 
     // Event listener for saving a map
     ipcRenderer.on('menu:file:save', (event: Electron.IpcMessageEvent, filePath?: string) => {
-      if (this.map === undefined) {
-        console.log('save-map rejected because Map was not created');
-        return;
-      }
-
       if (filePath) {
         this._mapFilePath = filePath;    // update our save location
       }
@@ -49,7 +50,7 @@ export class IOService {
 
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
       this.serializeService.parseTileSet(terrainData);
-      this.mapService.mapLoaded.next();
+      this.map.mapLoaded.next();
       console.log('terrain loaded');
 
       // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded

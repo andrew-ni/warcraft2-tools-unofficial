@@ -1,4 +1,4 @@
-import { TileType, strToTileType } from 'tile';
+import { strToTileType, TileType } from 'tile';
 
 export class Tileset {
   constructor(datStr: string) {

@@ -1,12 +1,33 @@
-import { Asset, strToAssetType } from 'asset';
 import { Injectable } from '@angular/core';
+import { ipcRenderer } from 'electron';
+import { Subject } from 'rxjs/Rx';
+
+import { Asset, strToAssetType } from 'asset';
+import { Dimension } from 'interfaces';
+import { Player } from 'player';
+import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { TerrainService } from 'services/terrain.service';
-import { AssetsService } from 'services/assets.service';
-import { TileType, charToTileType, Tile, numToChar } from 'tile';
-import { Player } from 'player';
-import { ipcRenderer } from 'electron';
+import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
+
+interface IMap {
+  canSave: boolean;
+  name: string;
+  description: string;
+  width: number;
+  height: number;
+  terrainLayer: TileType[][];
+  assetLayer: Asset[][];
+  drawLayer: Tile[][];
+  partialBits: Uint8Array[];
+  players: Player[];
+  assets: Asset[];
+  mapVersion: string;
+  terrainPath: string;
+  tileSet: Tileset;
+  mapResized: Subject<Dimension>;
+}
 
 @Injectable()
 export class SerializeService {
@@ -24,14 +45,14 @@ export class SerializeService {
   public static readonly DESCRIPTION_HEADER = '# Map Description';
   public static readonly TILESET_HEADER = '# Map Tileset';
 
-  private map: MapService;
+  private map: IMap;
 
   constructor(
-    private mapService: MapService,
+    mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
   ) {
-    this.map = this.mapService;
+    this.map = mapService;
   }
 
   // SAVE FUNCTIONS
@@ -124,7 +145,7 @@ export class SerializeService {
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
-    this.mapService.mapResized.next({ width: this.map.width, height: this.map.height });
+    this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
 
   private parseTerrain(terrainData: string) {

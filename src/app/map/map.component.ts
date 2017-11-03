@@ -1,12 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Rx';
 
-import { MapService } from 'services/map.service';
 import { Coordinate } from 'interfaces';
-import { CanvasService } from 'services/canvas.service';
-import { UserService } from 'services/user.service';
-import { TerrainService } from 'services/terrain.service';
 import { AssetsService } from 'services/assets.service';
+import { CanvasService } from 'services/canvas.service';
+import { TerrainService } from 'services/terrain.service';
+import { UserService } from 'services/user.service';
 
 @Component({
   selector: 'app-map',
@@ -15,23 +14,19 @@ import { AssetsService } from 'services/assets.service';
 })
 export class MapComponent implements OnInit, OnDestroy {
 
-  private map: MapService;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
   mapLoadedSubscription: Subscription;
 
   constructor(
-    private mapService: MapService,
     private canvasService: CanvasService,
     private userService: UserService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
-    this.map = this.mapService;
     this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
 
@@ -53,23 +48,19 @@ export class MapComponent implements OnInit, OnDestroy {
     let clickPos: Coordinate;
 
     const placeMapElementAtCursor = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        const x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
-        const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
-        this.userService.applySelectedType(
-          (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-          (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
-        );
-      }
+      const x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
+      const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+      this.userService.applySelectedType(
+        (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
+        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
+      );
     };
 
     // https://stackoverflow.com/a/34030504
     const pan = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        document.body.style.cursor = 'move';
-        this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
-        this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
-      }
+      document.body.style.cursor = 'move';
+      this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
+      this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
 
     // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
@@ -95,15 +86,5 @@ export class MapComponent implements OnInit, OnDestroy {
       this.canvas.removeEventListener('mouseleave', function() { }, false);
     });
   }
-
-  // // Runs each time the DOM window resize event fires.
-  // // Resets the canvas dimensions to match window,
-  // // then draws the new borders accordingly.
-  // @HostListener('window:resize', ['$event'])
-  // private resizeCanvas() {
-  //   console.log('resize requested');
-  //   this.canvas.width = window.innerWidth;
-  //   this.canvas.height = window.innerHeight;
-  // }
 }
 

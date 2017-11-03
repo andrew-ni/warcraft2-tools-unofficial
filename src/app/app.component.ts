@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { MapService } from 'services/map.service';
-import { IOService } from 'services/io.service';
 import { AssetsService } from 'services/assets.service';
+import { IOService } from 'services/io.service';
+import { MapService } from 'services/map.service';
 
 
 @Component({
