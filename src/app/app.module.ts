@@ -1,26 +1,44 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { TempComponent } from './temp/temp.component';
 
 // Services
 import { MapService } from 'services/map.service';
+import { AssetsService } from 'services/assets.service';
 import { MapComponent } from './map/map.component';
-import { TileComponent } from './map/tile/tile.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { FooterComponent } from './footer/footer.component';
+import { TerrainComponent } from './sidebar/terrain/terrain.component';
+import { UnitsComponent } from './sidebar/assets/units/units.component';
+import { StructuresComponent } from './sidebar/assets/structures/structures.component';
+import { AssetsComponent } from './sidebar/assets/assets.component';
+import { NewmapComponent } from './newmap/newmap.component';
+import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { UserService } from 'services/user.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    TempComponent,
-    TileComponent,
+    SidebarComponent,
+    FooterComponent,
+    TerrainComponent,
+    UnitsComponent,
+    StructuresComponent,
+    AssetsComponent,
+    NewmapComponent,
+    UploadmapComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule,
   ],
   providers: [
     MapService,
+    AssetsService,
+    UserService,
   ],
   bootstrap: [AppComponent]
 })

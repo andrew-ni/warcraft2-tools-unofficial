@@ -1,0 +1,11 @@
+:host {
+    $height: 30px;
+    width: 100%;
+    height: $height;
+    line-height: $height;
+    background: rgb(255, 127, 127);
+    font-size: 18px;
+    text-align: right;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
