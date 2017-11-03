@@ -9,10 +9,11 @@ enum State {
   assetSelected,
 }
 
-// User Service is a repository for user state, all services / components
-// that depend on it should read from an injected instance of this service
-// if it needs user state (ex: MapService map edits depends on user selected
-// service)
+/**
+ * User Service is a repository for user state, all services / components
+ * that depend on it should read from an injected instance of this service
+ * if it needs user state (ex: MapService map edits depends on user selected service).
+ */
 @Injectable()
 export class UserService {
   /** Either noSelection, terrainSelected, assetSelected */
@@ -45,14 +46,14 @@ export class UserService {
    * Classes that inject UserService call these getters in order to change the current palette
    * In [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
    */
-  get selectMapElement() { return this._selectedMapElement; }
+  get selectedMapElement() { return this._selectedMapElement; }
   get selectedTerrain() { return this._selectedTerrain; }
   get selectedAsset() { return this._selectedAsset; }
   get selectedPlayer() { return this._selectedPlayer; }
 
   /**
-   * @param tileType tileType to change state to
    * On terrain select, change _selectedMapElement, _selectedTerrain, and _state
+   * @param tileType tileType to change state to
    */
   set selectedTerrain(tileType) {
     this._selectedMapElement = this._selectedTerrain = tileType;
@@ -60,8 +61,8 @@ export class UserService {
   }
 
   /**
-   * @param assetType assetType to change state to
    * On asset select, change _selectedMapElement, _selectedAsset, and _state
+   * @param assetType assetType to change state to
    */
   set selectedAsset(assetType) {
     this._selectedMapElement = this._selectedAsset = assetType;
@@ -69,8 +70,8 @@ export class UserService {
   }
 
   /**
-   * @param id id to change _selectedPlayer to
    * On changing player selection, change_selectedPlayer
+   * @param id id to change _selectedPlayer to
    */
   set selectedPlayer(id) {
     this._selectedPlayer = id;
@@ -78,9 +79,10 @@ export class UserService {
   }
 
   /**
-   * @param applyTerrain
-   * @param applyAsset
-   * Not quite sure what this function does. Will ask Ben
+   * Will call one of the given callbacks based on whether terrain or asset is
+   * selected in the sidebar.
+   * @param applyTerrain A callback that takes the selected tileType. Called if a Tile is the active selection.
+   * @param applyAsset A callback that takes the selected AssetType. Called if an Asset is the active selection.
    */
   applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void) {
     switch (this._state) {

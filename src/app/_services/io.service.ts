@@ -60,8 +60,6 @@ export class IOService {
       this.serializeService.parseTileSet(terrainData);
       this.map.mapLoaded.next();
       console.log('terrain loaded');
-
-      // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded
     });
   }
 }
