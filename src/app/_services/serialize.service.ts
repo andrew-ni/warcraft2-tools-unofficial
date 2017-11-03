@@ -1,28 +1,96 @@
-import {Asset, strToAssetType} from 'asset';
+import { Asset, strToAssetType } from 'asset';
 import { Injectable } from '@angular/core';
 import { MapService } from 'services/map.service';
 import { TerrainService } from 'services/terrain.service';
 import { AssetsService } from 'services/assets.service';
-import { MapObject } from 'map';
-import {TileType, charToTileType, Tile} from 'tile';
+import { TileType, charToTileType, Tile, numToChar } from 'tile';
 import { Player } from 'player';
 import { ipcRenderer } from 'electron';
 import { Tileset } from 'tileset';
 
 @Injectable()
 export class SerializeService {
+  // Headers are for stringify(), which needs them to output map comments
+  public static readonly NAME_HEADER = '# Map Name';
+  public static readonly DIMENSION_HEADER = '# Map Dimensions W x H';
+  public static readonly TERRAIN_HEADER = '# Map Terrain Data';
+  public static readonly PARTIAL_BITS_HEADER = '# Map Partial Bits';
+  public static readonly PLAYER_NUM_HEADER = '# Number of players';
+  public static readonly PLAYER_RESOURCES_HEADER = '# Starting resources Player Gold Lumber';
+  public static readonly ASSET_NUM_HEADER = '# Number of assets';
+  public static readonly ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
+  public static readonly AI_NUM_HEADER = '# Number of scripts';
+  public static readonly AI_SCRIPTS_HEADER = '# AI Scripts';
+  public static readonly DESCRIPTION_HEADER = '# Map Description';
+  public static readonly TILESET_HEADER = '# Map Tileset';
 
-  private map: MapObject;
+  private map: MapService;
 
   constructor(
     private mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
   ) {
-    this.map = this.mapService.map;
+    this.map = this.mapService;
   }
 
-    // PARSE FUNCTIONS
+  // SAVE FUNCTIONS
+
+  public serializeMap(): string {
+    // convert the contents of this Map to a string which can be written as configuration
+    if (!this.map.canSave) {
+      return undefined;    // return undefined to indicate we could not generate a string, thus not calling the save file IO ipc call
+    }
+
+    const lines: string[] = [];
+
+    lines.push(this.map.mapVersion);
+    lines.push(SerializeService.NAME_HEADER);
+    lines.push(this.map.name);
+    lines.push(SerializeService.DIMENSION_HEADER);
+    lines.push(this.map.width + ' ' + this.map.height);
+    lines.push(SerializeService.DESCRIPTION_HEADER);
+    lines.push(this.map.description);
+    lines.push(SerializeService.TILESET_HEADER);
+    lines.push(this.map.terrainPath);
+    lines.push(SerializeService.TERRAIN_HEADER);
+    for (const yList of this.map.terrainLayer) {
+      let line = '';
+      for (const tile of yList) {
+        line += numToChar[tile];  // write out all tile types
+      }
+      lines.push(line);
+    }
+
+    lines.push(SerializeService.PARTIAL_BITS_HEADER);
+    for (const row of this.map.partialBits) {
+      let line = '';
+      for (const bit of row) {
+        line += bit.toString(16).toUpperCase();  // write out all bits
+      }
+      lines.push(line);
+    }
+
+    lines.push(SerializeService.PLAYER_NUM_HEADER);
+    lines.push(String(this.map.players.length - 1));    // convert player[] length to string
+
+    lines.push(SerializeService.PLAYER_RESOURCES_HEADER);
+    for (const player of this.map.players) {
+      lines.push(player.id + ' ' + player.gold + ' ' + player.lumber);
+    }
+
+    lines.push(SerializeService.ASSET_NUM_HEADER);
+    lines.push(String(this.map.assets.length));
+
+    lines.push(SerializeService.ASSET_DETAIL_HEADER);
+    for (const asset of this.map.assets) {
+      lines.push(asset.type + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
+    }
+
+    return lines.join('\n');  // join all lines with newline
+  }
+
+  // PARSE FUNCTIONS
   // TODO: implement exception throwing in order to detect parse failure
 
   public initMapFromFile(mapData: string, filePath = ''): void {
@@ -144,7 +212,7 @@ export class SerializeService {
     this.map.assetLayer = assetLayer;   // copy in the newly initialized asset layer
 
     for (const asset of assets) {
-      this.map.placeAsset(asset.owner, asset.assetType, asset.x, asset.y, true);
+      this.assetsService.placeAsset(asset.owner, asset.assetType, asset.x, asset.y, true);
     }
 
     // console.log(assetLayer);

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
 import { MapService } from 'services/map.service';
-import { MapObject } from 'map';
 import { TerrainService } from 'services/terrain.service';
 import { SerializeService } from 'services/serialize.service';
 
@@ -9,14 +8,14 @@ import { SerializeService } from 'services/serialize.service';
 export class IOService {
 
   private _mapFilePath: string;
-  private map: MapObject;
+  private map: MapService;
 
   constructor(
     private mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
   ) {
-    this.map = this.mapService.map;
+    this.map = this.mapService;
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
@@ -35,7 +34,7 @@ export class IOService {
         this._mapFilePath = filePath;    // update our save location
       }
 
-      const response: string = this.map.stringify();
+      const response: string = this.serializeService.serializeMap();
 
       if (response === undefined) {
         console.warn('save-map rejected because Map returned null');
@@ -55,8 +54,5 @@ export class IOService {
 
       // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded
     });
-
-
    }
-
 }

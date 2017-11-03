@@ -4,9 +4,9 @@ import { Observer, Subscription } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { Dimension, Coordinate } from 'interfaces';
 import { CanvasService } from 'services/canvas.service';
-import { MapObject } from 'map';
 import { UserService } from 'services/user.service';
 import { TerrainService } from 'services/terrain.service';
+import { AssetsService } from 'services/assets.service';
 
 @Component({
   selector: 'app-map',
@@ -15,11 +15,9 @@ import { TerrainService } from 'services/terrain.service';
 })
 export class MapComponent implements OnInit, OnDestroy {
 
-  private map: MapObject;
+  private map: MapService;
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-
-
 
   mapLoadedSubscription: Subscription;
 
@@ -28,11 +26,12 @@ export class MapComponent implements OnInit, OnDestroy {
     private canvasService: CanvasService,
     private userService: UserService,
     private terrainService: TerrainService,
+    private assetsService: AssetsService,
   ) {
   }
 
   ngOnInit() {
-    this.map = this.mapService.map;
+    this.map = this.mapService;
     this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
 
@@ -59,7 +58,7 @@ export class MapComponent implements OnInit, OnDestroy {
         const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         this.userService.applySelectedType(
           (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-          (assetType) => { this.map.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
+          (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
         );
       }
     };

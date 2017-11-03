@@ -3,7 +3,6 @@ import { AssetType, strToAssetType } from 'asset';
 import { readdir } from 'fs';
 import { Coordinate, Region } from 'interfaces';
 import { MapService } from 'services/map.service';
-import { MapObject } from 'map';
 import { UserService } from 'services/user.service';
 import { TerrainService } from 'services/terrain.service';
 import { AssetsService } from 'services/assets.service';
@@ -18,7 +17,7 @@ export class CanvasService {
   private fs;
   private path;
 
-  private map: MapObject;
+  private map: MapService;
 
   constructor(
     private mapService: MapService,
@@ -26,7 +25,7 @@ export class CanvasService {
     private terrainService: TerrainService,
     private assetService: AssetsService,
   ) {
-    this.map = mapService.map;
+    this.map = mapService;
     // Load assets before, and independently of map:loaded.
     this.fs = require('fs');
     this.path = require('path');

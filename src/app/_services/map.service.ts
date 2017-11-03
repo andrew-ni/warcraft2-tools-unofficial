@@ -1,35 +1,36 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
-import { TileType } from '../_classes/tile';
+import { TileType, Tile } from '../_classes/tile';
 
-import { MapObject } from 'map';
 import { Dimension, Region, Coordinate } from 'interfaces';
 import { UserService } from 'services/user.service';
-import { PlayerColor, numToColor } from 'player';
-import { AssetType, strToAssetType } from 'asset';
+import { PlayerColor, numToColor, Player } from 'player';
+import { AssetType, strToAssetType, Asset } from 'asset';
+import { Tileset } from 'tileset';
 
 @Injectable()
 export class MapService {
-  public map: MapObject;
+  public canSave = false; // save state is not ready yet
+  public name: string;
+  public description: string;
+  public width: number;
+  public height: number;
+  public terrainLayer: TileType[][];
+  public assetLayer: Asset[][];
+  public drawLayer: Tile[][];
+  public partialBits: Uint8Array[];
+  public players: Player[] = [];
+  public assets: Asset[] = [];
+  public mapVersion: string;
+  public terrainPath: string;
+  public tileSet: Tileset;
 
 
   // Events
   public mapResized = new Subject<Dimension>();
-  public mapLoaded = new Subject();
+  public mapLoaded = new Subject<void>();
   public tilesUpdated = new Subject<Region>();
 
   constructor(private userService: UserService) {
-    this.map = new MapObject();
   }
-
-  // public subscribeToMapLoaded(observer: Observer<Dimension>) {
-  //   return this._mapLoaded.subscribe(observer);
-  // }
-
-  // public subscribeToTilesUpdated(observer: Observer<Region>) {
-  //   return this._tilesUpdated.subscribe(observer);
-  // }
-
-
-
 }

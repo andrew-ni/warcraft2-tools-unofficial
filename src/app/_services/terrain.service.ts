@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { MapService } from 'services/map.service';
-import { Region } from 'interfaces';
-import { TileType, TileTypeChar, charToTileType } from 'tile';
-import { MapObject } from 'map';
+import { Region, Dimension } from 'interfaces';
+import { TileType, TileTypeChar, charToTileType, Tile } from 'tile';
 import { Tileset } from 'tileset';
+import { Subject } from 'rxjs/Rx';
 
 interface IMap {
   width: number;
   height: number;
   terrainLayer: TileType[][];
+  drawLayer: Tile[][];
+  partialBits: Uint8Array[];
   tileSet: Tileset;
+  tilesUpdated: Subject<Region>;
+  mapLoaded: Subject<void>;
 }
 
 @Injectable()
@@ -18,9 +22,9 @@ export class TerrainService {
   private map: IMap;
 
   constructor(private mapService: MapService) {
-    this.map = mapService.map;
+    this.map = mapService;
 
-    this.mapService.mapLoaded.subscribe({
+    this.map.mapLoaded.subscribe({
       next: () => this.calcIndices(),
       error: err => console.error(err),
     });
@@ -37,24 +41,24 @@ export class TerrainService {
       }
     }
 
-    this.mapService.tilesUpdated.next(reg);
+    this.map.tilesUpdated.next(reg);
   }
 
   // calcTiles() calculates tile orientation based on surrounding tiles
   // This is the function that writes the proper index into the tiles
   private calcIndex(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.mapService.map.height - 1 || x > this.mapService.map.width - 1) return;
+    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
 
-    const UL = this.mapService.map.terrainLayer[y][x];
-    const UR = this.mapService.map.terrainLayer[y][x + 1];
-    const LL = this.mapService.map.terrainLayer[y + 1][x];
-    const LR = this.mapService.map.terrainLayer[y + 1][x + 1];
-    const tile = this.mapService.map.drawLayer[y][x];
+    const UL = this.map.terrainLayer[y][x];
+    const UR = this.map.terrainLayer[y][x + 1];
+    const LL = this.map.terrainLayer[y + 1][x];
+    const LR = this.map.terrainLayer[y + 1][x + 1];
+    const tile = this.map.drawLayer[y][x];
 
-    let typeIndex = (((this.mapService.map.partialBits[y][x] & 0x8) >> 3) |
-      ((this.mapService.map.partialBits[y][x + 1] & 0x4) >> 1) |
-      ((this.mapService.map.partialBits[y + 1][x] & 0x2) << 1) |
-      ((this.mapService.map.partialBits[y + 1][x + 1] & 0x1) << 3));
+    let typeIndex = (((this.map.partialBits[y][x] & 0x8) >> 3) |
+      ((this.map.partialBits[y][x + 1] & 0x4) >> 1) |
+      ((this.map.partialBits[y + 1][x] & 0x2) << 1) |
+      ((this.map.partialBits[y + 1][x + 1] & 0x1) << 3));
 
     if ((TileType.DarkGrass === UL) || (TileType.DarkGrass === UR) || (TileType.DarkGrass === LL) || (TileType.DarkGrass === LR)) {
       typeIndex &= (TileType.DarkGrass === UL) ? 0xF : 0xE;
@@ -62,28 +66,28 @@ export class TerrainService {
       typeIndex &= (TileType.DarkGrass === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DarkGrass === LR) ? 0xF : 0x7;
       tile.tileType = TileType.DarkGrass;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.DarkDirt === UL) || (TileType.DarkDirt === UR) || (TileType.DarkDirt === LL) || (TileType.DarkDirt === LR)) {
       typeIndex &= (TileType.DarkDirt === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.DarkDirt === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.DarkDirt === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DarkDirt === LR) ? 0xF : 0x7;
       tile.tileType = TileType.DarkDirt;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.DeepWater === UL) || (TileType.DeepWater === UR) || (TileType.DeepWater === LL) || (TileType.DeepWater === LR)) {
       typeIndex &= (TileType.DeepWater === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.DeepWater === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.DeepWater === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.DeepWater === LR) ? 0xF : 0x7;
       tile.tileType = TileType.DeepWater;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.ShallowWater === UL) || (TileType.ShallowWater === UR) || (TileType.ShallowWater === LL) || (TileType.ShallowWater === LR)) {
       typeIndex &= (TileType.ShallowWater === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.ShallowWater === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.ShallowWater === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.ShallowWater === LR) ? 0xF : 0x7;
       tile.tileType = TileType.ShallowWater;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.Rock === UL) || (TileType.Rock === UR) || (TileType.Rock === LL) || (TileType.Rock === LR)) {
       typeIndex &= (TileType.Rock === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.Rock === UR) ? 0xF : 0xD;
@@ -91,7 +95,7 @@ export class TerrainService {
       typeIndex &= (TileType.Rock === LR) ? 0xF : 0x7;
       tile.tileType = TileType.Rock;
       // tile.tileType = typeIndex ? TileType.Rock : TileType.Rubble;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.Forest === UL) || (TileType.Forest === UR) || (TileType.Forest === LL) || (TileType.Forest === LR)) {
       typeIndex &= (TileType.Forest === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.Forest === UR) ? 0xF : 0xD;
@@ -99,20 +103,20 @@ export class TerrainService {
       typeIndex &= (TileType.Forest === LR) ? 0xF : 0x7;
       if (typeIndex) {
         // tile.tileType = TileType.Forest;
-        tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+        tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
       } else {
         // tile.tileType = TileType.Stump;
         // tile.index = ((TileType.Forest === UL) ? 0x1 : 0x0) | ((TileType.Forest === UR) ? 0x2 : 0x0) | ((TileType.Forest == LL) ? 0x4 : 0x0) | ((TileType.Forest == LR) ? 0x8 : 0x0);
       }
       tile.tileType = TileType.Forest;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else if ((TileType.LightDirt === UL) || (TileType.LightDirt === UR) || (TileType.LightDirt === LL) || (TileType.LightDirt === LR)) {
       typeIndex &= (TileType.LightDirt === UL) ? 0xF : 0xE;
       typeIndex &= (TileType.LightDirt === UR) ? 0xF : 0xD;
       typeIndex &= (TileType.LightDirt === LL) ? 0xF : 0xB;
       typeIndex &= (TileType.LightDirt === LR) ? 0xF : 0x7;
       tile.tileType = TileType.LightDirt;
-      tile.index = this.mapService.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
+      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
     } else {
       tile.tileType = TileType.LightGrass;
       tile.index = 0xF;
@@ -132,7 +136,7 @@ export class TerrainService {
 
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
-        this.mapService.map.terrainLayer[ypos][xpos] = tileType;   // set tiletype
+        this.map.terrainLayer[ypos][xpos] = tileType;   // set tiletype
       }
     }
 
