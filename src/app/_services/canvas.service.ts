@@ -32,8 +32,21 @@ export class CanvasService {
     this.path = require('path');
 
     this.mapService.tilesUpdated.subscribe({
-      next: reg => this.drawMap(reg),
+      next: reg => {this.drawMap(reg); console.log('tilesupdated'); }
+      ,
       error: err => console.error(err),
+      complete: null
+    });
+
+    this.mapService.mapResized.subscribe({
+      next: dim => {
+        if (this.canvas) {
+          this.canvas.width = dim.width * 32;
+          this.canvas.height = dim.height * 32;
+          console.log('Canvas Resized', dim.width, dim.height);
+        }
+      },
+      error: error => console.error(error),
       complete: null
     });
 

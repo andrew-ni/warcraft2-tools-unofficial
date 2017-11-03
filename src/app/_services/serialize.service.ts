@@ -4,7 +4,7 @@ import { MapService } from 'services/map.service';
 import { TerrainService } from 'services/terrain.service';
 import { AssetsService } from 'services/assets.service';
 import { MapObject } from 'map';
-import {TileType, charToTileType} from 'tile';
+import {TileType, charToTileType, Tile} from 'tile';
 import { Player } from 'player';
 import { ipcRenderer } from 'electron';
 import { Tileset } from 'tileset';
@@ -35,6 +35,8 @@ export class SerializeService {
     this.map.assets = [];
     this.map.tileSet = undefined;
     this.parseMapData(mapData);
+    console.log('initmMap');
+
     ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
     // ipcRenderer.send('assets:load', )
   }
@@ -54,21 +56,21 @@ export class SerializeService {
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
-    this.mapService.mapLoaded.next({ width: this.map.width, height: this.map.height });
+    this.mapService.mapResized.next({ width: this.map.width, height: this.map.height });
   }
 
   private parseTerrain(terrainData: string) {
     const terrain: TileType[][] = [];
-    // this.drawLayer = [];
+    this.map.drawLayer = [];
     const rows = terrainData.trim().split(/\r?\n/);
 
     for (const [index, row] of rows.entries()) {
       terrain.push([]);
-      // this.drawLayer.push([]);
+      this.map.drawLayer.push([]);
 
       for (const tileLetter of row.split('')) {
         terrain[index].push(charToTileType[tileLetter]);
-        // this.drawLayer[index].push(new Tile(0));
+        this.map.drawLayer[index].push(new Tile(0));
       }
     }
 

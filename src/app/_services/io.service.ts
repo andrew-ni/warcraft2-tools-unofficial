@@ -50,6 +50,9 @@ export class IOService {
 
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
       this.serializeService.parseTileSet(terrainData);
+      this.mapService.mapLoaded.next();
+      console.log('terrain loaded');
+
       // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded
     });
 

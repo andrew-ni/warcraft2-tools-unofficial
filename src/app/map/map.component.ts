@@ -19,15 +19,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
-  onMapLoaded: Observer<Dimension> = {
-    next: dim => {
-      this.canvas.width = dim.width * 32;
-      this.canvas.height = dim.height * 32;
-      console.log('Canvas Resized', dim.width, dim.height);
-    },
-    error: error => console.error(error),
-    complete: null
-  };
+
 
   mapLoadedSubscription: Subscription;
 
@@ -47,7 +39,6 @@ export class MapComponent implements OnInit, OnDestroy {
     // Draw canvas for the first time.
     // this.canvas.width = window.innerWidth;
     // this.canvas.height = window.innerHeight;
-    this.mapLoadedSubscription = this.mapService.mapLoaded.subscribe(this.onMapLoaded);
 
     // Pass canvas to map service for drawing
     this.canvasService.setCanvas(this.canvas, this.context);

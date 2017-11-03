@@ -19,6 +19,11 @@ export class TerrainService {
 
   constructor(private mapService: MapService) {
     this.map = mapService.map;
+
+    this.mapService.mapLoaded.subscribe({
+      next: () => this.calcIndices(),
+      error: err => console.error(err),
+    });
   }
 
   // by default, calculates indices for whole map

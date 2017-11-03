@@ -14,7 +14,8 @@ export class MapService {
 
 
   // Events
-  public mapLoaded = new Subject<Dimension>();
+  public mapResized = new Subject<Dimension>();
+  public mapLoaded = new Subject();
   public tilesUpdated = new Subject<Region>();
 
   constructor(private userService: UserService) {
