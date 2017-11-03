@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Region } from 'interfaces';
 import { Subject } from 'rxjs/Rx';
+
+import { Coordinate, Region } from 'interfaces';
 import { MapService } from 'services/map.service';
 import { charToTileType, Tile, TileType, TileTypeChar } from 'tile';
 import { Tileset } from 'tileset';
@@ -18,47 +19,59 @@ interface IMap {
 
 @Injectable()
 export class TerrainService {
-
   private map: IMap;
 
-  constructor(private mapService: MapService) {
+  constructor(
+    mapService: MapService
+  ) {
     this.map = mapService;
 
     this.map.mapLoaded.subscribe({
-      next: () => this.calcIndices(),
+      next: () => this.calcTileIndices(),
       error: err => console.error(err),
     });
   }
 
-  // by default, calculates indices for whole map
-  private calcIndices(reg: Region = { y: 0, x: 0, height: this.map.height, width: this.map.width }) {
+  /**
+   * Calculates the tile indices within `drawLayer` for the given region based on adjacent tiles.
+   * @param reg The region of the map that needs the tile indices recalculated (defaults to whole map)
+   * @fires tilesUpdated With the modified region.
+   */
+  private calcTileIndices(reg: Region = { y: 0, x: 0, height: this.map.height, width: this.map.width }) {
     // Need to additionally calculate one row above and one column to the left of changed tiles
     reg.y--; reg.x--; reg.height++; reg.width++;
 
-    for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
-      for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
-        this.calcIndex(ypos, xpos);
+    for (let _y = reg.y; _y < reg.y + reg.height; _y++) {
+      for (let _x = reg.x; _x < reg.x + reg.width; _x++) {
+        this.calcTileIndex({ x: _x, y: _y });
       }
     }
 
     this.map.tilesUpdated.next(reg);
   }
 
-  // calcTiles() calculates tile orientation based on surrounding tiles
-  // This is the function that writes the proper index into the tiles
-  private calcIndex(y = 0, x = 0): void {
-    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
+  /**
+   * Calculates the tile index based on the adjacent tiles.
+   * Does not fire tilesUpdated event.
+   * Do not call this function directly.
+   * @param pos The x, y coordinate of the tile.
+   * @throws RangeError if the coordinate given is out of bounds of the map.
+   */
+  private calcTileIndex(pos: Coordinate): void {
+    if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) {
+      throw RangeError('calcTileIndex OutofBounds');
+    }
 
-    const UL = this.map.terrainLayer[y][x];
-    const UR = this.map.terrainLayer[y][x + 1];
-    const LL = this.map.terrainLayer[y + 1][x];
-    const LR = this.map.terrainLayer[y + 1][x + 1];
-    const tile = this.map.drawLayer[y][x];
+    const UL = this.map.terrainLayer[pos.y][pos.x];
+    const UR = this.map.terrainLayer[pos.y][pos.x + 1];
+    const LL = this.map.terrainLayer[pos.y + 1][pos.x];
+    const LR = this.map.terrainLayer[pos.y + 1][pos.x + 1];
+    const tile = this.map.drawLayer[pos.y][pos.x];
 
-    let typeIndex = (((this.map.partialBits[y][x] & 0x8) >> 3) |
-      ((this.map.partialBits[y][x + 1] & 0x4) >> 1) |
-      ((this.map.partialBits[y + 1][x] & 0x2) << 1) |
-      ((this.map.partialBits[y + 1][x + 1] & 0x1) << 3));
+    let typeIndex = (((this.map.partialBits[pos.y][pos.x] & 0x8) >> 3) |
+      ((this.map.partialBits[pos.y][pos.x + 1] & 0x4) >> 1) |
+      ((this.map.partialBits[pos.y + 1][pos.x] & 0x2) << 1) |
+      ((this.map.partialBits[pos.y + 1][pos.x + 1] & 0x1) << 3));
 
     if ((TileType.DarkGrass === UL) || (TileType.DarkGrass === UR) || (TileType.DarkGrass === LL) || (TileType.DarkGrass === LR)) {
       typeIndex &= (TileType.DarkGrass === UL) ? 0xF : 0xE;
@@ -123,12 +136,14 @@ export class TerrainService {
     }
   }
 
-  // updateTiles() is the public function to call when applying a brush to the map (edit operation)
-  // updateTiles will:
-  // 1. update the "brushed" reg with the selected tile type (bringing the map to an invalid state, with invalid transitions)
-  // 2. transition the tiles that were affected (bringing map to a valid state)
-  // 3. call calcTiles() on the affected region
-  // 4. emit the affected region so that mapService can redraw
+  /**
+   * Applies the given tile type to the given region.
+   * Calculates the transitions needed between the new tiles and the existing tiles.
+   * Recalculates the tiles indices.
+   * @param tileType The tile type being applied.
+   * @param reg The region to apply the tile type.
+   * @fires tilesUpdated With the modified region.
+   */
   public updateTiles(tileType: TileType, reg: Region) {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
     reg.width++;
@@ -136,36 +151,41 @@ export class TerrainService {
 
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
-        this.map.terrainLayer[ypos][xpos] = tileType;   // set tiletype
+        this.map.terrainLayer[ypos][xpos] = tileType;
       }
     }
 
-    const newArea = this.transitionTiles(tileType, reg);
-    this.calcIndices(newArea);    // NOTE: might need to change this if we need to print that extra border
+    const newArea = this.transitionTiles(reg);
+    this.calcTileIndices(newArea);
   }
 
-  // transitionTiles() transitions affected tiles (passed in) based on surrounding tiles
-  private transitionTiles(tileType: TileType, reg: Region): Region {
+  /**
+   * Applies a transition between newly placed tiles and existing tiles.
+   * Assumes the given region consists of all the same tile type
+   * Read wiki for more info on transitions:
+   * https://github.com/UCDClassNitta/ECS160Tools/wiki/Tile-Transitions
+   * @param reg The region of tiles that had their types changed.
+   */
+  private transitionTiles(reg: Region): Region {
 
-    // The top row indicates the current tile type
-    // The left column indicates the new tile type being placed
-    // Within a cell represents the transition sequence
-    // For example placing a ShallowWater tile (w) in a LightGrass field
-    // would result in a transition w[wd]g
-    // Read wiki for more info on transitions:
-    // https://github.com/UCDClassNitta/ECS160Tools/wiki/Tile-Transitions
-    /*
-    |   | d   | D    | F     | g    | G     | w    | W     | R    |
-    |---|-----|----- |-------|------|-------|------|-------|------|
-    | d | []  | []   | [g]   | []   | [g]   | []   | [w]   | []   |
-    | D | []  | []   | [dg]  | [d]  | [dg]  | [d]  | [dw]  | [d]  |
-    | F | [g] | [gd] | []    | []   | [g]   | [gd] | [gdw] | [gd] |
-    | g | []  | [d]  | []    | []   | []    | [d]  | [dw]  | [d]  |
-    | G | [g] | [gd] | [g]   | []   | []    | [gd] | [gdw] | [gd] |
-    | w | []  | [d]  | [dg]  | [d]  | [dg]  | []   | []    | [d]  |
-    | W | [w] | [wd] | [wdg] | [wd] | [wdg] | []   | []    | [wd] |
-    | R | []  | [d]  | [dg]  | [d]  | [dg]  | [d]  | [dw]  | []   |
-    */
+    /**
+     * The top row indicates the current tile type
+     * The left column indicates the new tile type being placed
+     * Within a cell represents the transition sequence
+     * For example placing a ShallowWater tile (w) in a LightGrass (g) field
+     * would result in a transition w[wd]g
+     *
+     * |   | d   | D    | F     | g    | G     | w    | W     | R    |
+     * |---|-----|----- |-------|------|-------|------|-------|------|
+     * | d | []  | []   | [g]   | []   | [g]   | []   | [w]   | []   |
+     * | D | []  | []   | [dg]  | [d]  | [dg]  | [d]  | [dw]  | [d]  |
+     * | F | [g] | [gd] | []    | []   | [g]   | [gd] | [gdw] | [gd] |
+     * | g | []  | [d]  | []    | []   | []    | [d]  | [dw]  | [d]  |
+     * | G | [g] | [gd] | [g]   | []   | []    | [gd] | [gdw] | [gd] |
+     * | w | []  | [d]  | [dg]  | [d]  | [dg]  | []   | []    | [d]  |
+     * | W | [w] | [wd] | [wdg] | [wd] | [wdg] | []   | []    | [wd] |
+     * | R | []  | [d]  | [dg]  | [d]  | [dg]  | [d]  | [dw]  | []   |
+     */
     const transitionTable: TileTypeChar[/*newTile*/][/*currentTile*/][/*iteration*/] =
       [
         [[], [], ['g'], [], ['g'], [], ['w'], []],
@@ -178,29 +198,38 @@ export class TerrainService {
         [[], ['d'], ['d', 'g'], ['d'], ['d', 'g'], ['d'], ['d', 'w'], []],
       ];
 
+    const tileType = this.map.terrainLayer[reg.y][reg.x];
+
     for (let iteration = 0; iteration < 3 /*max*/; iteration++) {
       let changed = false;
 
-      const applyTileTransition = (_x: number, _y: number) => {
-        if (_y < 0 || _x < 0 || _y > this.map.height || _x > this.map.width) {
-          return;
-        }
+      /**
+       * Applies the tile transition for a single tile by performing a look up in the transitionTable.
+       * @param pos The coordinates of the tile to apply the transition to.
+       */
+      const applyTileTransition = (pos: Coordinate) => {
+        if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height || pos.x > this.map.width) return;
 
-        const currentType = this.map.terrainLayer[_y][_x];
+        const currentType = this.map.terrainLayer[pos.y][pos.x];
         const tileChar = transitionTable[tileType][currentType][iteration];
         if (tileChar) {
-          this.map.terrainLayer[_y][_x] = charToTileType[tileChar];
+          this.map.terrainLayer[pos.y][pos.x] = charToTileType[tileChar];
           changed = true;
         }
       };
 
+      /**
+       * Applies tiles transition along an edge
+       * @param length The length of the edge.
+       * @param fx A function that takes values [0, length) and maps them to x coordinates.
+       * @param fy A function that takes values [0, length) and maps them to y coordinates.
+       */
       const transitionEdge = (length: number, fx: (n: number) => number, fy: (n: number) => number) => {
         for (let n = 0; n < length; n++) {
-          applyTileTransition(fx(n) + reg.x, fy(n) + reg.y);
+          applyTileTransition({ x: fx(n) + reg.x, y: fy(n) + reg.y });
         }
       };
 
-      // TODO: bound checking
       transitionEdge(reg.width + 1, (_x) => _x, () => -1); // Top
       transitionEdge(reg.height + 1, () => reg.width, (_y) => _y); // Right
       transitionEdge(reg.width + 1, (_x) => reg.width - _x - 1, () => reg.height); // Bottom
@@ -212,5 +241,4 @@ export class TerrainService {
 
     return reg;
   }
-
 }
