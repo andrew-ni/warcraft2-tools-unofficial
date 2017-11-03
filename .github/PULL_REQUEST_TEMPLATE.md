@@ -6,13 +6,14 @@ Requirements before creating a Pull Request:
 
 Closes #
 
-##### Additions
+##### Additions:
 - 
 
-##### Changes
+##### Changes:
 - 
 
-##### Removals
+##### Removals:
 - 
 
+##### Description:
 
