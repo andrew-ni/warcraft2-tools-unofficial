@@ -7,6 +7,7 @@ import { MapObject } from 'map';
 import {TileType, charToTileType} from 'tile';
 import { Player } from 'player';
 import { ipcRenderer } from 'electron';
+import { Tileset } from 'tileset';
 
 @Injectable()
 export class SerializeService {
@@ -17,8 +18,7 @@ export class SerializeService {
     private mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
-  )
-  {
+  ) {
     this.map = this.mapService.map;
   }
 
@@ -118,6 +118,16 @@ export class SerializeService {
     }
 
     return parsedAssets;
+  }
+
+  /**
+   * Sets the tile set, firest first draw event
+   * @param terrainData Terrain.dat contents (or specified custom tileset)
+   */
+  public parseTileSet(terrainData: string): void {
+    this.map.tileSet = new Tileset(terrainData);
+    // TODO: fire event to start first draw (calc indices, draw onto scren)
+    // also draw assets after
   }
 
   private initAssetLayer(assets: Asset[]) {

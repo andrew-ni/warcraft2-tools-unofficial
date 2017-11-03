@@ -204,8 +204,4 @@ export class TerrainService {
     return reg;
   }
 
-  public setTileSet(terrainData: string): void {
-    this.map.tileSet = new Tileset(terrainData);
-    this.calcIndices();
-  }
 }

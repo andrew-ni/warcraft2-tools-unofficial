@@ -19,28 +19,16 @@ export class MapService {
 
   constructor(private userService: UserService) {
     this.map = new MapObject();
-
-    this.loadAssets();
   }
 
+  // public subscribeToMapLoaded(observer: Observer<Dimension>) {
+  //   return this._mapLoaded.subscribe(observer);
+  // }
+
+  // public subscribeToTilesUpdated(observer: Observer<Region>) {
+  //   return this._tilesUpdated.subscribe(observer);
+  // }
 
 
-  // TODO: read the .dat files for more information, filter readdir()
-  // Finds files in /assets/img/, and replaces .dat with .png.
-  // Creates Image() for each then inserts <string, image> into assetMap.
-  private loadAssets() {
-    const myPath = './src/assets/img/';
-    const myFiles = this.fs.readdirSync(myPath);
 
-    for (const i in myFiles) {
-      if (this.path.extname(myFiles[i]) === '.dat') {
-        const temp = String(myFiles[i]);
-        const temp2 = temp.substring(0, temp.length - 4);
-
-        const tempImage = new Image();
-        tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(strToAssetType[temp2], tempImage);
-      }
-    }
-  }
 }

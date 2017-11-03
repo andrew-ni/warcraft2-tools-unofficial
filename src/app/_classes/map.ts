@@ -78,13 +78,7 @@ export class MapObject {
   //   this._mapLoaded.next({ width: this.width, height: this.height });
   // }
 
-  // public subscribeToMapLoaded(observer: Observer<Dimension>) {
-  //   return this._mapLoaded.subscribe(observer);
-  // }
 
-  // public subscribeToTilesUpdated(observer: Observer<Region>) {
-  //   return this._tilesUpdated.subscribe(observer);
-  // }
 
 
 

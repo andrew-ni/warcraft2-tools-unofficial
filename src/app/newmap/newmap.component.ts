@@ -49,7 +49,7 @@ export class NewmapComponent implements OnInit {
     const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value);
     const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value);
 
-    this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
+    // this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
   private updateNumPlayers(num: number): void {

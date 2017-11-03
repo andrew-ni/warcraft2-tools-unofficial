@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import { MapService } from 'services/map.service';
 import { MapObject } from 'map';
 import { TerrainService } from 'services/terrain.service';
+import { SerializeService } from 'services/serialize.service';
 
 @Injectable()
 export class IOService {
@@ -13,14 +14,14 @@ export class IOService {
   constructor(
     private mapService: MapService,
     private terrainService: TerrainService,
-  )
-  {
+    private serializeService: SerializeService,
+  ) {
     this.map = this.mapService.map;
     // Event listener for when a map has been loaded from a file.
     // `mapData` is the raw file contents
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
       this._mapFilePath = filePath;
-      this.map.init(mapData, filePath);
+      this.serializeService.initMapFromFile(mapData, filePath);
     });
 
     // Event listener for saving a map
@@ -48,15 +49,11 @@ export class IOService {
     });
 
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
-      this.map.setTileSet(terrainData);
-      this.mapService.drawAssets(); // drawAssets only after terrain is loaded
+      this.serializeService.parseTileSet(terrainData);
+      // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded
     });
 
-    this.mapService.subscribeToTilesUpdated({
-      next: reg => this.mapService.drawMap(reg),
-      error: err => console.error(err),
-      complete: null
-    });
+
    }
 
 }
