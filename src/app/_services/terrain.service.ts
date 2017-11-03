@@ -38,102 +38,72 @@ export class TerrainService {
    * @fires tilesUpdated With the modified region.
    */
   private calcTileIndices(reg: Region = { y: 0, x: 0, height: this.map.height, width: this.map.width }) {
-    // Need to additionally calculate one row above and one column to the left of changed tiles
+
+    /**
+     * Calculates the tile index and type based on the adjacent tiles.
+     * @param pos The x, y coordinate of the tile.
+     */
+    const calcTileIndex = (pos: Coordinate) => {
+      if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) return;
+
+      const UL = this.map.terrainLayer[pos.y][pos.x];
+      const UR = this.map.terrainLayer[pos.y][pos.x + 1];
+      const LL = this.map.terrainLayer[pos.y + 1][pos.x];
+      const LR = this.map.terrainLayer[pos.y + 1][pos.x + 1];
+      const tile = this.map.drawLayer[pos.y][pos.x];
+
+      let typeIndex = (((this.map.partialBits[pos.y][pos.x] & 0x8) >> 3) |
+        ((this.map.partialBits[pos.y][pos.x + 1] & 0x4) >> 1) |
+        ((this.map.partialBits[pos.y + 1][pos.x] & 0x2) << 1) |
+        ((this.map.partialBits[pos.y + 1][pos.x + 1] & 0x1) << 3));
+
+      /**
+       * Does some bitshift math to calculate the proper tile index.
+       * @param tt The tile type to check for.
+       */
+      const calculateIndex = (tt: TileType) => {
+        typeIndex &= (tt === UL) ? 0xF : 0xE;
+        typeIndex &= (tt === UR) ? 0xF : 0xD;
+        typeIndex &= (tt === LL) ? 0xF : 0xB;
+        typeIndex &= (tt === LR) ? 0xF : 0x7;
+        return this.map.tileSet.getIndex(tt, typeIndex, 0 /*alt*/);
+      };
+
+      /**
+       * Checks if the tile type matches any in a 2x2 box.
+       * If so then the tile type is applied to the tile at `pos` and the index is calculated.
+       * @param tt The tile type to check for.
+       */
+      const CheckTileAndApplyTypeAndIndex = (tt: TileType) => {
+        if (tt === UL || tt === UR || tt === LL || tt === LR) {
+          tile.tileType = tt;
+          tile.index = calculateIndex(tile.tileType);
+          return true;
+        } else return false;
+      };
+
+      if (CheckTileAndApplyTypeAndIndex(TileType.DarkGrass)) return;
+      if (CheckTileAndApplyTypeAndIndex(TileType.DarkDirt)) return;
+      if (CheckTileAndApplyTypeAndIndex(TileType.DeepWater)) return;
+      if (CheckTileAndApplyTypeAndIndex(TileType.ShallowWater)) return;
+      if (CheckTileAndApplyTypeAndIndex(TileType.Rock)) return; // TODO: Rubble?
+      if (CheckTileAndApplyTypeAndIndex(TileType.Forest)) return; // TODO: Stump?
+      if (CheckTileAndApplyTypeAndIndex(TileType.LightDirt)) return;
+
+      tile.tileType = TileType.LightGrass;
+      tile.index = 0xF;
+    };
+
+    // Need to additionally calculate one row above and one column to the left of changed tiles.
     reg.y--; reg.x--; reg.height++; reg.width++;
 
     for (let _y = reg.y; _y < reg.y + reg.height; _y++) {
       for (let _x = reg.x; _x < reg.x + reg.width; _x++) {
-        this.calcTileIndex({ x: _x, y: _y });
+        calcTileIndex({ x: _x, y: _y });
       }
     }
 
     this.map.tilesUpdated.next(reg);
-  }
-
-  /**
-   * Calculates the tile index based on the adjacent tiles.
-   * Does not fire tilesUpdated event.
-   * Do not call this function directly.
-   * @param pos The x, y coordinate of the tile.
-   * @throws RangeError if the coordinate given is out of bounds of the map.
-   */
-  private calcTileIndex(pos: Coordinate): void {
-    if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) {
-      throw RangeError('calcTileIndex OutofBounds');
-    }
-
-    const UL = this.map.terrainLayer[pos.y][pos.x];
-    const UR = this.map.terrainLayer[pos.y][pos.x + 1];
-    const LL = this.map.terrainLayer[pos.y + 1][pos.x];
-    const LR = this.map.terrainLayer[pos.y + 1][pos.x + 1];
-    const tile = this.map.drawLayer[pos.y][pos.x];
-
-    let typeIndex = (((this.map.partialBits[pos.y][pos.x] & 0x8) >> 3) |
-      ((this.map.partialBits[pos.y][pos.x + 1] & 0x4) >> 1) |
-      ((this.map.partialBits[pos.y + 1][pos.x] & 0x2) << 1) |
-      ((this.map.partialBits[pos.y + 1][pos.x + 1] & 0x1) << 3));
-
-    if ((TileType.DarkGrass === UL) || (TileType.DarkGrass === UR) || (TileType.DarkGrass === LL) || (TileType.DarkGrass === LR)) {
-      typeIndex &= (TileType.DarkGrass === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.DarkGrass === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.DarkGrass === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.DarkGrass === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.DarkGrass;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.DarkDirt === UL) || (TileType.DarkDirt === UR) || (TileType.DarkDirt === LL) || (TileType.DarkDirt === LR)) {
-      typeIndex &= (TileType.DarkDirt === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.DarkDirt === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.DarkDirt === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.DarkDirt === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.DarkDirt;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.DeepWater === UL) || (TileType.DeepWater === UR) || (TileType.DeepWater === LL) || (TileType.DeepWater === LR)) {
-      typeIndex &= (TileType.DeepWater === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.DeepWater === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.DeepWater === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.DeepWater === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.DeepWater;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.ShallowWater === UL) || (TileType.ShallowWater === UR) || (TileType.ShallowWater === LL) || (TileType.ShallowWater === LR)) {
-      typeIndex &= (TileType.ShallowWater === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.ShallowWater === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.ShallowWater === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.ShallowWater === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.ShallowWater;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.Rock === UL) || (TileType.Rock === UR) || (TileType.Rock === LL) || (TileType.Rock === LR)) {
-      typeIndex &= (TileType.Rock === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.Rock === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.Rock === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.Rock === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.Rock;
-      // tile.tileType = typeIndex ? TileType.Rock : TileType.Rubble;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.Forest === UL) || (TileType.Forest === UR) || (TileType.Forest === LL) || (TileType.Forest === LR)) {
-      typeIndex &= (TileType.Forest === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.Forest === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.Forest === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.Forest === LR) ? 0xF : 0x7;
-      if (typeIndex) {
-        // tile.tileType = TileType.Forest;
-        tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-      } else {
-        // tile.tileType = TileType.Stump;
-        // tile.index = ((TileType.Forest === UL) ? 0x1 : 0x0) | ((TileType.Forest === UR) ? 0x2 : 0x0) | ((TileType.Forest == LL) ? 0x4 : 0x0) | ((TileType.Forest == LR) ? 0x8 : 0x0);
-      }
-      tile.tileType = TileType.Forest;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else if ((TileType.LightDirt === UL) || (TileType.LightDirt === UR) || (TileType.LightDirt === LL) || (TileType.LightDirt === LR)) {
-      typeIndex &= (TileType.LightDirt === UL) ? 0xF : 0xE;
-      typeIndex &= (TileType.LightDirt === UR) ? 0xF : 0xD;
-      typeIndex &= (TileType.LightDirt === LL) ? 0xF : 0xB;
-      typeIndex &= (TileType.LightDirt === LR) ? 0xF : 0x7;
-      tile.tileType = TileType.LightDirt;
-      tile.index = this.map.tileSet.getIndex(tile.tileType, typeIndex, 0); // TODO  alt
-    } else {
-      tile.tileType = TileType.LightGrass;
-      tile.index = 0xF;
-    }
   }
 
   /**
