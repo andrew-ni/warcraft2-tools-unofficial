@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapService } from 'services/map.service';
 import { Player } from 'player';
-import { TileType } from 'tile';
 
 @Component({
   selector: 'app-newmap',
@@ -29,7 +28,7 @@ export class NewmapComponent implements OnInit {
     this.setListeners();
   }
 
-  fun_close(){
+  fun_close() {
     document.getElementById('newMapModal').setAttribute('style', 'display: none;');
   }
 

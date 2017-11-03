@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AssetType, strToAssetType } from 'asset';
-import { readdir } from 'fs';
-import { Coordinate, Region } from 'interfaces';
+import { Region } from 'interfaces';
 import { MapService } from 'services/map.service';
 import { UserService } from 'services/user.service';
 import { TerrainService } from 'services/terrain.service';
@@ -31,7 +30,7 @@ export class CanvasService {
     this.path = require('path');
 
     this.mapService.tilesUpdated.subscribe({
-      next: reg => {this.drawMap(reg); console.log('tilesupdated'); }
+      next: reg => { this.drawMap(reg); console.log('tilesupdated'); }
       ,
       error: err => console.error(err),
       complete: null

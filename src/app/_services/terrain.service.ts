@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MapService } from 'services/map.service';
-import { Region, Dimension } from 'interfaces';
+import { Region } from 'interfaces';
 import { TileType, TileTypeChar, charToTileType, Tile } from 'tile';
 import { Tileset } from 'tileset';
 import { Subject } from 'rxjs/Rx';

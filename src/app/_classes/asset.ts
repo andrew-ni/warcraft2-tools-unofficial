@@ -1,4 +1,3 @@
-import { PlayerColor, numToColor } from 'player';
 
 export enum AssetType {
   Archer,

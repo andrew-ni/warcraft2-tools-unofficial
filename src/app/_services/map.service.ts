@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
+import { Subject } from 'rxjs/Rx';
 import { TileType, Tile } from '../_classes/tile';
 
-import { Dimension, Region, Coordinate } from 'interfaces';
+import { Dimension, Region } from 'interfaces';
 import { UserService } from 'services/user.service';
-import { PlayerColor, numToColor, Player } from 'player';
-import { AssetType, strToAssetType, Asset } from 'asset';
+import { Player } from 'player';
+import { Asset } from 'asset';
 import { Tileset } from 'tileset';
 
 @Injectable()

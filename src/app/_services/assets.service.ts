@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MapService } from 'services/map.service';
-import {Asset, AssetType, strToAssetType} from '../_classes/asset';
+import { Asset, AssetType, strToAssetType } from '../_classes/asset';
 
 @Injectable()
 export class AssetsService {

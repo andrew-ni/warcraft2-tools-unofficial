@@ -54,5 +54,5 @@ export class IOService {
 
       // this.canvasService.drawAssets(); // drawAssets only after terrain is loaded
     });
-   }
+  }
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
-import { Observer, Subscription } from 'rxjs/Rx';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Rx';
 
 import { MapService } from 'services/map.service';
-import { Dimension, Coordinate } from 'interfaces';
+import { Coordinate } from 'interfaces';
 import { CanvasService } from 'services/canvas.service';
 import { UserService } from 'services/user.service';
 import { TerrainService } from 'services/terrain.service';
@@ -48,8 +48,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.mapLoadedSubscription.unsubscribe();
   }
 
-   // Handles clickEvents like clickdrag and panning.
-   private setClickListeners() {
+  // Handles clickEvents like clickdrag and panning.
+  private setClickListeners() {
     let clickPos: Coordinate;
 
     const placeMapElementAtCursor = (event: MouseEvent) => {
@@ -92,7 +92,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // On mouseup, remove listeners
     this.canvas.addEventListener('mouseup', (event) => {
       removeListeners();
-      this.canvas.removeEventListener('mouseleave', function () { }, false);
+      this.canvas.removeEventListener('mouseleave', function() { }, false);
     });
   }
 

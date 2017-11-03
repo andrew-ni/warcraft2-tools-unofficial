@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TileType } from 'tile';
 import { AssetType } from 'asset';
 import { Dimension } from '../_interfaces/dimension';   // is this the right way to do this
@@ -45,7 +45,7 @@ export class UserService {
     console.log('player number = ', id);
   }
 
-  applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void ) {
+  applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void) {
     switch (this._state) {
       case State.terrainSelected: applyTerrain(this._selectedTerrain); return;
       case State.assetSelected: applyAsset(this._selectedAsset); return;
