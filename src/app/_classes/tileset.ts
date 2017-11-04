@@ -30,7 +30,6 @@ export class Tileset {
         // ERROR
       }
     }
-    console.log(this.tileset);
   }
 
   getIndex(tileType: TileType, partialIndex: number, alt: number) {

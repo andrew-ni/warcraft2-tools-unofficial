@@ -59,7 +59,7 @@ export class IOService {
     ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
       this.serializeService.parseTileSet(terrainData);
       this.map.mapLoaded.next();
-      console.log('terrain loaded');
     });
+
   }
 }
