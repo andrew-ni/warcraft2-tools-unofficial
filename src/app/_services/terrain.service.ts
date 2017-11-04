@@ -26,7 +26,7 @@ export class TerrainService {
   ) {
     this.map = mapService;
 
-    this.map.mapLoaded.subscribe({
+    this.map.mapLoaded.do(() => console.log('mapLoaded:Terrain')).subscribe({
       next: () => this.calcTileIndices(),
       error: err => console.error(err),
     });

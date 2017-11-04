@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { ipcRenderer } from 'electron';
+import { readdir } from 'fs';
+import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType } from 'asset';
@@ -49,16 +52,6 @@ export class CanvasService {
   private assetMap = new Map<AssetType, HTMLImageElement>();
 
   /**
-   * For accessing assets and mapping file contents
-   */
-  private fs;
-
-  /**
-   * Asset location
-   */
-  private path;
-
-  /**
    * Map to be read from
    */
   private map: IMap;
@@ -72,14 +65,25 @@ export class CanvasService {
     private assetsService: AssetsService,
   ) {
     this.map = mapService;
-    // Load assets before, and independently of map:loaded.
-    this.fs = require('fs');
-    this.path = require('path');
+  }
 
-    this.map.tilesUpdated.subscribe({
+  private async init() {
+    this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
+      next: dim => {
+        if (this.canvas) {
+          this.canvas.width = dim.width * 32;
+          this.canvas.height = dim.height * 32;
+        }
+      },
+      error: error => console.error(error),
+      complete: null
+    });
+
+    await this.loadDoseDatFiles();
+
+    this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: reg => {
-        this.drawMap(reg);
-        console.log('tilesupdated');
+        this.drawMap(reg)
         this.drawAssets();
         this.assetsService.removeInvalidAsset(reg);
       },
@@ -87,19 +91,7 @@ export class CanvasService {
       complete: null
     });
 
-    this.map.mapResized.subscribe({
-      next: dim => {
-        if (this.canvas) {
-          this.canvas.width = dim.width * 32;
-          this.canvas.height = dim.height * 32;
-          console.log('Canvas Resized', dim.width, dim.height);
-        }
-      },
-      error: error => console.error(error),
-      complete: null
-    });
-
-    this.loadDoseDatFiles();
+    ipcRenderer.send('map:load', './src/assets/map/bay.map');
   }
 
   /**
@@ -110,6 +102,7 @@ export class CanvasService {
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
+    this.init();
   }
 
 
@@ -119,19 +112,28 @@ export class CanvasService {
    * Images for them and creates a mapping in assetMap
    */
   private loadDoseDatFiles() {
-    const myPath = './src/assets/img/';
-    const myFiles = this.fs.readdirSync(myPath);
+    const loadImage = async (name: string) => {
+      const tempImage = new Image();
+      const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
+        tempImage.onload = () => resolve(tempImage);
+      });
+      tempImage.src = 'assets/img/' + name + '.png';
+      return imageLoaded;
+    };
 
-    for (const i in myFiles) {
-      if (this.path.extname(myFiles[i]) === '.dat') {
-        const temp = String(myFiles[i]);
-        const temp2 = temp.substring(0, temp.length - 4);
+    return new Promise<void>((resolve, reject) => {
+      readdir('./src/assets/img/', async (err, fileNames) => {
+        if (err) return reject(err);
 
-        const tempImage = new Image();
-        tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(AssetType[temp2], tempImage);
-      }
-    }
+        for (const fileName of fileNames) {
+          const { name, ext } = parse(fileName);
+          if (/\.dat/i.test(ext)) {
+            this.assetMap.set(AssetType[name], await loadImage(name));
+          }
+        }
+        resolve();
+      });
+    });
   }
 
 
