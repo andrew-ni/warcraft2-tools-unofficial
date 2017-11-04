@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Asset, AssetType, strToAssetType } from 'asset';
+import { Asset, AssetType } from 'asset';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
 import { TileType } from 'tile';
@@ -44,7 +44,7 @@ export class AssetsService {
     // placeholder for asset depending on its dimensions
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
-        this.map.assetLayer[ypos][xpos] = new Asset(asset.owner, strToAssetType['Placeholder'], xpos, ypos, asset);
+        this.map.assetLayer[ypos][xpos] = asset;
       }
     }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, numToString, strToAssetType } from 'asset';
+import { Asset, AssetType } from 'asset';
 import { Dimension } from 'interfaces';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
@@ -105,7 +105,7 @@ export class SerializeService {
 
     lines.push(SerializeService.ASSET_DETAIL_HEADER);
     for (const asset of this.map.assets) {
-      lines.push(asset.type + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
+      lines.push(AssetType[asset.type] + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
     }
 
     return lines.join('\n');  // join all lines with newline
@@ -205,7 +205,7 @@ export class SerializeService {
     for (const line of lines) {
       const [type, owner, x, y] = line.split(' ');
       // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset(parseInt(owner, 10), strToAssetType[type], parseInt(x, 10), parseInt(y, 10)));
+      parsedAssets.push(new Asset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10)));
     }
     return parsedAssets;
   }
@@ -232,7 +232,7 @@ export class SerializeService {
     this.map.assetLayer = assetLayer;   // copy in the newly initialized asset layer
 
     for (const asset of assets) {
-      this.assetsService.placeAsset(asset.owner, asset.assetType, asset.x, asset.y, true);
+      this.assetsService.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
     }
 
     // console.log(assetLayer);

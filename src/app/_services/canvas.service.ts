@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType, strToAssetType } from 'asset';
+import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -86,7 +86,7 @@ export class CanvasService {
 
         const tempImage = new Image();
         tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(strToAssetType[temp2], tempImage);
+        this.assetMap.set(AssetType[temp2], tempImage);
       }
     }
   }
@@ -109,7 +109,7 @@ export class CanvasService {
   // Draws Assets layer using Assets[] array from map.ts
   public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
     for (const asset of this.map.assets) {
-      const img = this.assetMap.get(asset.assetType);
+      const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
   }
