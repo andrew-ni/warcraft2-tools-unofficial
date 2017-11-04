@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, strToAssetType } from 'asset';
+import { Asset, numToString, strToAssetType } from 'asset';
 import { Dimension } from 'interfaces';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
@@ -207,7 +207,6 @@ export class SerializeService {
       // .map format is type owner x y, whereas asset construction is owner type x y
       parsedAssets.push(new Asset(parseInt(owner, 10), strToAssetType[type], parseInt(x, 10), parseInt(y, 10)));
     }
-
     return parsedAssets;
   }
 

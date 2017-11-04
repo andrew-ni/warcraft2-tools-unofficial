@@ -83,6 +83,28 @@ strToAssetType['Wall'] = AssetType.Wall;
 strToAssetType['Placeholder'] = AssetType.Placeholder;
 strToAssetType['Terrain'] = AssetType.Terrain;
 
+export type AssetTypeString = 'Archer' | 'Barracks' | 'Blacksmith' | 'CannonTower' | 'Castle' | 'Farm' | 'Footman' | 'GoldMine'|'GuardTower'|'Keep'|'LumberMill'|'Peasant'|'Ranger'|'ScoutTower'|'TownHall'|'Placeholder'|'Wall'|'Terrain';
+
+export const numToString: AssetTypeString[] = [];
+numToString[AssetType.Archer] = 'Archer';
+numToString[AssetType.Footman] = 'Footman';
+numToString[AssetType.Peasant] = 'Peasant';
+numToString[AssetType.Ranger] = 'Ranger';
+numToString[AssetType.Barracks] = 'Barracks';
+numToString[AssetType.Blacksmith] = 'Blacksmith';
+numToString[AssetType.CannonTower] = 'CannonTower';
+numToString[AssetType.Castle] = 'Castle';
+numToString[AssetType.Farm] = 'Farm';
+numToString[AssetType.GoldMine] = 'GoldMine';
+numToString[AssetType.GuardTower] = 'GuardTower';
+numToString[AssetType.Keep] = 'Keep';
+numToString[AssetType.LumberMill] = 'LumberMill';
+numToString[AssetType.ScoutTower] = 'ScoutTower';
+numToString[AssetType.TownHall] = 'TownHall';
+numToString[AssetType.Wall] = 'Wall';
+numToString[AssetType.Placeholder] = 'Placeholder';
+numToString[AssetType.Terrain] = 'Terrain';
+
 export class Asset {
   owner: number;
   type: string;
@@ -101,6 +123,7 @@ export class Asset {
     this.y = y;
     this.height = dimensionMap.get(type);
     this.width = dimensionMap.get(type);
+    this.type = numToString[type];
   }
 }
 

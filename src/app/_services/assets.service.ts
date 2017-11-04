@@ -32,6 +32,7 @@ export class AssetsService {
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
+        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass){console.log('terraincollision'); }
       }
     }
 
