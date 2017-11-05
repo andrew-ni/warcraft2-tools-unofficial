@@ -18,6 +18,7 @@ export enum AssetType {
   Wall,
   Placeholder,
   Terrain,
+  Colors,
 }
 
 // export enum UnitType {

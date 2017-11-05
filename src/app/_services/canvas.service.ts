@@ -5,7 +5,7 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType } from 'asset';
-import { Dimension, Region } from 'interfaces';
+import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { Tile } from 'tile';
@@ -50,6 +50,7 @@ export class CanvasService {
    * Map of assets to their image elements
    */
   private assetMap = new Map<AssetType, HTMLImageElement>();
+  private assetMap2 = new Map<AssetType, ImageBitmap[]>();
 
   /**
    * Map to be read from
@@ -68,6 +69,9 @@ export class CanvasService {
   }
 
   private async init() {
+    await this.loadDoseDatFiles();
+    await this.recolorAssets();
+
     this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
         if (this.canvas) {
@@ -79,8 +83,6 @@ export class CanvasService {
       complete: null
     });
 
-    await this.loadDoseDatFiles();
-
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: reg => {
         this.drawMap(reg)
@@ -91,6 +93,7 @@ export class CanvasService {
       complete: null
     });
 
+    // TEMP for convenience
     ipcRenderer.send('map:load', './src/assets/map/bay.map');
   }
 
@@ -178,6 +181,79 @@ export class CanvasService {
       this.context.drawImage(image, 17, 13, 50, 50, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, 50, 50);
     } else {
       this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
+    }
+  }
+
+  private async recolorAssets() {
+    const [r, g, b, a] = [0, 1, 2, 4];
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    const tempColors = this.assetMap.get(AssetType.Colors);
+    canvas.width = tempColors.width; canvas.height = tempColors.height;
+    context.drawImage(tempColors, 0, 0);
+    const colors = context.getImageData(0, 0, 4, 8);
+
+    const getPixel = (image: ImageData, pos: Coordinate) => {
+      return new Uint8ClampedArray(image.data.buffer, pos.y * image.width * 4 + pos.x * 4, 4);
+    };
+
+    const testAndReplacePixel = (test: Uint8ClampedArray, src: Uint8ClampedArray, dest: Uint8ClampedArray) => {
+      if (test[r] === dest[r] && test[g] === dest[g] && test[b] === dest[b]) {
+        dest[r] = src[r]; dest[g] = src[g]; dest[b] = src[b];
+      }
+    };
+
+    const recolorToPlayer = (image: ImageData, owner: number) => {
+      for (let shade = 0; shade < colors.width; shade++) {
+        const testPx = getPixel(colors, { x: shade, y: 0 });
+        const srcPx = getPixel(colors, { x: shade, y: owner });
+
+        for (let y = 0; y < image.height; y++) {
+          for (let x = 0; x < image.width; x++) {
+            const destPx = getPixel(image, { x, y });
+            testAndReplacePixel(testPx, srcPx, destPx);
+          }
+        }
+      }
+    };
+
+    const recolorAsset = async (assetType: AssetType) => {
+      const htmlImage = this.assetMap.get(assetType);
+      canvas.width = htmlImage.width; canvas.height = htmlImage.height;
+      context.clearRect(0, 0, htmlImage.width, htmlImage.height);
+      context.drawImage(htmlImage, 0, 0);
+      let image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
+      this.assetMap2.set(assetType, []);
+      this.assetMap2.get(assetType).push(await createImageBitmap(image));
+
+      for (let owner = 1; owner < 8; owner++) {
+        image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
+        recolorToPlayer(image, owner);
+        this.assetMap2.get(assetType).push(await createImageBitmap(image));
+      }
+    };
+
+    const assetsToRecolor = [
+      // AssetType.Archer,
+      AssetType.Footman,
+      // AssetType.Peasant,
+      // AssetType.Ranger,
+      AssetType.Barracks,
+      AssetType.Blacksmith,
+      // AssetType.Farm,
+      AssetType.CannonTower,
+      AssetType.Castle,
+      AssetType.GuardTower,
+      AssetType.Keep,
+      AssetType.LumberMill,
+      AssetType.ScoutTower,
+      AssetType.TownHall,
+    ];
+
+    for (const assetType of assetsToRecolor) {
+      await recolorAsset(assetType);
     }
   }
 }
