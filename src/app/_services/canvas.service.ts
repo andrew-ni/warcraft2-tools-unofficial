@@ -44,7 +44,7 @@ export class CanvasService {
     this.path = require('path');
 
     this.map.tilesUpdated.subscribe({
-      next: reg => { this.drawMap(reg); console.log('tilesupdated'); }
+      next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.drawAssets(); }
       ,
       error: err => console.error(err),
       complete: null
@@ -106,15 +106,23 @@ export class CanvasService {
     }
   }
 
+  // TODO: Accept Regions / individual assets to redraw
   // Draws Assets layer using Assets[] array from map.ts
-  public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
+  public drawAssets(): void {
     for (const asset of this.map.assets) {
       const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
   }
 
-  // PARMS: image (assetMap.get(imgName), width (use image.width), y, x (in 32x32 pixels), index (position on spritesheet)
+  /**
+   * Used to draw terrain, units, and assets onto the canvas.
+   * @param image Image stored in assetMap. Access with assetMap.get(imgName)
+   * @param width Use image.width.
+   * @param y Y coordinate to draw on canvas.
+   * @param x X coordinate to draw on canvas.
+   * @param index Position in the spritesheet. Starts at 0.
+   */
   private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
     this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
   }
