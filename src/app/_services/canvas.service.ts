@@ -44,7 +44,7 @@ export class CanvasService {
     this.path = require('path');
 
     this.map.tilesUpdated.subscribe({
-      next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.drawAssets(); }
+       next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.assetService.removeAsset(reg); this.drawAssets();}
       ,
       error: err => console.error(err),
       complete: null
