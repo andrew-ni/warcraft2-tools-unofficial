@@ -166,6 +166,30 @@ export class CanvasService {
       const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
+
+
+    // TEMP. Proof of concept
+    const assetsToRecolor = [
+      // AssetType.Archer,
+      AssetType.Footman,
+      // AssetType.Peasant,
+      // AssetType.Ranger,
+      AssetType.Barracks,
+      AssetType.Blacksmith,
+      // AssetType.Farm,
+      AssetType.CannonTower,
+      AssetType.Castle,
+      AssetType.GuardTower,
+      AssetType.Keep,
+      AssetType.LumberMill,
+      AssetType.ScoutTower,
+      AssetType.TownHall,
+    ];
+    let drawX = 0;
+    assetsToRecolor.forEach(type => {
+      this.context.drawImage(this.assetMap2.get(type)[(drawX / 128) % 8], drawX + 32, 32);
+      drawX += 128;
+    });
   }
 
   /**
