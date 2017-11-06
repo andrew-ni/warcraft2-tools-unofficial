@@ -11,6 +11,9 @@ import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
+/**
+ * Narrow IMap interface to discourage access of unrelated attributes
+ */
 interface IMap {
   canSave: boolean;
   name: string;
@@ -29,9 +32,14 @@ interface IMap {
   mapResized: Subject<Dimension>;
 }
 
+/**
+ * SerializeService is the service that manages transformation of MapService
+ * as well as reading it from a map data string. It does not intercept / send
+ * IO commands, rather it is only responsible for serializing and deserializing
+ * the MapService.
+ */
 @Injectable()
 export class SerializeService {
-  // Headers are for stringify(), which needs them to output map comments
   public static readonly NAME_HEADER = '# Map Name';
   public static readonly DIMENSION_HEADER = '# Map Dimensions W x H';
   public static readonly TERRAIN_HEADER = '# Map Terrain Data';
@@ -57,6 +65,10 @@ export class SerializeService {
 
   // SAVE FUNCTIONS
 
+  /**
+   * Converts the contents of MapService to a string that can be re-read and
+   * loaded by initMapFromFile()
+   */
   public serializeMap(): string {
     // convert the contents of this Map to a string which can be written as configuration
     if (!this.map.canSave) {
@@ -114,6 +126,12 @@ export class SerializeService {
   // PARSE FUNCTIONS
   // TODO: implement exception throwing in order to detect parse failure
 
+  /**
+   * Initializes a map from save file. Resets all mapService attributes and
+   * calls parseMapData(). Compatible with output from serializeMap()
+   * @param mapData Entire file contents in string form
+   * @param filePath Map file path (for locality)
+   */
   public initMapFromFile(mapData: string, filePath = ''): void {
     this.map.canSave = false;
     this.map.terrainLayer = undefined;
@@ -124,12 +142,16 @@ export class SerializeService {
     this.map.assets = [];
     this.map.tileSet = undefined;
     this.parseMapData(mapData);
-    console.log('initmMap');
+    console.log('init Map');
 
     ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
     // ipcRenderer.send('assets:load', )
   }
 
+  /**
+   * Parse a map file contents
+   * @param mapData Map file contents
+   */
   private parseMapData(mapData: string): void {
     const [mapVersion, name, dimension, mapDescription, terrainPath, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
     this.map.mapVersion = mapVersion.trim();
@@ -148,6 +170,9 @@ export class SerializeService {
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
 
+  /**
+   * @param terrainData string containing entire terrain grid from file
+   */
   private parseTerrain(terrainData: string) {
     const terrain: TileType[][] = [];
     this.map.drawLayer = [];
@@ -166,6 +191,9 @@ export class SerializeService {
     return terrain;
   }
 
+  /**
+   * @param partialbitsData string containing partial bits grid from file
+   */
   private parsePartialBits(partialbitsData: string) {
     const partialbits: Uint8Array[] = [];
     const rows = partialbitsData.trim().split(/\r?\n/);
@@ -177,6 +205,10 @@ export class SerializeService {
     return partialbits;
   }
 
+  /**
+   * @param playersData string containing list of player information
+   * @param assets Assets[] array containing assets belonging to players
+   */
   private parsePlayers(playersData: string, assets: Asset[]): Player[] {
     const players: Player[] = [];
     const lines = playersData.split(/\r?\n/);
@@ -198,6 +230,9 @@ export class SerializeService {
     return players;
   }
 
+  /**
+   * @param assetsData string containing list of assets
+   */
   private parseAssets(assetsData: string): Asset[] {
     const parsedAssets: Asset[] = [];
     const lines = assetsData.split(/\r?\n/);
@@ -220,6 +255,11 @@ export class SerializeService {
     // also draw assets after
   }
 
+  /**
+   * Iterates through Asset array and informs assetsService to build the
+   * collision map.
+   * @param assets Assets list to be processed
+   */
   private initAssetLayer(assets: Asset[]) {
     const assetLayer: Asset[][] = [];
 
@@ -234,7 +274,5 @@ export class SerializeService {
     for (const asset of assets) {
       this.assetsService.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
     }
-
-    // console.log(assetLayer);
   }
 }
