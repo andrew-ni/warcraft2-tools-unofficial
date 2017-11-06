@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MapService } from 'services/map.service';
 import { Player } from 'player';
-import { TileType } from 'tile';
+import { MapService } from 'services/map.service';
 
 @Component({
   selector: 'app-newmap',
@@ -29,7 +28,7 @@ export class NewmapComponent implements OnInit {
     this.setListeners();
   }
 
-  fun_close(){
+  fun_close() {
     document.getElementById('newMapModal').setAttribute('style', 'display: none;');
   }
 
@@ -46,10 +45,10 @@ export class NewmapComponent implements OnInit {
     const name: string = (document.getElementById('NameField') as HTMLInputElement).value;
     const description: string = (document.getElementById('DescField') as HTMLInputElement).value;
     // const description = 'hello';
-    const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value);
-    const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value);
+    const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value, 10);
+    const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value, 10);
 
-    this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
+    // this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
   private updateNumPlayers(num: number): void {

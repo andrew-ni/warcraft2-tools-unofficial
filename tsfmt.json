@@ -3,6 +3,7 @@
   "tabSize": 2,
   "convertTabsToSpaces": true,
   "insertSpaceAfterCommaDelimiter": true,
+  "newLineCharacter": "\n",
   "insertSpaceAfterSemicolonInForStatements": true,
   "insertSpaceBeforeAndAfterBinaryOperators": true,
   "insertSpaceAfterConstructor": false,
