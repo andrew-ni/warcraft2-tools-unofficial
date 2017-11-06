@@ -81,7 +81,7 @@ export class IOService {
 
   }
   /**
-   * Event listener for once the terrain is loaded, send next event to calcTileIndices(). See terrain.service.ts
+   * Create map when using New
    */
   public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
     this.map.canSave = false;
