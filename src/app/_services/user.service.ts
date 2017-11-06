@@ -24,7 +24,7 @@ export class UserService {
   }
 
   // Classes that inject the User Service call these functions in order to change the current palette.
-  // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
+  // in [sidebar].component.html, call these on button clicks, e.g. (click)="userService.selectedTerrain = button.tileType"
   get selectMapElement() { return this._selectedMapElement; }
   get selectedTerrain() { return this._selectedTerrain; }
   get selectedAsset() { return this._selectedAsset; }

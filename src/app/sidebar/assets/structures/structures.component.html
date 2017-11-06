@@ -1,6 +1,11 @@
+<!-- <div class="ui center aligned container"> -->
+<div class="ui container">
 <h5>Structures</h5>
-<button class="ui primary button">Structures</button>
-<div *ngFor="let button of structureButtons">
+<div class="ui grid">
+<div class ="column" *ngFor="let button of structureButtons">
   <img [src]="button.imgSrc"
        (click)="userService.selectedAsset = button.structureType">
+</div>
+
+</div>
 </div>
