@@ -1,9 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Module is like a namespace so we don't polute the global space
+/**
+ * Module is like a namespace so we don't pollute the global space
+ */
 export module IO {
-  // Note it is async, opening files take a long time and we don't want to block the thread
+  /**
+   * @param window The Electron window
+   * @param filename string of which .map file we want to open
+   * Loads the map contents into `data`, then sends a 'map:loaded' signal to the window
+   * Async function, because loading the map could take some time
+   */
   export async function loadMap(window: Electron.WebContents, filename: string) {
     console.log('loadMap');
 
@@ -16,17 +23,27 @@ export module IO {
     });
   }
 
-  /*
-  TODO: make main thread stateless, have mapservice decide whether a save is valid
-        also handle errors
-  */
+  /**
+   * TODO: make main thread stateless; have mapservice decide whether a save is valid; handle errors
+   */
 
-  // Renderer allows us to save
+  /**
+   * @param data The stringify data that we want to save to the specified filepath string
+   * @param filepath Where we want to save data
+   * Renderer allows us to save
+   */
   export async function saveMap(data: string, filepath: string) {
     console.log('saveMap');
     fs.writeFile(filepath, data, () => { });
   }
 
+  /**
+   * @param window
+   * @param terrainFilePath Specifies terrain.dat to load
+   * @param mapFilePath Specifies filepath of current map
+   * Loads terrain.dat for canvasService to use when drawing map
+   * Default: Terrain.dat
+   */
   export async function loadTerrain(window: Electron.WebContents, terrainFilePath: string, mapFilePath: string) {
     console.log('loadTerrain');
 
