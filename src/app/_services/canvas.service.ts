@@ -44,7 +44,7 @@ export class CanvasService {
     this.path = require('path');
 
     this.map.tilesUpdated.subscribe({
-       next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.assetService.removeAsset(reg); this.drawAssets();}
+       next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.assetService.removeAsset(reg); this.drawAssets(); }
       ,
       error: err => console.error(err),
       complete: null
@@ -124,6 +124,10 @@ export class CanvasService {
    * @param index Position in the spritesheet. Starts at 0.
    */
   private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
-    this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
+    if (width === 72) { // if it's a 1 width unit, TEMP solution
+      this.context.drawImage(image, 17, 13, 50, 50, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, 50, 50);
+    } else {
+      this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
+    }
   }
 }
