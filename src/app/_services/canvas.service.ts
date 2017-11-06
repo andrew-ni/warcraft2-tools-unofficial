@@ -50,7 +50,8 @@ export class CanvasService {
    * Map of assets to their image elements
    */
   private assetMap = new Map<AssetType, HTMLImageElement>();
-  private assetMap2 = new Map<AssetType, ImageBitmap[]>();
+  private sprites = new Map<AssetType, ImageBitmap[]>();
+  private playerColors: ImageData;
 
   /**
    * Map to be read from
@@ -70,7 +71,6 @@ export class CanvasService {
 
   private async init() {
     await this.loadDoseDatFiles();
-    await this.recolorAssets();
 
     this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
@@ -85,7 +85,7 @@ export class CanvasService {
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: reg => {
-        this.drawMap(reg)
+        this.drawMap(reg);
         this.drawAssets();
         this.assetsService.removeInvalidAsset(reg);
       },
@@ -110,33 +110,37 @@ export class CanvasService {
 
 
   // TODO: read the .dat files for more information, filter readdir()
-  /**
-   * Finds files in /assets/img/, reads in all files .dat as .png. Creates
-   * Images for them and creates a mapping in assetMap
-   */
-  private loadDoseDatFiles() {
-    const loadImage = async (name: string) => {
+  // Finds files in /assets/img/, and replaces .dat with .png.
+  // Creates Image() for each then inserts <string, image> into assetMap.
+  private async loadDoseDatFiles() {
+    const loadImage = async (name: string, onload: (image: HTMLImageElement, type: AssetType) => Promise<void> | void = () => { }) => {
       const tempImage = new Image();
-      const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
-        tempImage.onload = () => resolve(tempImage);
+      const imageLoaded = new Promise<void>((resolve) => {
+        tempImage.onload = async () => {
+          await onload(tempImage, AssetType[name]);
+          this.assetMap.set(AssetType[name], tempImage);
+
+          resolve();
+        };
       });
       tempImage.src = 'assets/img/' + name + '.png';
       return imageLoaded;
     };
 
-    return new Promise<void>((resolve, reject) => {
-      readdir('./src/assets/img/', async (err, fileNames) => {
-        if (err) return reject(err);
+    await loadImage('Colors', (img) => this.initColorMap(img));
 
-        for (const fileName of fileNames) {
-          const { name, ext } = parse(fileName);
-          if (/\.dat/i.test(ext)) {
-            this.assetMap.set(AssetType[name], await loadImage(name));
-          }
+    const pendingImages: Promise<void>[] = [];
+
+    readdir('./src/assets/img/', async (err, fileNames) => {
+      for (const fileName of fileNames) {
+        const { name, ext } = parse(fileName);
+        if (/\.dat/i.test(ext)) {
+          pendingImages.push(loadImage(name, (img, type) => this.recolorSprite(img, type)));
         }
-        resolve();
-      });
+      }
     });
+
+    return Promise.all(pendingImages);
   }
 
 
@@ -187,7 +191,7 @@ export class CanvasService {
     ];
     let drawX = 0;
     assetsToRecolor.forEach(type => {
-      this.context.drawImage(this.assetMap2.get(type)[(drawX / 128) % 8], drawX + 32, 32);
+      this.context.drawImage(this.sprites.get(type)[(drawX / 128) % 8], drawX + 32, 32);
       drawX += 128;
     });
   }
@@ -208,19 +212,23 @@ export class CanvasService {
     }
   }
 
-  private async recolorAssets() {
+  private initColorMap(htmlImage: HTMLImageElement) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = htmlImage.width; canvas.height = htmlImage.height;
+    context.drawImage(htmlImage, 0, 0);
+    this.playerColors = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
+  }
+
+  private async recolorSprite(htmlImage: HTMLImageElement, assetType: AssetType) {
     const [r, g, b, a] = [0, 1, 2, 4];
 
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
-    const tempColors = this.assetMap.get(AssetType.Colors);
-    canvas.width = tempColors.width; canvas.height = tempColors.height;
-    context.drawImage(tempColors, 0, 0);
-    const colors = context.getImageData(0, 0, 4, 8);
-
-    const getPixel = (image: ImageData, pos: Coordinate) => {
-      return new Uint8ClampedArray(image.data.buffer, pos.y * image.width * 4 + pos.x * 4, 4);
+    const getPixel = (img: ImageData, pos: Coordinate) => {
+      return new Uint8ClampedArray(img.data.buffer, pos.y * img.width * 4 + pos.x * 4, 4);
     };
 
     const testAndReplacePixel = (test: Uint8ClampedArray, src: Uint8ClampedArray, dest: Uint8ClampedArray) => {
@@ -229,55 +237,31 @@ export class CanvasService {
       }
     };
 
-    const recolorToPlayer = (image: ImageData, owner: number) => {
-      for (let shade = 0; shade < colors.width; shade++) {
-        const testPx = getPixel(colors, { x: shade, y: 0 });
-        const srcPx = getPixel(colors, { x: shade, y: owner });
+    const recolorToPlayer = (img: ImageData, owner: number) => {
+      for (let shade = 0; shade < this.playerColors.width; shade++) {
+        const testPx = getPixel(this.playerColors, { x: shade, y: 0 });
+        const srcPx = getPixel(this.playerColors, { x: shade, y: owner });
 
-        for (let y = 0; y < image.height; y++) {
-          for (let x = 0; x < image.width; x++) {
-            const destPx = getPixel(image, { x, y });
+        for (let y = 0; y < img.height; y++) {
+          for (let x = 0; x < img.width; x++) {
+            const destPx = getPixel(img, { x, y });
             testAndReplacePixel(testPx, srcPx, destPx);
           }
         }
       }
     };
 
-    const recolorAsset = async (assetType: AssetType) => {
-      const htmlImage = this.assetMap.get(assetType);
-      canvas.width = htmlImage.width; canvas.height = htmlImage.height;
-      context.clearRect(0, 0, htmlImage.width, htmlImage.height);
-      context.drawImage(htmlImage, 0, 0);
-      let image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
-      this.assetMap2.set(assetType, []);
-      this.assetMap2.get(assetType).push(await createImageBitmap(image));
+    canvas.width = htmlImage.width; canvas.height = htmlImage.height;
+    context.clearRect(0, 0, htmlImage.width, htmlImage.height);
+    context.drawImage(htmlImage, 0, 0);
+    let image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
+    this.sprites.set(assetType, []);
+    this.sprites.get(assetType).push(await createImageBitmap(image));
 
-      for (let owner = 1; owner < 8; owner++) {
-        image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
-        recolorToPlayer(image, owner);
-        this.assetMap2.get(assetType).push(await createImageBitmap(image));
-      }
-    };
-
-    const assetsToRecolor = [
-      // AssetType.Archer,
-      AssetType.Footman,
-      // AssetType.Peasant,
-      // AssetType.Ranger,
-      AssetType.Barracks,
-      AssetType.Blacksmith,
-      // AssetType.Farm,
-      AssetType.CannonTower,
-      AssetType.Castle,
-      AssetType.GuardTower,
-      AssetType.Keep,
-      AssetType.LumberMill,
-      AssetType.ScoutTower,
-      AssetType.TownHall,
-    ];
-
-    for (const assetType of assetsToRecolor) {
-      await recolorAsset(assetType);
+    for (let owner = 1; owner < 8; owner++) {
+      image = context.getImageData(0, 0, htmlImage.width, htmlImage.height);
+      recolorToPlayer(image, owner);
+      this.sprites.get(assetType).push(await createImageBitmap(image));
     }
   }
 }
