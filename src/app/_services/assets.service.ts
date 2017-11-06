@@ -71,8 +71,7 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           if (this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass){
             const assetToBeRemoved = this.map.assetLayer[y][x];
-            console.log('the index of the assettoberemoved is: ');
-            this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1)
+            this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
             for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
               for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
                 this.map.assetLayer[ypos][xpos] = undefined;
@@ -83,18 +82,6 @@ export class AssetsService {
         }
       }
     }
-    console.log('megablock v2');
-    console.log(this.map.assetLayer[0][0]);
-    console.log(this.map.assetLayer[0][1]);
-    console.log(this.map.assetLayer[0][2]);
-    console.log(this.map.assetLayer[1][0]);
-    console.log(this.map.assetLayer[1][1]);
-    console.log(this.map.assetLayer[1][2]);
-    console.log(this.map.assetLayer[2][0]);
-    console.log(this.map.assetLayer[2][1]);
-    console.log(this.map.assetLayer[2][2]);
-    console.log('megablock v2 end');
-    console.log(this.map.assets);
   }
 
 }
