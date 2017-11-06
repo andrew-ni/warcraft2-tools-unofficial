@@ -1,4 +1,5 @@
 <h5>Units</h5>
+<button class="ui primary button">Units</button>
 <div *ngFor="let button of unitButtons">
   <img [src]="button.imgSrc"
        (click)="userService.selectedAsset = button.unitType">

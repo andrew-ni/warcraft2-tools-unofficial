@@ -1,4 +1,5 @@
 <h5>Structures</h5>
+<button class="ui primary button">Structures</button>
 <div *ngFor="let button of structureButtons">
   <img [src]="button.imgSrc"
        (click)="userService.selectedAsset = button.structureType">
