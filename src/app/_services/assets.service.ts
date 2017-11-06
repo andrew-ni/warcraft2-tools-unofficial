@@ -25,51 +25,76 @@ export class AssetsService {
     this.map = mapService;
   }
 
-  public placeAsset(owner: number, type: AssetType, x: number, y: number, init: boolean = false) {
-    console.log(this.map.assets.length);
-    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
-
-    const asset: Asset = new Asset(owner, type, x, y);
-    // checks if cells are occupied
-    for (let xpos = x; xpos < x + asset.width; xpos++) {
-      for (let ypos = y; ypos < y + asset.height; ypos++) {
-        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
-        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass){console.log('terraincollision'); return; }
+  public placeAsset(owner: number, type: AssetType, x: number, y: number, init: boolean) {
+    if (init) {
+      for (const initassets of this.map.assets){
+        if (initassets.y < 0 || initassets.x < 0 || initassets.y > this.map.height - 1 || x > this.map.width - 1) return;
+        for (let xpos = initassets.x; xpos < initassets.x + initassets.width; xpos++) {
+          for (let ypos = initassets.y; ypos < initassets.y + initassets.height; ypos++) {
+            if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision init'); break; }
+            if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass){console.log('terraincollision init'); break; }
+          }
+        }
+        // placeholder for asset depending on its dimensions
+        for (let xpos = initassets.x; xpos < initassets.x + initassets.width; xpos++) {
+          for (let ypos = initassets.y; ypos < initassets.y + initassets.height; ypos++) {
+            this.map.assetLayer[ypos][xpos] = initassets;
+          }
+        }
       }
     }
 
     if (!init) {
+//      if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
+      const asset: Asset = new Asset(owner, type, x, y);
+      for (let xpos = x; xpos < x + asset.width; xpos++) {
+        for (let ypos = y; ypos < y + asset.height; ypos++) {
+          if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision not init'); return; }
+          if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass){console.log('terraincollision not init'); return; }
+        }
+      }
+
+      // placeholder for asset depending on its dimensions
+      for (let xpos = x; xpos < x + asset.width; xpos++) {
+        for (let ypos = y; ypos < y + asset.height; ypos++) {
+          this.map.assetLayer[ypos][xpos] = asset;
+        }
+      }
       this.map.assets.push(asset);
       console.log('pushed');
     }
-
-    // placeholder for asset depending on its dimensions
-    for (let xpos = x; xpos < x + asset.width; xpos++) {
-      for (let ypos = y; ypos < y + asset.height; ypos++) {
-        this.map.assetLayer[ypos][xpos] = asset;
-      }
-    }
-
-    // positional reference point for asset
-    this.map.assetLayer[asset.y][asset.x] = asset;
   }
 
   public removeAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         if (this.map.assetLayer[y][x] !== undefined) {
-          if (this.map.terrainLayer[y][x] !== TileType.LightGrass){
+          if (this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass){
             const assetToBeRemoved = this.map.assetLayer[y][x];
+            console.log('the index of the assettoberemoved is: ');
+            this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1)
             for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
               for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
                 this.map.assetLayer[ypos][xpos] = undefined;
               }
             }
-          this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
+
           }
         }
       }
     }
+    console.log('megablock v2');
+    console.log(this.map.assetLayer[0][0]);
+    console.log(this.map.assetLayer[0][1]);
+    console.log(this.map.assetLayer[0][2]);
+    console.log(this.map.assetLayer[1][0]);
+    console.log(this.map.assetLayer[1][1]);
+    console.log(this.map.assetLayer[1][2]);
+    console.log(this.map.assetLayer[2][0]);
+    console.log(this.map.assetLayer[2][1]);
+    console.log(this.map.assetLayer[2][2]);
+    console.log('megablock v2 end');
+    console.log(this.map.assets);
   }
 
 }
