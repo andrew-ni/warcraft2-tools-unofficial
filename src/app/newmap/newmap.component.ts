@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from 'player';
+import {IOService} from 'services/io.service';
 import { MapService } from 'services/map.service';
+import { TileType } from 'tile';
 
 @Component({
   selector: 'app-newmap',
@@ -11,7 +13,7 @@ export class NewmapComponent implements OnInit {
   public allPlayerInfo: Player[];
   public currentPlayers: Player[];    // window of players visible to ui
 
-  constructor(private mapService: MapService) { }
+  constructor(private ioService: IOService) { }
 
   ngOnInit() {
     this.allPlayerInfo = [new Player(0, 0, 0),  // set default game assets
@@ -48,7 +50,7 @@ export class NewmapComponent implements OnInit {
     const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value, 10);
     const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value, 10);
 
-    // this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
+    this.ioService.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
   private updateNumPlayers(num: number): void {
