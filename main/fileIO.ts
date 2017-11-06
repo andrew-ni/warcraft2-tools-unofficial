@@ -6,10 +6,10 @@ import * as path from 'path';
  */
 export module IO {
   /**
-   * @param window The Electron window
-   * @param filename string of which .map file we want to open
    * Loads the map contents into `data`, then sends a 'map:loaded' signal to the window
    * Async function, because loading the map could take some time
+   * @param window The Electron window
+   * @param filename string of which .map file we want to open
    */
   export async function loadMap(window: Electron.WebContents, filename: string) {
     console.log('loadMap');
@@ -28,9 +28,9 @@ export module IO {
    */
 
   /**
+   * Renderer allows us to save
    * @param data The stringify data that we want to save to the specified filepath string
    * @param filepath Where we want to save data
-   * Renderer allows us to save
    */
   export async function saveMap(data: string, filepath: string) {
     console.log('saveMap');
@@ -38,11 +38,11 @@ export module IO {
   }
 
   /**
+   * Loads terrain.dat for canvasService to use when drawing map
+   * Default: Terrain.dat
    * @param window
    * @param terrainFilePath Specifies terrain.dat to load
    * @param mapFilePath Specifies filepath of current map
-   * Loads terrain.dat for canvasService to use when drawing map
-   * Default: Terrain.dat
    */
   export async function loadTerrain(window: Electron.WebContents, terrainFilePath: string, mapFilePath: string) {
     console.log('loadTerrain');
