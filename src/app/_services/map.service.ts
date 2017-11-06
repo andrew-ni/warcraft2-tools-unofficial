@@ -64,8 +64,10 @@ export class MapService {
   /** @event mapLoaded When the assets and terrain have fully been parsed and initialized. */
   public mapLoaded = new ReplaySubject<void>(1);
 
-  /** @event tilesUpdated When the any tile types/indices have changed. */
+  /** @event tilesUpdated When any tile types/indices have changed. */
   public tilesUpdated = new ReplaySubject<Region>(1);
 
+  /** @event assetsUpdated When any assets have changed. */
+  public assetsUpdated = new ReplaySubject<Region>(1);
   constructor() { }
 }

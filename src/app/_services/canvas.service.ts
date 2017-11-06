@@ -25,6 +25,7 @@ interface IMap {
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
+  assetsUpdated: Subject<Region>;
 }
 
 /**
@@ -54,7 +55,7 @@ export class CanvasService {
   private map: IMap;
 
   /**
-   * Registers tilesUpdated and mapResized events, and loads dose dat files.
+   * Registers tilesUpdated, assetsUpdated, and mapResized events, and loads dose dat files.
    * @param mapService Needs access to read from map for draw events
    */
   constructor(
@@ -82,12 +83,18 @@ export class CanvasService {
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: reg => {
         this.drawMap(reg);
-        this.drawAssets();
         this.assetsService.removeInvalidAsset(reg);
       },
       error: err => console.error(err),
       complete: null
     });
+
+    this.map.assetsUpdated.do(x => console.log('assetsUpdated:Canvas: ', JSON.stringify(x))).subscribe({
+      next: reg => this.drawAssets(reg),
+      error: err => console.error(err),
+      complete: null
+    });
+
 
     // TEMP for convenience
     ipcRenderer.send('map:load', './src/assets/map/bay.map');
@@ -125,7 +132,9 @@ export class CanvasService {
   /**
    * Draws all the assets
    */
-  public async drawAssets() {
+  // Draws Assets layer using Assets[] array from map.ts
+  public async drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
+    console.log('drawing');
     for (const asset of this.map.assets) {
       const img = await this.spriteService.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
