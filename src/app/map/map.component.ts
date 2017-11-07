@@ -51,12 +51,13 @@ export class MapComponent implements OnInit, OnDestroy {
   private setClickListeners() {
     let clickPos: Coordinate;
 
+    // Regions sent on click are exactly 1x1. Subsequent functions should expand / modify this Region before drawing.
     const placeMapElementAtCursor = (event: MouseEvent) => {
       const x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
       const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
       this.userService.applySelectedType(
         (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y); this.canvasService.drawAssets(); },
+        (assetType) => this.assetsService.placeAsset(1, assetType, x, y),
       );
     };
 

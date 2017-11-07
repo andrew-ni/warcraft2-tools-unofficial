@@ -11,7 +11,7 @@ export class SpriteService {
   private isInitialized = false;
   private colorMap: ImageData;
   private sprites = new Map<AssetType, ImageBitmap>();
-  private isColored = new Map<AssetType, boolean>([
+  public isColored = new Map<AssetType, boolean>([
     [AssetType.Archer, true],
     [AssetType.Footman, true],
     [AssetType.Peasant, true],
