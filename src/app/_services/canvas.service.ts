@@ -172,10 +172,10 @@ export class CanvasService {
    * @param index Position in the spritesheet. Starts at 0.
    */
   private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
-    if (width === 72) { // if it's a 1 width unit, TEMP solution
-      this.context.drawImage(image, 17, 13, 50, 50, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, 50, 50);
-    } else {
-      this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
+    let offset = 0;
+    if (width % CanvasService.TERRAIN_SIZE !== 0) {
+      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
     }
+    this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE - offset, y * CanvasService.TERRAIN_SIZE - offset, width, width);
   }
 }
