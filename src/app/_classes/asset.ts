@@ -44,6 +44,8 @@ export enum AssetType {
 //   Placeholder,
 // }
 
+
+
 const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Archer, 1],
   [AssetType.Footman, 1],

@@ -34,7 +34,7 @@ export class AssetsService {
     this.map = mapService;
   }
 
- // TODO: refactor to take Region, change to use x y from Region, expand Region before firing event (like in terrain?)
+ // TODO: refactor to take Coordinate, change to use x y from Region, expand Region before firing event (like in terrain?)
  /**
   * Updates assetLayer and performs collision checking.
   * @param owner owner of asset to be placed
@@ -44,7 +44,9 @@ export class AssetsService {
   * @param reg
   * @fires assetsUpdated With the modified Region.
   */
-  public placeAsset(owner: number, type: AssetType, x: number, y: number) {
+  public placeAsset(owner: number, type: AssetType, coord: Coordinate) {
+    const y = coord.y;
+    const x = coord.x;
     if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
     const asset: Asset = new Asset(owner, type, x, y);
     for (let xpos = x; xpos < x + asset.width; xpos++) {
@@ -57,7 +59,7 @@ export class AssetsService {
     this.map.assets.push(asset);
     console.log('pushed');
 
-    this.map.assetsUpdated.next({x, y, width: asset.width, height: asset.height});
+    this.map.assetsUpdated.next({y: coord.y, x: coord.x, width: asset.width, height: asset.height});
   }
 
   /**

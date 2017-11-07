@@ -239,7 +239,7 @@ export class SerializeService {
     for (const line of lines) {
       const [type, owner, x, y] = line.split(' ');
       // .map format is type owner x y, whereas asset construction is owner type x y
-      this.assetsService.placeAsset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10));
+      this.assetsService.placeAsset(parseInt(owner, 10), AssetType[type], {x: parseInt(x, 10), y: parseInt(y, 10)});
     }
   }
 
