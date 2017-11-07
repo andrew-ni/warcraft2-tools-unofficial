@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ipcRenderer } from 'electron';
-import { Subject } from 'rxjs/Rx';
-
 import { Asset } from 'asset';
+import { ipcRenderer } from 'electron';
 import { Dimension } from 'interfaces';
 import { Player } from 'player';
+import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
+const {dialog} = require('electron').remote;
 
 interface IMap {
   canSave: boolean;
@@ -27,6 +27,7 @@ interface IMap {
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
 }
+
 
 @Injectable()
 export class IOService {
@@ -66,7 +67,17 @@ export class IOService {
 
         return; // don't make ipc call
       }
-
+      /**
+       * Use save as if the map is created by the editor
+       */
+      if (this._mapFilePath === undefined) {
+        this._mapFilePath = dialog.showSaveDialog({ filters: [
+               { name: 'Map File (.map)', extensions: ['map'] }
+              ]});
+      }
+      if (this._mapFilePath === undefined) {
+        return;
+      }
       console.log('saving...');
       ipcRenderer.send('map:save', response, this._mapFilePath);
     });
@@ -90,6 +101,7 @@ export class IOService {
    * @param players player number and starting resource
    */
   public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+    this._mapFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
     this.map.description = description;
