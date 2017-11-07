@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+  import { Injectable } from '@angular/core';
 import { AssetType } from 'asset';
 import { Dimension } from 'interfaces';
 import { TileType } from 'tile';

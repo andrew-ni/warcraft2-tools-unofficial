@@ -5,11 +5,12 @@ import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
-import { TerrainService } from 'services/terrain.service';
-import { UserService } from 'services/user.service';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
 
+/**
+ * Narrow IMap interface to discourage access of unrelated attributes
+ */
 interface IMap {
   width: number;
   height: number;
@@ -21,22 +22,54 @@ interface IMap {
   tilesUpdated: Subject<Region>;
 }
 
+/**
+ * CanvasService manages drawing output of the map to the map display window.
+ * It is the View component of this MVC model.
+ */
 @Injectable()
 export class CanvasService {
-  public static readonly TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
+  /**
+   * Sprite edge length in pixels
+   */
+  public static readonly TERRAIN_SIZE = 32;
+
+  /**
+   * Contains the canvas HTML element for output
+   */
   private canvas: HTMLCanvasElement;
+
+  /**
+   * This canvas's context
+   */
   private context: CanvasRenderingContext2D;
+
+  /**
+   * Map of assets to their image elements
+   */
   private assetMap = new Map<AssetType, HTMLImageElement>();
+
+  /**
+   * For accessing assets and mapping file contents
+   */
   private fs;
+
+  /**
+   * Asset location
+   */
   private path;
 
+  /**
+   * Map to be read from
+   */
   private map: IMap;
 
+  /**
+   * Registers tilesUpdated and mapResized events, and loads dose dat files.
+   * @param mapService Needs access to read from map for draw events
+   */
   constructor(
     mapService: MapService,
-    private userService: UserService,
-    private terrainService: TerrainService,
-    private assetService: AssetsService,
+    private assetsService: AssetsService,
   ) {
     this.map = mapService;
     // Load assets before, and independently of map:loaded.
@@ -44,8 +77,12 @@ export class CanvasService {
     this.path = require('path');
 
     this.map.tilesUpdated.subscribe({
-       next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.assetService.removeAsset(reg); this.drawAssets(); }
-      ,
+      next: reg => {
+        this.drawMap(reg);
+        console.log('tilesupdated');
+        this.drawAssets();
+        this.assetsService.removeInvalidAsset(reg);
+      },
       error: err => console.error(err),
       complete: null
     });
@@ -65,7 +102,11 @@ export class CanvasService {
     this.loadDoseDatFiles();
   }
 
-  // Save canvas context from map.component.ts
+  /**
+   * Sets canvas and context elements, initializing this CanvasService
+   * @param c canvas to be set
+   * @param ctx context to be set
+   */
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
@@ -73,8 +114,10 @@ export class CanvasService {
 
 
   // TODO: read the .dat files for more information, filter readdir()
-  // Finds files in /assets/img/, and replaces .dat with .png.
-  // Creates Image() for each then inserts <string, image> into assetMap.
+  /**
+   * Finds files in /assets/img/, reads in all files .dat as .png. Creates
+   * Images for them and creates a mapping in assetMap
+   */
   private loadDoseDatFiles() {
     const myPath = './src/assets/img/';
     const myFiles = this.fs.readdirSync(myPath);
@@ -92,7 +135,10 @@ export class CanvasService {
   }
 
 
-  // Draws Map when loaded from file.
+  /**
+   * Draws map
+   * @param reg Region to be drawn (default entire map)
+   */
   public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
@@ -107,7 +153,9 @@ export class CanvasService {
   }
 
   // TODO: Accept Regions / individual assets to redraw
-  // Draws Assets layer using Assets[] array from map.ts
+  /**
+   * Draws all the assets
+   */
   public drawAssets(): void {
     for (const asset of this.map.assets) {
       const img = this.assetMap.get(asset.type);

@@ -6,6 +6,9 @@ import { MapService } from 'services/map.service';
 import { TileType } from 'tile';
 import { Region } from '../_interfaces';
 
+/**
+ * Narrow IMap interface to discourage access of unrelated attributes
+ */
 interface IMap {
   width: number;
   height: number;
@@ -15,6 +18,10 @@ interface IMap {
   assets: Asset[];
 }
 
+/**
+* AssetsService handles the logic of placing and removing assets (units and buildings),
+* including asset and terrain collision and player logic.
+*/
 @Injectable()
 export class AssetsService {
   private map: IMap;
@@ -25,63 +32,63 @@ export class AssetsService {
     this.map = mapService;
   }
 
-  public placeAsset(owner: number, type: AssetType, x: number, y: number, init: boolean) {
-    if (init) {
-      for (const initassets of this.map.assets){
-        if (initassets.y < 0 || initassets.x < 0 || initassets.y > this.map.height - 1 || x > this.map.width - 1) return;
-        for (let xpos = initassets.x; xpos < initassets.x + initassets.width; xpos++) {
-          for (let ypos = initassets.y; ypos < initassets.y + initassets.height; ypos++) {
-            if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision init'); break; }
-            if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass){console.log('terraincollision init'); break; }
-          }
-        }
-        // placeholder for asset depending on its dimensions
-        for (let xpos = initassets.x; xpos < initassets.x + initassets.width; xpos++) {
-          for (let ypos = initassets.y; ypos < initassets.y + initassets.height; ypos++) {
-            this.map.assetLayer[ypos][xpos] = initassets;
-          }
-        }
+  /**
+   * Places asset on requested position in assets layer. Also handles legality of placement.
+   * @param owner owner of asset to be placed
+   * @param type type of asset to be placed
+   * @param x x-coord of asset to be placed
+   * @param y y-coord of asset to be placed
+   * @param init check if method is called during assets layer init
+   */
+  public placeAsset(owner: number, type: AssetType, x: number, y: number) {
+    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
+    const asset: Asset = new Asset(owner, type, x, y);
+    for (let xpos = x; xpos < x + asset.width; xpos++) {
+      for (let ypos = y; ypos < y + asset.height; ypos++) {
+        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
+        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass) { console.log('terraincollision'); return; }
+        this.map.assetLayer[ypos][xpos] = asset;
       }
     }
-
-    if (!init) {
-//      if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
-      const asset: Asset = new Asset(owner, type, x, y);
-      for (let xpos = x; xpos < x + asset.width; xpos++) {
-        for (let ypos = y; ypos < y + asset.height; ypos++) {
-          if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision not init'); return; }
-          if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass){console.log('terraincollision not init'); return; }
-        }
-      }
-
-      // placeholder for asset depending on its dimensions
-      for (let xpos = x; xpos < x + asset.width; xpos++) {
-        for (let ypos = y; ypos < y + asset.height; ypos++) {
-          this.map.assetLayer[ypos][xpos] = asset;
-        }
-      }
-      this.map.assets.push(asset);
-      console.log('pushed');
-    }
+    this.map.assets.push(asset);
+    console.log('pushed');
   }
 
-  public removeAsset(reg: Region) {
+  /**
+   * Remove any assets placed invalidly within the given region.
+   * @param reg The region to check for Assets.
+   */
+  public removeInvalidAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        if (this.map.assetLayer[y][x] !== undefined) {
-          if (this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass){
-            const assetToBeRemoved = this.map.assetLayer[y][x];
-            this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
-            for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
-              for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
-                this.map.assetLayer[ypos][xpos] = undefined;
-              }
+        if (this.map.assetLayer[y][x] !== undefined && this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass) {
+          const assetToBeRemoved = this.map.assetLayer[y][x];
+          this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
+          console.log('removed asset', assetToBeRemoved);
+          for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
+            for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
+              this.map.assetLayer[ypos][xpos] = undefined;
             }
-
           }
         }
       }
     }
   }
 
+  // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
+  /**
+  * Updates the owner ID of an asset at requested position.
+  * @param x x-coord of asset to be updated
+  * @param y y-coord of asset to be updated
+  * @param newOwner the new owner ID of asset to be updated
+  */
+  public updateOwner(x: number, y: number, newOwner: number) {
+    // invalid owner
+    if (newOwner < 0 || newOwner > 7) throw Error('invalid player number');
+
+    // check if asset DNE at requested position
+    if (this.map.assetLayer[y][x] !== undefined) {
+      this.map.assetLayer[y][x].owner = newOwner;
+    }
+  }
 }

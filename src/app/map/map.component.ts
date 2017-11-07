@@ -26,11 +26,13 @@ export class MapComponent implements OnInit, OnDestroy {
     private assetsService: AssetsService,
   ) { }
 
+  /**
+   * Draws canvas for the first time
+   * Sets click listeners
+   */
   ngOnInit() {
     this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
-
-    // Draw canvas for the first time.
     // this.canvas.width = window.innerWidth;
     // this.canvas.height = window.innerHeight;
 
@@ -43,7 +45,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.mapLoadedSubscription.unsubscribe();
   }
 
-  // Handles clickEvents like clickdrag and panning.
+  /**
+   * Handles click events like clickdrag and panning
+   */
   private setClickListeners() {
     let clickPos: Coordinate;
 
@@ -52,7 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
       const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
       this.userService.applySelectedType(
         (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
+        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y); this.canvasService.drawAssets(); },
       );
     };
 
@@ -63,16 +67,20 @@ export class MapComponent implements OnInit, OnDestroy {
       this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
 
-    // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
+    /**
+     * Helper function to remove mousemove listeners
+     * Called on mouseup or mouseleave
+     */
     const removeListeners = () => {
       document.body.style.cursor = 'auto';
       this.canvas.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.canvas.removeEventListener('mousemove', pan, false);
     };
 
-    // On mousedown, route to appropriate function (clickdrag or pan)
-    // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
-    // 0 = left click, 1 = middle click, 2 = right click
+    /**
+     * On mousedown, route to appropriate function (clickdrag or pan)
+     * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
+     */
     this.canvas.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
@@ -80,7 +88,7 @@ export class MapComponent implements OnInit, OnDestroy {
       if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
     });
 
-    // On mouseup, remove listeners
+    /** On mouseup, remove listeners */
     this.canvas.addEventListener('mouseup', (event) => {
       removeListeners();
       this.canvas.removeEventListener('mouseleave', function() { }, false);

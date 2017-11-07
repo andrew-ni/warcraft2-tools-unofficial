@@ -80,6 +80,11 @@ export class Asset {
     this.y = y;
     this.height = dimensionMap.get(type);
     this.width = dimensionMap.get(type);
+    if (type === AssetType.Placeholder) {
+      this.referenceAsset = referenceAsset;
+    } else {
+      this.referenceAsset = this;
+    }
   }
 }
 
