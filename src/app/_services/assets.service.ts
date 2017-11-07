@@ -76,18 +76,46 @@ export class AssetsService {
   public removeInvalidAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        if (this.map.assetLayer[y][x] !== undefined && this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass) {
-          const assetToBeRemoved = this.map.assetLayer[y][x];
-          this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
-          console.log('removed asset', assetToBeRemoved);
-          for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
-            for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
-              this.map.assetLayer[ypos][xpos] = undefined;
+        const theTerrain = this.map.terrainLayer[y][x];
+        if (this.map.assetLayer[y][x] !== undefined) {
+          const theAsset = this.map.assetLayer[y][x];
+          console.log('the asset is type: ' + theAsset.type);
+          if (theAsset.type === 0 || theAsset.type === 1 || theAsset.type === 2 || theAsset.type === 3) {
+            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
+              this.removeAsset(theAsset);
             }
+        } else {
+          if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass ) {
+            this.removeAsset(theAsset);
           }
         }
+        // if (this.map.assetLayer[y][x] !== undefined && this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass) {
+        //   const assetToBeRemoved = this.map.assetLayer[y][x];
+        //   this.removeAsset(assetToBeRemoved);
+        // this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
+          // console.log('removed asset', assetToBeRemoved);
+          // for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
+          //   for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
+          //     this.map.assetLayer[ypos][xpos] = undefined;
+          //   }
+          // }
       }
     }
+  }
+}
+/**
+ *
+ * @param toBeRemoved asset to be removed
+ */
+  public removeAsset(toBeRemoved: Asset): void {
+    this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
+    console.log('removed asset ', toBeRemoved);
+    for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++){
+      for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
+        this.map.assetLayer[ypos][xpos] = undefined;
+      }
+    }
+    console.log(this.map.assetLayer);
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
