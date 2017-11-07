@@ -130,7 +130,7 @@ export class CanvasService {
     const terrain = await this.spriteService.get(AssetType.Terrain);
     for (let x = reg.x; x < reg.x + reg.width; x++) {
       for (let y = reg.y; y < reg.y + reg.width; y++) {
-        this.drawImage(terrain, 1, terrain.width, x, y, this.map.drawLayer[y][x].index);
+        this.drawImage(terrain, 1, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
@@ -147,16 +147,16 @@ export class CanvasService {
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
 
     const hashSet = new Set<Asset>();
-    for (let x = reg.x; x < reg.x + reg.width; x++) {
-      for (let y = reg.y; y < reg.y + reg.height; y++) {
-        const currentAsset = this.map.assetLayer[reg.y][reg.x];
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        const currentAsset = this.map.assetLayer[y][x];
         // only draw on hash miss (first time only)
         if (!hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
           let single = img.width;
-          if (this.spriteService.isColored.get(currentAsset.type) === true) { single = img.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(img, currentAsset.owner, single, currentAsset.x, currentAsset.y, 0);
+          if (this.spriteService.isColored.get(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
+          this.drawImage(img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
         }
       }
     }
@@ -172,11 +172,22 @@ export class CanvasService {
    * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
    * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */
-  private drawImage(image: ImageBitmap, player: number, width: number, x: number, y: number, index: number) {
-    this.context.drawImage(image,
-      (player - 1) * width, index * width, width, width,
-      x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width
+  private drawImage(image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+    let offset = 0;
+    if (width % CanvasService.TERRAIN_SIZE !== 0) {
+      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
+    }
+
+    this.context.drawImage(
+      image,
+      (player - 1) * width,
+      index * width,
+      width,
+      width,
+      pos.x * CanvasService.TERRAIN_SIZE - offset,
+      pos.y * CanvasService.TERRAIN_SIZE - offset,
+      width,
+      width
     );
-    // this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
   }
 }
