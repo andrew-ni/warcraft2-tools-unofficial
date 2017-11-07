@@ -81,7 +81,13 @@ export class IOService {
 
   }
   /**
-   * Create map when using New
+   * Initialize the map when new menu is used
+   * @param name map name created.
+   * @param description for the map.
+   * @param width width for the map.
+   * @param height height for the map.
+   * @param fillTile type of tile used to fill default map
+   * @param players player number and starting resource
    */
   public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
     this.map.canSave = false;
