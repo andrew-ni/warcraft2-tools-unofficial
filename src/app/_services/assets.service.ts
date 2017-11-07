@@ -47,7 +47,7 @@ export class AssetsService {
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
-        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass){console.log('terraincollision'); }
+        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass) { console.log('terraincollision'); }
       }
     }
 
@@ -111,8 +111,8 @@ export class AssetsService {
     }
 
     // locate index of updated asset
-    var index = -1;
-    for (var i = 0; i < this.map.assets.length; i++) {
+    let index = -1;
+    for (let i = 0; i < this.map.assets.length; i++) {
       if (originalAsset.x === this.map.assets[i].x && originalAsset.y === this.map.assets[i].y) {
         index = i;
         break;
