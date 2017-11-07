@@ -161,7 +161,7 @@ export class SerializeService {
     this.map.terrainPath = terrainPath.trim();
     this.map.terrainLayer = this.parseTerrain(terrain);
     this.map.partialBits = this.parsePartialBits(partialbits);
-    this.map.assets = this.parseAssets(assets.trim());
+    this.map.assets = this.parseAssets(assets ? assets.trim() : undefined);
     this.map.players = this.parsePlayers(players.trim(), this.map.assets);
     this.initAssetLayer(this.map.assets);
 
@@ -235,12 +235,14 @@ export class SerializeService {
    */
   private parseAssets(assetsData: string): Asset[] {
     const parsedAssets: Asset[] = [];
-    const lines = assetsData.split(/\r?\n/);
+    if (assetsData !== undefined) {
+      const lines = assetsData.split(/\r?\n/);
 
-    for (const line of lines) {
-      const [type, owner, x, y] = line.split(' ');
-      // .map format is type owner x y, whereas asset construction is owner type x y
-      parsedAssets.push(new Asset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10)));
+      for (const line of lines) {
+        const [type, owner, x, y] = line.split(' ');
+        // .map format is type owner x y, whereas asset construction is owner type x y
+        parsedAssets.push(new Asset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10)));
+      }
     }
     return parsedAssets;
   }
