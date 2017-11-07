@@ -147,13 +147,29 @@ export class CanvasService {
 
   // TODO: Accept Regions / individual assets to redraw
   /**
-   * Draws all the assets
+   * Draws assets in the region specified
    */
-  public drawAssets(): void {
+  public drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
+
+    const assetsInRegion: Asset[] = [];
     for (const asset of this.map.assets) {
+      if (asset.x >= reg.x - asset.width &&
+          asset.x <= reg.x + reg.width &&
+          asset.y >= reg.y - asset.height &&
+          asset.y <= reg.y + reg.height)
+      {
+        assetsInRegion.push(asset);
+      }
+    }
+    for (const asset of assetsInRegion) {
       const img = this.assetMap.get(asset.type);
       this.drawImage(img, img.width, asset.y, asset.x, 0);
     }
+
   }
 
   /**

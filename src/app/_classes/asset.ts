@@ -42,8 +42,28 @@ export enum AssetType {
 //   Wall,
 //   Placeholder,
 // }
+export const assetTypeToDimension: number[] = [];
+assetTypeToDimension[AssetType.Archer] = 1;
+assetTypeToDimension[AssetType.Footman] = 1;
+assetTypeToDimension[AssetType.Peasant] = 1;
+assetTypeToDimension[AssetType.Ranger] = 1;
+assetTypeToDimension[AssetType.Barracks] = 3;
+assetTypeToDimension[AssetType.Blacksmith] = 3;
+assetTypeToDimension[AssetType.Farm] = 2;
+assetTypeToDimension[AssetType.CannonTower] = 2;
+assetTypeToDimension[AssetType.Castle] = 3;
+assetTypeToDimension[AssetType.GoldMine] = 3;
+assetTypeToDimension[AssetType.GuardTower] = 2;
+assetTypeToDimension[AssetType.Keep] = 3;
+assetTypeToDimension[AssetType.LumberMill] = 3;
+assetTypeToDimension[AssetType.ScoutTower] = 2;
+assetTypeToDimension[AssetType.TownHall] = 4;
+assetTypeToDimension[AssetType.Wall] = 1;
+assetTypeToDimension[AssetType.Placeholder] = 0;
 
-const dimensionMap: Map<AssetType, number> = new Map([
+
+
+export const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Archer, 1],
   [AssetType.Footman, 1],
   [AssetType.Peasant, 1],
