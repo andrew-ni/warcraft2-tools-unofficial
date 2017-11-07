@@ -46,7 +46,22 @@ export class AssetsService {
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
-        if (this.map.terrainLayer[ypos][xpos] !== TileType.LightGrass && this.map.terrainLayer[ypos][xpos] !== TileType.DarkGrass) { console.log('terraincollision'); return; }
+
+        const theAsset = this.map.assetLayer[ypos][xpos];
+        const theTerrain = this.map.terrainLayer[ypos][xpos];
+        // if it's a human unit, it can be placed on dirt and grass
+          if (asset.type === 0 || asset.type === 1 || asset.type === 2 || asset.type === 3) {
+            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
+              console.log('terrain collision');
+              return;
+            }
+        // otherwise it can only be placed on grass
+          } else {
+            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass) {
+              console.log('terrain collision');
+              return;
+            }
+          }
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
