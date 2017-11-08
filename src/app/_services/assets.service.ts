@@ -18,6 +18,8 @@ interface IMap {
   players: Player[];
   assets: Asset[];
   assetsUpdated: Subject<Region>;
+  assetRemoved: Subject<Region>;
+  tilesUpdated: Subject<Region>;
 }
 
 /**
@@ -32,6 +34,14 @@ export class AssetsService {
     mapService: MapService,
   ) {
     this.map = mapService;
+
+    this.map.tilesUpdated.do(x => console.log('tilesUpdated:Asset: ', JSON.stringify(x))).subscribe({
+      next: reg => {
+        this.removeInvalidAsset(reg);
+      },
+      error: err => console.error(err),
+      complete: null
+    });
   }
 
  // TODO: refactor to take Coordinate, change to use x y from Region, expand Region before firing event (like in terrain?)
@@ -82,6 +92,10 @@ export class AssetsService {
    * @param reg The region to check for Assets.
    */
   public removeInvalidAsset(reg: Region) {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         const theTerrain = this.map.terrainLayer[y][x];
@@ -124,6 +138,8 @@ export class AssetsService {
       }
     }
     console.log(this.map.assetLayer);
+
+    this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.

@@ -27,6 +27,7 @@ interface IMap {
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
   assetsUpdated: Subject<Region>;
+  assetRemoved: Subject<Region>;
 }
 
 /**
@@ -48,12 +49,16 @@ export class CanvasService {
   /**
    * Contains the canvas HTML element for output
    */
-  private canvas: HTMLCanvasElement;
+  private terrainCanvas: HTMLCanvasElement;
+
+
+  private assetCanvas: HTMLCanvasElement;
 
   /**
    * This canvas's context
    */
-  private context: CanvasRenderingContext2D;
+  private terrainContext: CanvasRenderingContext2D;
+  private assetContext: CanvasRenderingContext2D;
 
   /**
    * Map to be read from
@@ -78,10 +83,10 @@ export class CanvasService {
 
     this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
-        if (this.canvas) {
-          this.canvas.width = dim.width * 32;
-          this.canvas.height = dim.height * 32;
-        }
+        this.terrainCanvas.width = dim.width * 32;
+        this.terrainCanvas.height = dim.height * 32;
+        this.assetCanvas.width = dim.width * 32;
+        this.assetCanvas.height = dim.height * 32;
       },
       error: error => console.error(error),
       complete: null
@@ -90,7 +95,6 @@ export class CanvasService {
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: reg => {
         this.drawMap(reg);
-        this.assetsService.removeInvalidAsset(reg);
       },
       error: err => console.error(err),
       complete: null
@@ -102,9 +106,26 @@ export class CanvasService {
       complete: null
     });
 
+    this.map.assetRemoved.do(x => console.log('assetRemoved:Canvas: ', JSON.stringify(x))).subscribe({
+      next: reg => this.clearRegion(this.assetContext, reg),
+      error: err => console.error(err),
+      complete: null
+    });
+
+
+
 
     // TEMP for convenience
     ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
+  }
+
+  public clearRegion(ctx: CanvasRenderingContext2D, reg: Region ) {
+    ctx.clearRect(
+      reg.x * CanvasService.TERRAIN_SIZE,
+      reg.y * CanvasService.TERRAIN_SIZE,
+      reg.width * CanvasService.TERRAIN_SIZE,
+      reg.height * CanvasService.TERRAIN_SIZE
+    );
   }
 
   /**
@@ -112,9 +133,11 @@ export class CanvasService {
    * @param c canvas to be set
    * @param ctx context to be set
    */
-  public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
-    this.canvas = c;
-    this.context = ctx;
+  public setCanvases(tc: HTMLCanvasElement, tctx: CanvasRenderingContext2D, ac: HTMLCanvasElement, actx: CanvasRenderingContext2D): void {
+    this.terrainCanvas = tc;
+    this.terrainContext = tctx;
+    this.assetCanvas = ac;
+    this.assetContext = actx;
     this.init();
   }
 
@@ -130,7 +153,7 @@ export class CanvasService {
     const terrain = await this.spriteService.get(AssetType.Terrain);
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        this.drawImage(terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
+        this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
@@ -156,7 +179,7 @@ export class CanvasService {
           const img = await this.spriteService.get(currentAsset.type);
           let single = img.width;
           if (this.spriteService.isColored.get(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
+          this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
         }
       }
     }
@@ -172,14 +195,14 @@ export class CanvasService {
    * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
    * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */
-  private drawImage(image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+  private drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
     let offset = 0;
     if (width % CanvasService.TERRAIN_SIZE !== 0) {
       offset = (width - CanvasService.TERRAIN_SIZE) / 2;
     }
     // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
     if (player === 0) { player = 1; }
-    this.context.drawImage(
+    layer.drawImage(
       image,
       (player - 1) * width,
       index * width,

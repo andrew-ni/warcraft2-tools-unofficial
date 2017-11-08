@@ -15,8 +15,13 @@ import { UserService } from 'services/user.service';
 })
 export class MapComponent implements OnInit, OnDestroy {
 
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
+  private eventHandler: HTMLDivElement;
+
+  private terrainCanvas: HTMLCanvasElement;
+  private terrainContext: CanvasRenderingContext2D;
+
+  private assetCanvas: HTMLCanvasElement;
+  private assetContext: CanvasRenderingContext2D;
 
   mapLoadedSubscription: Subscription;
 
@@ -32,13 +37,15 @@ export class MapComponent implements OnInit, OnDestroy {
    * Sets click listeners
    */
   ngOnInit() {
-    this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
-    this.context = this.canvas.getContext('2d');
-    // this.canvas.width = window.innerWidth;
-    // this.canvas.height = window.innerHeight;
+    this.eventHandler = document.getElementById('events') as HTMLDivElement;
+    this.terrainCanvas = document.getElementById('terrainCanvas') as HTMLCanvasElement;
+    this.terrainContext = this.terrainCanvas.getContext('2d');
+
+    this.assetCanvas = document.getElementById('assetCanvas') as HTMLCanvasElement;
+    this.assetContext = this.assetCanvas.getContext('2d');
+    this.canvasService.setCanvases(this.terrainCanvas, this.terrainContext, this.assetCanvas, this.assetContext);
 
     // Pass canvas to map service for drawing
-    this.canvasService.setCanvas(this.canvas, this.context);
     this.setClickListeners();
   }
 
@@ -67,8 +74,8 @@ export class MapComponent implements OnInit, OnDestroy {
     // https://stackoverflow.com/a/34030504
     const pan = (event: MouseEvent) => {
       document.body.style.cursor = 'move';
-      this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
-      this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
+      this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
+      this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
 
     /**
@@ -77,25 +84,25 @@ export class MapComponent implements OnInit, OnDestroy {
      */
     const removeListeners = () => {
       document.body.style.cursor = 'auto';
-      this.canvas.removeEventListener('mousemove', placeMapElementAtCursor, false);
-      this.canvas.removeEventListener('mousemove', pan, false);
+      this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
+      this.eventHandler.removeEventListener('mousemove', pan, false);
     };
 
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
      * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
      */
-    this.canvas.addEventListener('mousedown', (event) => {
+    this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
-      this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { placeMapElementAtCursor(event); this.canvas.addEventListener('mousemove', placeMapElementAtCursor, false); }
-      if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
+      this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
+      if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
+      if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
     });
 
     /** On mouseup, remove listeners */
-    this.canvas.addEventListener('mouseup', (event) => {
+    this.eventHandler.addEventListener('mouseup', (event) => {
       removeListeners();
-      this.canvas.removeEventListener('mouseleave', function () { }, false);
+      this.eventHandler.removeEventListener('mouseleave', function () { }, false);
     });
   }
 }
