@@ -19,6 +19,8 @@ interface IMap {
   assets: Asset[];
 }
 
+
+
 /**
 * AssetsService handles the logic of placing and removing assets (units and buildings),
 * including asset and terrain collision and player logic.
@@ -26,17 +28,35 @@ interface IMap {
 @Injectable()
 export class AssetsService {
   private map: IMap;
-  private unitTypes: Set<AssetType>;
-  private structureTypes: Set<AssetType>;
+
+  /** The set of all unit assets. */
+  public readonly unitTypes = new Set<AssetType>([
+    AssetType.Peasant,
+    AssetType.Footman,
+    AssetType.Ranger,
+    AssetType.Archer,
+  ]);
+
+  /** The set of all structure assets. */
+  public readonly structureTypes = new Set<AssetType>([
+    AssetType.Barracks,
+    AssetType.Blacksmith,
+    AssetType.CannonTower,
+    AssetType.Castle,
+    AssetType.Farm,
+    AssetType.GoldMine,
+    AssetType.GuardTower,
+    AssetType.Keep,
+    AssetType.LumberMill,
+    AssetType.ScoutTower,
+    AssetType.TownHall,
+    AssetType.Wall
+  ]);
 
   constructor(
     mapService: MapService,
   ) {
     this.map = mapService;
-    this.unitTypes = new Set<AssetType>([AssetType.Peasant, AssetType.Footman, AssetType.Ranger, AssetType.Archer]);
-    this.structureTypes = new Set<AssetType>([AssetType.Barracks, AssetType.Blacksmith, AssetType.CannonTower,
-    AssetType.Castle, AssetType.Farm, AssetType.GoldMine, AssetType.GuardTower, AssetType.Keep, AssetType.LumberMill,
-    AssetType.ScoutTower, AssetType.TownHall, AssetType.Wall]);
   }
 
 
