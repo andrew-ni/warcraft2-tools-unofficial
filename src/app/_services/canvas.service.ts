@@ -177,7 +177,8 @@ export class CanvasService {
     if (width % CanvasService.TERRAIN_SIZE !== 0) {
       offset = (width - CanvasService.TERRAIN_SIZE) / 2;
     }
-
+    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
+    if (player === 0) { player = 1; }
     this.context.drawImage(
       image,
       (player - 1) * width,
