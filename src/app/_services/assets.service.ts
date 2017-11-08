@@ -35,8 +35,8 @@ export class AssetsService {
     this.map = mapService;
     this.unitTypes = new Set<AssetType>([AssetType.Peasant, AssetType.Footman, AssetType.Ranger, AssetType.Archer]);
     this.structureTypes = new Set<AssetType>([AssetType.Barracks, AssetType.Blacksmith, AssetType.CannonTower,
-        AssetType.Castle, AssetType.Farm, AssetType.GoldMine, AssetType.GuardTower, AssetType.Keep, AssetType.LumberMill,
-        AssetType.ScoutTower, AssetType.TownHall, AssetType.Wall]);
+    AssetType.Castle, AssetType.Farm, AssetType.GoldMine, AssetType.GuardTower, AssetType.Keep, AssetType.LumberMill,
+    AssetType.ScoutTower, AssetType.TownHall, AssetType.Wall]);
   }
 
 
@@ -87,7 +87,7 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          if (!(theAsset.validTiles.has(theTerrain.tileType))) {this.removeAsset(theAsset); }
+          if (!(theAsset.validTiles.has(theTerrain.tileType))) { this.removeAsset(theAsset); }
         }
       }
     }
