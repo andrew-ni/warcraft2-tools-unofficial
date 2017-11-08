@@ -33,15 +33,29 @@ export class AssetsService {
     this.map = mapService;
   }
 
+
+  private isBetween(bottom: number, num: number, top: number) { return num >= bottom && num <= top; }
+
   /**
    * Places asset on requested position in assets layer. Also handles legality of placement.
    * @param owner owner of asset to be placed
    * @param type type of asset to be placed
    * @param x x-coord of asset to be placed
    * @param y y-coord of asset to be placed
-   * @param init check if method is called during assets layer init
+   * @param validate whether to check for valid place, false means force placement.
    */
-  public placeAsset(owner: number, type: AssetType, x: number, y: number) {
+  public placeAsset(owner: number, type: AssetType, x: number, y: number, validate = true) {
+
+    const validatePlacement = (assetType: AssetType, tileIndex: number) => {
+      // if it's a human unit, it can be placed on dirt and grass
+      if (assetType <= 3) {
+        return (this.isBetween(8, tileIndex, 19) || this.isBetween(91, tileIndex, 122) || this.isBetween(147, tileIndex, 210));
+        // otherwise it can only be placed on grass
+      } else {
+        return (this.isBetween(14, tileIndex, 19) || this.isBetween(179, tileIndex, 210));
+      }
+    };
+
     if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
     if (type === AssetType.GoldMine) { owner = 0; }
     const asset: Asset = new Asset(owner, type, x, y);
@@ -49,21 +63,9 @@ export class AssetsService {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
 
-        const theAsset = this.map.assetLayer[ypos][xpos];
-        const theTerrain = this.map.drawLayer[ypos][xpos];
-        // if it's a human unit, it can be placed on dirt and grass
-          if (asset.type <= 3) {
-            if (!(this.isBetween(8, theTerrain.index, 19) || this.isBetween(91, theTerrain.index, 122) || this.isBetween(147, theTerrain.index, 210))) {
-              console.log('terrain collision');
-              return;
-            }
-        // otherwise it can only be placed on grass
-          } else {
-            if (!(this.isBetween(14, theTerrain.index, 19) ||  this.isBetween(179, theTerrain.index, 210))) {
-              console.log('terrain collision');
-              return;
-            }
-          }
+        const tileIndex = this.map.drawLayer[ypos][xpos].index;
+        if (validate && !validatePlacement(type, tileIndex)) { console.log('terrain collision'); return; }
+
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
@@ -71,7 +73,6 @@ export class AssetsService {
     console.log('pushed');
   }
 
-  private isBetween(bottom: number, num: number, top: number) {return num >= bottom && num <= top; }
 
   /**
    * Remove any assets placed invalidly within the given region.
