@@ -128,9 +128,9 @@ export class CanvasService {
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     const terrain = await this.spriteService.get(AssetType.Terrain);
-    for (let x = reg.x; x < reg.x + reg.width; x++) {
-      for (let y = reg.y; y < reg.y + reg.width; y++) {
-        this.drawImage(terrain, 1, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        this.drawImage(terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
