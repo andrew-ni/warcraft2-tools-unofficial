@@ -46,13 +46,14 @@ export class AssetsService {
    */
   public placeAsset(owner: number, type: AssetType, x: number, y: number, validate = true) {
 
-    const validatePlacement = (assetType: AssetType, tileIndex: number) => {
+    const validatePlacement = (assetType: AssetType, tileType: TileType) => {
       // if it's a human unit, it can be placed on dirt and grass
       if (assetType <= 3) {
-        return (this.isBetween(8, tileIndex, 19) || this.isBetween(91, tileIndex, 122) || this.isBetween(147, tileIndex, 210));
+        return (tileType === TileType.LightGrass) || (tileType === TileType.DarkGrass) ||
+          (tileType === TileType.LightDirt) || (tileType === TileType.DarkDirt);
         // otherwise it can only be placed on grass
       } else {
-        return (this.isBetween(14, tileIndex, 19) || this.isBetween(179, tileIndex, 210));
+        return (tileType === TileType.LightGrass) || (tileType === TileType.DarkGrass);
       }
     };
 
@@ -63,8 +64,8 @@ export class AssetsService {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
 
-        const tileIndex = this.map.drawLayer[ypos][xpos].index;
-        if (validate && !validatePlacement(type, tileIndex)) { console.log('terrain collision'); return; }
+        const tileType = this.map.drawLayer[ypos][xpos].tileType;
+        if (validate && !validatePlacement(type, tileType)) { console.log('terrain collision'); return; }
 
         this.map.assetLayer[ypos][xpos] = asset;
       }
