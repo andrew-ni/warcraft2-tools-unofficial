@@ -89,23 +89,23 @@ export class AssetsService {
             if (!(this.isBetween(8, theTerrain.index, 19) || this.isBetween(91, theTerrain.index, 122) || this.isBetween(147, theTerrain.index, 210))) {
               this.removeAsset(theAsset);
             }
-        } else {
-          if (!(this.isBetween(14, theTerrain.index, 19) ||  this.isBetween(179, theTerrain.index, 210))) {
-            this.removeAsset(theAsset);
+          } else {
+            if (!(this.isBetween(14, theTerrain.index, 19) || this.isBetween(179, theTerrain.index, 210))) {
+              this.removeAsset(theAsset);
+            }
           }
         }
       }
     }
   }
-}
-/**
- * Removes a single asset
- * @param toBeRemoved asset to be removed
- */
+  /**
+   * Removes a single asset
+   * @param toBeRemoved asset to be removed
+   */
   public removeAsset(toBeRemoved: Asset): void {
     this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
     console.log('removed asset ', toBeRemoved);
-    for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++){
+    for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++) {
       for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
