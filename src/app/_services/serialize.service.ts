@@ -161,9 +161,9 @@ export class SerializeService {
     this.map.terrainPath = terrainPath.trim();
     this.map.terrainLayer = this.parseTerrain(terrain);
     this.map.partialBits = this.parsePartialBits(partialbits);
-    this.map.assets = this.parseAssets(assets ? assets.trim() : undefined);
+    this.initAssetLayer();
+    this.parseAssets(assets ? assets.trim() : undefined);
     this.map.players = this.parsePlayers(players.trim(), this.map.assets);
-    this.initAssetLayer(this.map.assets);
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
@@ -233,18 +233,16 @@ export class SerializeService {
   /**
    * @param assetsData string containing list of assets
    */
-  private parseAssets(assetsData: string): Asset[] {
-    const parsedAssets: Asset[] = [];
-    if (assetsData !== undefined) {
-      const lines = assetsData.split(/\r?\n/);
+  private parseAssets(assetsData: string) {
+    if (assetsData === undefined) return;
 
-      for (const line of lines) {
-        const [type, owner, x, y] = line.split(' ');
-        // .map format is type owner x y, whereas asset construction is owner type x y
-        parsedAssets.push(new Asset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10)));
-      }
+    const lines = assetsData.split(/\r?\n/);
+
+    for (const line of lines) {
+      const [type, owner, x, y] = line.split(' ');
+      // .map format is type owner x y, whereas asset construction is owner type x y
+      this.assetsService.placeAsset(parseInt(owner, 10), AssetType[type], parseInt(x, 10), parseInt(y, 10), false);
     }
-    return parsedAssets;
   }
 
   /**
@@ -262,19 +260,13 @@ export class SerializeService {
    * collision map.
    * @param assets Assets list to be processed
    */
-  private initAssetLayer(assets: Asset[]) {
-    const assetLayer: Asset[][] = [];
+  private initAssetLayer() {
+    this.map.assetLayer = [];
 
     for (let row = 0; row < this.map.height; row++) {
       const colIndex = 0;
-      assetLayer.push([]);
-      assetLayer[row] = new Array(this.map.width);
-    }
-
-    this.map.assetLayer = assetLayer;   // copy in the newly initialized asset layer
-
-    for (const asset of assets) {
-      this.assetsService.placeAsset(asset.owner, asset.type, asset.x, asset.y, true);
+      this.map.assetLayer.push([]);
+      this.map.assetLayer[row] = new Array(this.map.width);
     }
   }
 }

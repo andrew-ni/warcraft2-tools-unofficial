@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
+import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
@@ -68,6 +69,7 @@ export class CanvasService {
    */
   constructor(
     mapService: MapService,
+    private assetsService: AssetsService,
   ) {
     this.map = mapService;
     // Load assets before, and independently of map:loaded.
@@ -75,7 +77,12 @@ export class CanvasService {
     this.path = require('path');
 
     this.map.tilesUpdated.subscribe({
-      next: reg => { this.drawMap(reg); console.log('tilesupdated'); this.drawAssets(); },
+      next: reg => {
+        this.drawMap(reg);
+        console.log('tilesupdated');
+        this.assetsService.removeInvalidAsset(reg);
+        this.drawAssets();
+      },
       error: err => console.error(err),
       complete: null
     });
@@ -165,6 +172,10 @@ export class CanvasService {
    * @param index Position in the spritesheet. Starts at 0.
    */
   private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
-    this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE, y * CanvasService.TERRAIN_SIZE, width, width);
+    let offset = 0;
+    if (width % CanvasService.TERRAIN_SIZE !== 0) {
+      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
+    }
+    this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE - offset, y * CanvasService.TERRAIN_SIZE - offset, width, width);
   }
 }

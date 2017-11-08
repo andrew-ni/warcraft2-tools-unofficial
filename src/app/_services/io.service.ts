@@ -9,7 +9,7 @@ import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
-const {dialog} = require('electron').remote;
+const { dialog } = require('electron').remote;
 
 interface IMap {
   canSave: boolean;
@@ -71,9 +71,11 @@ export class IOService {
        * Use save as if the map is created by the editor
        */
       if (this._mapFilePath === undefined) {
-        this._mapFilePath = dialog.showSaveDialog({ filters: [
-               { name: 'Map File (.map)', extensions: ['map'] }
-              ]});
+        this._mapFilePath = dialog.showSaveDialog({
+          filters: [
+            { name: 'Map File (.map)', extensions: ['map'] }
+          ]
+        });
       }
       if (this._mapFilePath === undefined) {
         return;

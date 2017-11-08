@@ -56,7 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
       const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
       this.userService.applySelectedType(
         (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, false); this.canvasService.drawAssets(); },
+        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, true); this.canvasService.drawAssets(); },
       );
     };
 
