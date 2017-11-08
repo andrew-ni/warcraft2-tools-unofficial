@@ -146,7 +146,7 @@ export class CanvasService {
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     const terrain = this.assetMap.get(AssetType.Terrain);
     for (let x = reg.x; x < reg.x + reg.width; x++) {
-      for (let y = reg.y; y < reg.y + reg.width; y++) {
+      for (let y = reg.y; y < reg.y + reg.height; y++) {
         this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
       }
     }
