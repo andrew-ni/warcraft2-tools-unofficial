@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType } from 'asset';
+import { Asset, AssetType, Structure, Unit } from 'asset';
 import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
-import { TileType } from 'tile';
+import { Tile, TileType } from 'tile';
 
 /**
  * Narrow IMap interface to discourage access of unrelated attributes
@@ -15,6 +15,7 @@ interface IMap {
   height: number;
   terrainLayer: TileType[][];
   assetLayer: Asset[][];
+  drawLayer: Tile[][];
   players: Player[];
   assets: Asset[];
   assetsUpdated: Subject<Region>;
@@ -27,55 +28,59 @@ interface IMap {
 @Injectable()
 export class AssetsService {
   private map: IMap;
+  private unitTypes: Set<AssetType>;
+  private structureTypes: Set<AssetType>;
 
   constructor(
     mapService: MapService,
   ) {
     this.map = mapService;
+    this.unitTypes = new Set<AssetType>([AssetType.Peasant, AssetType.Footman, AssetType.Ranger, AssetType.Archer]);
+    this.structureTypes = new Set<AssetType>([AssetType.Barracks, AssetType.Blacksmith, AssetType.CannonTower,
+    AssetType.Castle, AssetType.Farm, AssetType.GoldMine, AssetType.GuardTower, AssetType.Keep, AssetType.LumberMill,
+    AssetType.ScoutTower, AssetType.TownHall, AssetType.Wall]);
   }
 
- // TODO: refactor to take Coordinate, change to use x y from Region, expand Region before firing event (like in terrain?)
- /**
-  * Updates assetLayer and performs collision checking.
-  * @param owner owner of asset to be placed
-  * @param type type of asset to be placed
-  * @param x x-coord of asset to be placed
-  * @param y y-coord of asset to be placed
-  * @param reg
-  * @fires assetsUpdated With the modified Region.
-  */
-  public placeAsset(owner: number, type: AssetType, coord: Coordinate) {
-    const y = coord.y;
-    const x = coord.x;
-    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
-    const asset: Asset = new Asset(owner, type, x, y);
-    for (let xpos = x; xpos < x + asset.width; xpos++) {
-      for (let ypos = y; ypos < y + asset.height; ypos++) {
-        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
 
-        const theAsset = this.map.assetLayer[ypos][xpos];
-        const theTerrain = this.map.terrainLayer[ypos][xpos];
-        // if it's a human unit, it can be placed on dirt and grass
-          if (asset.type === 0 || asset.type === 1 || asset.type === 2 || asset.type === 3) {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
-              console.log('terrain collision');
-              return;
-            }
-        // otherwise it can only be placed on grass
-          } else {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass) {
-              console.log('terrain collision');
-              return;
-            }
-          }
+  /**
+   * Places asset on requested position in assets layer. Also handles legality of placement.
+   * @param owner owner of asset to be placed
+   * @param type type of asset to be placed
+   * @param x x-coord of asset to be placed
+   * @param y y-coord of asset to be placed
+   * @param validate whether to check for valid place, false means force placement.
+   * @fires assetsUpdated With the modified Region.
+   */
+  public placeAsset(owner: number, type: AssetType, pos: Coordinate, validate = true) {
+
+    if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) return;
+    let asset: Asset;
+
+    if (this.unitTypes.has(type)) {
+      asset = new Unit(owner, type, pos);
+    } else if (this.structureTypes.has(type)) {
+      asset = new Structure(owner, type, pos);
+    } else return;
+
+    for (let ypos = pos.y; ypos < pos.y + asset.height; ypos++) {
+      for (let xpos = pos.x; xpos < pos.x + asset.width; xpos++) {
+        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
+        const tileType = this.map.drawLayer[ypos][xpos].tileType;
+        if (validate && !(asset.validTiles.has(tileType))) { console.log('terrain collision'); return; }
+      }
+    }
+
+    for (let ypos = pos.y; ypos < pos.y + asset.height; ypos++) {
+      for (let xpos = pos.x; xpos < pos.x + asset.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
     this.map.assets.push(asset);
     console.log('pushed');
 
-    this.map.assetsUpdated.next({y: coord.y, x: coord.x, width: asset.width, height: asset.height});
+    this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
   }
+
 
   /**
    * Remove any assets placed invalidly within the given region.
@@ -84,46 +89,27 @@ export class AssetsService {
   public removeInvalidAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        const theTerrain = this.map.terrainLayer[y][x];
         if (this.map.assetLayer[y][x] !== undefined) {
+          const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          console.log('the asset is type: ' + theAsset.type);
-          if (theAsset.type === 0 || theAsset.type === 1 || theAsset.type === 2 || theAsset.type === 3) {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
-              this.removeAsset(theAsset);
-            }
-        } else {
-          if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass ) {
-            this.removeAsset(theAsset);
-          }
+          if (!(theAsset.validTiles.has(theTerrain.tileType))) { this.removeAsset(theAsset); }
         }
-        // if (this.map.assetLayer[y][x] !== undefined && this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass) {
-        //   const assetToBeRemoved = this.map.assetLayer[y][x];
-        //   this.removeAsset(assetToBeRemoved);
-        // this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
-          // console.log('removed asset', assetToBeRemoved);
-          // for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
-          //   for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
-          //     this.map.assetLayer[ypos][xpos] = undefined;
-          //   }
-          // }
       }
     }
   }
-}
-/**
- *
- * @param toBeRemoved asset to be removed
- */
+
+  /**
+   * Removes a single asset
+   * @param toBeRemoved asset to be removed
+   */
   public removeAsset(toBeRemoved: Asset): void {
     this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
     console.log('removed asset ', toBeRemoved);
-    for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++){
-      for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
+    for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
+      for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
-    console.log(this.map.assetLayer);
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.

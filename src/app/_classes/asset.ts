@@ -1,3 +1,5 @@
+import { Coordinate } from 'interfaces';
+import { TileType } from 'tile';
 
 export enum AssetType {
   Archer,
@@ -20,31 +22,6 @@ export enum AssetType {
   Terrain,
   Colors,
 }
-
-// export enum UnitType {
-//   Archer,
-//   Footman,
-//   Peasant,
-//   Ranger,
-// }
-
-// export enum StructureType {
-//   Barracks,
-//   Blacksmith,
-//   Farm,
-//   CannonTower,
-//   Castle,
-//   GoldMine,
-//   GuardTower,
-//   Keep,
-//   LumberMill,
-//   ScoutTower,
-//   TownHall,
-//   Wall,
-//   Placeholder,
-// }
-
-
 
 const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Archer, 1],
@@ -75,37 +52,29 @@ export class Asset {
   height: number;
   width: number;
   referenceAsset: Asset;
+  validTiles: Set<TileType>;
 
-  constructor(owner: number, type: AssetType, x: number, y: number, referenceAsset?: Asset) {
+  constructor(owner: number, type: AssetType, pos: Coordinate, referenceAsset?: Asset) {
     this.owner = owner;
     this.type = type;
-    this.x = x;
-    this.y = y;
+    this.x = pos.x;
+    this.y = pos.y;
     this.height = dimensionMap.get(type);
     this.width = dimensionMap.get(type);
-    if (type === AssetType.Placeholder) {
-      this.referenceAsset = referenceAsset;
-    } else {
-      this.referenceAsset = this;
-    }
   }
 }
 
 export class Unit extends Asset {
-  type: AssetType;
-  constructor(owner: number, type: AssetType, x: number, y: number) {
-    super(owner, type, x, y);
+  constructor(owner: number, type: AssetType, pos: Coordinate) {
+    super(owner, type, pos);
+    this.validTiles = new Set<TileType>([TileType.DarkDirt, TileType.DarkGrass, TileType.LightDirt, TileType.LightGrass]);
   }
 }
 
 export class Structure extends Asset {
-  type: AssetType;
-  constructor(owner: number, type: AssetType, x: number, y: number) {
-    super(owner, type, x, y);
-    if (type === AssetType.Placeholder) {
-      this.referenceAsset = this.referenceAsset;
-    } else {
-      this.referenceAsset = this;
-    }
+  constructor(owner: number, type: AssetType, pos: Coordinate) {
+    super(owner, type, pos);
+    this.validTiles = new Set<TileType>([TileType.DarkGrass, TileType.LightGrass]);
+    if (type === AssetType.GoldMine) { this.owner = 0; }
   }
 }
