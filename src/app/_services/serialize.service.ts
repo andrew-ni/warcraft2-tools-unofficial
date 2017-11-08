@@ -162,7 +162,7 @@ export class SerializeService {
     this.map.terrainLayer = this.parseTerrain(terrain);
     this.map.partialBits = this.parsePartialBits(partialbits);
     this.initAssetLayer();
-    this.parseAssets(assets.trim());
+    this.parseAssets(assets ? assets.trim() : undefined);
     this.map.players = this.parsePlayers(players.trim(), this.map.assets);
 
     // if execution has reached this point, that means all parsing was completed successfully
@@ -234,6 +234,8 @@ export class SerializeService {
    * @param assetsData string containing list of assets
    */
   private parseAssets(assetsData: string) {
+    if (assetsData === undefined) return;
+
     const lines = assetsData.split(/\r?\n/);
 
     for (const line of lines) {
