@@ -43,6 +43,7 @@ export class AssetsService {
    */
   public placeAsset(owner: number, type: AssetType, x: number, y: number) {
     if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
+    if (type === AssetType.GoldMine) { owner = 0; }
     const asset: Asset = new Asset(owner, type, x, y);
     for (let xpos = x; xpos < x + asset.width; xpos++) {
       for (let ypos = y; ypos < y + asset.height; ypos++) {
