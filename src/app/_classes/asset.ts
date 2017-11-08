@@ -63,9 +63,6 @@ export class Asset {
 }
 
 export class Unit extends Asset {
-  type: AssetType;
-  validTiles: Set<TileType>;
-
   constructor(owner: number, type: AssetType, x: number, y: number) {
     super(owner, type, x, y);
     this.validTiles = new Set<TileType>([TileType.DarkDirt, TileType.DarkGrass, TileType.LightDirt, TileType.LightGrass]);
@@ -73,9 +70,6 @@ export class Unit extends Asset {
 }
 
 export class Structure extends Asset {
-  type: AssetType;
-  validTiles: Set<TileType>;
-
   constructor(owner: number, type: AssetType, x: number, y: number) {
     super(owner, type, x, y);
     this.validTiles = new Set<TileType>([TileType.DarkGrass, TileType.LightGrass]);

@@ -61,7 +61,7 @@ export class AssetsService {
 
     for (let ypos = y; ypos < y + asset.height; ypos++) {
       for (let xpos = x; xpos < x + asset.width; xpos++) {
-        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision', this.map.assetLayer[ypos][xpos], 'clicked: ', y, x); return; }
+        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
         const tileType = this.map.drawLayer[ypos][xpos].tileType;
         if (validate && !(asset.validTiles.has(tileType))) { console.log('terrain collision'); return; }
         this.map.assetLayer[ypos][xpos] = asset;
