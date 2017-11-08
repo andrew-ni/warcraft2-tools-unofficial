@@ -64,6 +64,11 @@ export class AssetsService {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
         const tileType = this.map.drawLayer[ypos][xpos].tileType;
         if (validate && !(asset.validTiles.has(tileType))) { console.log('terrain collision'); return; }
+      }
+    }
+
+    for (let ypos = y; ypos < y + asset.height; ypos++) {
+      for (let xpos = x; xpos < x + asset.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
