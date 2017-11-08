@@ -80,8 +80,8 @@ export class CanvasService {
       next: reg => {
         this.drawMap(reg);
         console.log('tilesupdated');
-        this.drawAssets();
         this.assetsService.removeInvalidAsset(reg);
+        this.drawAssets();
       },
       error: err => console.error(err),
       complete: null

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Asset, AssetType } from 'asset';
+import { Asset, AssetType, Structure, Unit } from 'asset';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
 import { Tile, TileType } from 'tile';
@@ -26,15 +26,19 @@ interface IMap {
 @Injectable()
 export class AssetsService {
   private map: IMap;
+  private unitTypes: Set<AssetType>;
+  private structureTypes: Set<AssetType>;
 
   constructor(
     mapService: MapService,
   ) {
     this.map = mapService;
+    this.unitTypes = new Set<AssetType>([AssetType.Peasant, AssetType.Footman, AssetType.Ranger, AssetType.Archer]);
+    this.structureTypes = new Set<AssetType>([AssetType.Barracks, AssetType.Blacksmith, AssetType.CannonTower,
+        AssetType.Castle, AssetType.Farm, AssetType.GoldMine, AssetType.GuardTower, AssetType.Keep, AssetType.LumberMill,
+        AssetType.ScoutTower, AssetType.TownHall, AssetType.Wall]);
   }
 
-
-  private isBetween(bottom: number, num: number, top: number) { return num >= bottom && num <= top; }
 
   /**
    * Places asset on requested position in assets layer. Also handles legality of placement.
@@ -44,29 +48,22 @@ export class AssetsService {
    * @param y y-coord of asset to be placed
    * @param validate whether to check for valid place, false means force placement.
    */
-  public placeAsset(owner: number, type: AssetType, x: number, y: number, validate = true) {
-
-    const validatePlacement = (assetType: AssetType, tileType: TileType) => {
-      // if it's a human unit, it can be placed on dirt and grass
-      if (assetType <= 3) {
-        return (tileType === TileType.LightGrass) || (tileType === TileType.DarkGrass) ||
-          (tileType === TileType.LightDirt) || (tileType === TileType.DarkDirt);
-        // otherwise it can only be placed on grass
-      } else {
-        return (tileType === TileType.LightGrass) || (tileType === TileType.DarkGrass);
-      }
-    };
+  public placeAsset(owner: number, type: AssetType, x: number, y: number, validate: boolean) {
 
     if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
-    if (type === AssetType.GoldMine) { owner = 0; }
-    const asset: Asset = new Asset(owner, type, x, y);
-    for (let xpos = x; xpos < x + asset.width; xpos++) {
-      for (let ypos = y; ypos < y + asset.height; ypos++) {
-        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
+    let asset: Asset;
 
+    if (this.unitTypes.has(type)) {
+      asset = new Unit(owner, type, x, y);
+    } else if (this.structureTypes.has(type)) {
+      asset = new Structure(owner, type, x, y);
+    } else return;
+
+    for (let ypos = y; ypos < y + asset.height; ypos++) {
+      for (let xpos = x; xpos < x + asset.width; xpos++) {
+        if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision', this.map.assetLayer[ypos][xpos], 'clicked: ', y, x); return; }
         const tileType = this.map.drawLayer[ypos][xpos].tileType;
-        if (validate && !validatePlacement(type, tileType)) { console.log('terrain collision'); return; }
-
+        if (validate && !(asset.validTiles.has(tileType))) { console.log('terrain collision'); return; }
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
@@ -82,23 +79,15 @@ export class AssetsService {
   public removeInvalidAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        const theTerrain = this.map.drawLayer[y][x];
         if (this.map.assetLayer[y][x] !== undefined) {
+          const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          console.log('the asset is type: ' + theAsset.type);
-          if (theAsset.type <= 3) {
-            if (!(this.isBetween(8, theTerrain.index, 19) || this.isBetween(91, theTerrain.index, 122) || this.isBetween(147, theTerrain.index, 210))) {
-              this.removeAsset(theAsset);
-            }
-          } else {
-            if (!(this.isBetween(14, theTerrain.index, 19) || this.isBetween(179, theTerrain.index, 210))) {
-              this.removeAsset(theAsset);
-            }
-          }
+          if (!(theAsset.validTiles.has(theTerrain.tileType))) {this.removeAsset(theAsset); }
         }
       }
     }
   }
+
   /**
    * Removes a single asset
    * @param toBeRemoved asset to be removed
@@ -106,12 +95,11 @@ export class AssetsService {
   public removeAsset(toBeRemoved: Asset): void {
     this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
     console.log('removed asset ', toBeRemoved);
-    for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++) {
-      for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
+    for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
+      for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
-    console.log(this.map.assetLayer);
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
