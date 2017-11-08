@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
-import { TileType } from 'tile';
+import { Tile, TileType } from 'tile';
 import { Region } from '../_interfaces';
 
 /**
@@ -14,6 +14,7 @@ interface IMap {
   height: number;
   terrainLayer: TileType[][];
   assetLayer: Asset[][];
+  drawLayer: Tile[][];
   players: Player[];
   assets: Asset[];
 }
@@ -48,16 +49,16 @@ export class AssetsService {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
 
         const theAsset = this.map.assetLayer[ypos][xpos];
-        const theTerrain = this.map.terrainLayer[ypos][xpos];
+        const theTerrain = this.map.drawLayer[ypos][xpos];
         // if it's a human unit, it can be placed on dirt and grass
-          if (asset.type === 0 || asset.type === 1 || asset.type === 2 || asset.type === 3) {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
+          if (asset.type <= 3) {
+            if (!(this.isBetween(8, theTerrain.index, 19) || this.isBetween(91, theTerrain.index, 122) || this.isBetween(147, theTerrain.index, 210))) {
               console.log('terrain collision');
               return;
             }
         // otherwise it can only be placed on grass
           } else {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass) {
+            if (!(this.isBetween(14, theTerrain.index, 19) ||  this.isBetween(179, theTerrain.index, 210))) {
               console.log('terrain collision');
               return;
             }
@@ -69,6 +70,8 @@ export class AssetsService {
     console.log('pushed');
   }
 
+  private isBetween(bottom: number, num: number, top: number) {return num >= bottom && num <= top; }
+
   /**
    * Remove any assets placed invalidly within the given region.
    * @param reg The region to check for Assets.
@@ -76,35 +79,25 @@ export class AssetsService {
   public removeInvalidAsset(reg: Region) {
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        const theTerrain = this.map.terrainLayer[y][x];
+        const theTerrain = this.map.drawLayer[y][x];
         if (this.map.assetLayer[y][x] !== undefined) {
           const theAsset = this.map.assetLayer[y][x];
           console.log('the asset is type: ' + theAsset.type);
-          if (theAsset.type === 0 || theAsset.type === 1 || theAsset.type === 2 || theAsset.type === 3) {
-            if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass && theTerrain !== TileType.LightDirt && theTerrain !== TileType.DarkDirt) {
+          if (theAsset.type <= 3) {
+            if (!(this.isBetween(8, theTerrain.index, 19) || this.isBetween(91, theTerrain.index, 122) || this.isBetween(147, theTerrain.index, 210))) {
               this.removeAsset(theAsset);
             }
         } else {
-          if (theTerrain !== TileType.LightGrass && theTerrain !== TileType.DarkGrass ) {
+          if (!(this.isBetween(14, theTerrain.index, 19) ||  this.isBetween(179, theTerrain.index, 210))) {
             this.removeAsset(theAsset);
           }
         }
-        // if (this.map.assetLayer[y][x] !== undefined && this.map.terrainLayer[y][x] !== TileType.LightGrass && this.map.terrainLayer[y][x] !== TileType.DarkGrass) {
-        //   const assetToBeRemoved = this.map.assetLayer[y][x];
-        //   this.removeAsset(assetToBeRemoved);
-        // this.map.assets.splice(this.map.assets.indexOf(assetToBeRemoved), 1);
-          // console.log('removed asset', assetToBeRemoved);
-          // for (let xpos = assetToBeRemoved.x; xpos < assetToBeRemoved.x + assetToBeRemoved.width; xpos++) {
-          //   for (let ypos = assetToBeRemoved.y; ypos < assetToBeRemoved.y + assetToBeRemoved.height; ypos++) {
-          //     this.map.assetLayer[ypos][xpos] = undefined;
-          //   }
-          // }
       }
     }
   }
 }
 /**
- *
+ * Removes a single asset
  * @param toBeRemoved asset to be removed
  */
   public removeAsset(toBeRemoved: Asset): void {
