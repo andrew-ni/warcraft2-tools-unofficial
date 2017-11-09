@@ -107,6 +107,6 @@ export class Structure extends Asset {
   constructor(owner: number, type: AssetType, pos: Coordinate) {
     super(owner, type, pos);
     this.validTiles = new Set<TileType>([TileType.DarkGrass, TileType.LightGrass]);
-    if (type === AssetType.GoldMine) { this.owner = 0; }
+    if (neutralAssets.has(type)) { this.owner = 0; }
   }
 }
