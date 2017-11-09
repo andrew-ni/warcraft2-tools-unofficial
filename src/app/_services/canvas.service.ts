@@ -125,7 +125,7 @@ export class CanvasService {
     ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
   }
 
-  public clearRegion(ctx: CanvasRenderingContext2D, reg: Region ) {
+  public clearRegion(ctx: CanvasRenderingContext2D, reg: Region) {
     ctx.clearRect(
       reg.x * CanvasService.TERRAIN_SIZE,
       reg.y * CanvasService.TERRAIN_SIZE,
@@ -186,7 +186,7 @@ export class CanvasService {
           let single = img.width;
 
           if (!neutralAssets.has(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
-            this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
+          this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
         }
       }
     }
