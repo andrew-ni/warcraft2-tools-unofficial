@@ -93,9 +93,10 @@ export class CanvasService {
     });
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
-      next: reg => {
-        this.drawMap(reg);
+      next: async reg => {
+        await this.drawMap(reg);
         this.assetsService.removeInvalidAsset(reg);
+        this.drawAssets(reg);
       },
       error: err => console.error(err),
       complete: null
@@ -155,7 +156,7 @@ export class CanvasService {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         const currentAsset = this.map.assetLayer[y][x];
         // only draw on hash miss (first time only)
-        if (!hashSet.has(currentAsset)) {
+        if (currentAsset && !hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
           let single = img.width;
