@@ -131,14 +131,16 @@ export class CanvasService {
 
   /**
    * Sets canvas and context elements, initializing this CanvasService
-   * @param c canvas to be set
-   * @param ctx context to be set
+   * @param terrainCanvas canvas element for drawing terrain
+   * @param terrainCtx context for terrain
+   * @param assetCanvas canvas element for drawing assets
+   * @param assetCtx context for assets
    */
-  public setCanvases(tc: HTMLCanvasElement, tctx: CanvasRenderingContext2D, ac: HTMLCanvasElement, actx: CanvasRenderingContext2D): void {
-    this.terrainCanvas = tc;
-    this.terrainContext = tctx;
-    this.assetCanvas = ac;
-    this.assetContext = actx;
+  public setCanvases(terrainCanvas: HTMLCanvasElement, terrainCtx: CanvasRenderingContext2D, assetCanvas: HTMLCanvasElement, assetCtx: CanvasRenderingContext2D): void {
+    this.terrainCanvas = terrainCanvas;
+    this.terrainContext = terrainCtx;
+    this.assetCanvas = assetCanvas;
+    this.assetContext = assetCtx;
     this.init();
   }
 
@@ -189,11 +191,11 @@ export class CanvasService {
 
   /**
    * Used to draw terrain, units, and assets onto the canvas.
+   * @param layer The canvas context to draw on.
    * @param image Image stored in assetMap. Access with assetMap.get(imgName)
    * @param player Player 1 - 8. Used to calculate x offset in source image.
    * @param width Width of a single sprite on the image.
-   * @param y Y coordinate to draw on canvas.
-   * @param x X coordinate to draw on canvas.
+   * @param pos X, Y coordinate to draw on canvas.
    * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
    * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */

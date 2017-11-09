@@ -70,6 +70,7 @@ export class MapService {
   /** @event assetsUpdated When any assets have changed. */
   public assetsUpdated = new ReplaySubject<Region>(1);
 
+  /** @event assetRemoved When any asset has ben removed. */
   public assetRemoved = new ReplaySubject<Region>(1);
 
   constructor() { }
