@@ -1,4 +1,5 @@
-import { Menu, dialog } from 'electron';
+import { dialog, Menu } from 'electron';
+
 import { IO } from './fileIO';
 
 const options = {
@@ -7,6 +8,11 @@ const options = {
   ]
 };
 
+/**
+ * Builds the menubar with specified labels at the top left of window
+ * On label click, sends appropriate command
+ * @param window
+ */
 export function buildMenu(window: Electron.WebContents): void {
   const template = [
     {
@@ -18,7 +24,7 @@ export function buildMenu(window: Electron.WebContents): void {
         },
         {
           label: 'Load Map',
-          async click() {   // declare async because opening files taes a long time
+          async click() {   // declare async because opening files takes a long time
             dialog.showOpenDialog(options, (paths: string[]) => {
               if (paths === undefined) return;
 

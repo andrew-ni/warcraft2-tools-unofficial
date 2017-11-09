@@ -1,184 +1,71 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observer, Subscription, Observable } from 'rxjs/Rx';
-import { ipcRenderer } from 'electron';
-import { TileType } from '../_classes/tile';
+import { Subject } from 'rxjs/Rx';
 
-import { MapObject } from 'map';
-import { Dimension, Region, Coordinate } from 'interfaces';
-import { readdir } from 'fs';
-import { UserService } from 'services/user.service';
-import { PlayerColor, numToColor } from 'player';
-import { AssetType, strToAssetType } from 'asset';
+import { Asset } from 'asset';
+import { Dimension, Region } from 'interfaces';
+import { Player } from 'player';
+import { Tile, TileType } from 'tile';
+import { Tileset } from 'tileset';
 
 @Injectable()
 export class MapService {
-  private readonly TERRAIN_SIZE = 32; // size of a single terrain tile, in pixels
+  /** True if the map is in a valid state to save, False otherwise. */
+  public canSave = false;
 
-  public map: MapObject;
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
-  private _filePath: string;
-  private assetMap = new Map<AssetType, HTMLImageElement>();
-  private fs;
-  private path;
+  /** The name of the map. */
+  public name: string;
 
-  constructor(private userService: UserService) {
-    this.map = new MapObject();
-    // Load assets before, and independently of map:loaded.
-    this.fs = require('fs');
-    this.path = require('path');
-    this.loadAssets();
+  /** The description for the map. */
+  public description: string;
 
-    // Event listener for when a map has been loaded from a file.
-    // `mapData` is the raw file contents
-    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
-      this._filePath = filePath;
-      this.map.init(mapData, filePath);
-    });
+  /** The width of the map in tiles. */
+  public width: number;
 
-    // Event listener for saving a map
-    ipcRenderer.on('menu:file:save', (event: Electron.IpcMessageEvent, filePath?: string) => {
-      if (this.map === undefined) {
-        console.log('save-map rejected because Map was not created');
-        return;
-      }
+  /** The height of the map in tiles. */
+  public height: number;
 
-      if (filePath) {
-        this._filePath = filePath;    // update our save location
-      }
+  /** A raw matrix of terrain tile types. This is what is saved and loaded. */
+  public terrainLayer: TileType[][];
 
-      const response: string = this.map.stringify();
+  /** A list of assets. */
+  public assets: Asset[] = [];
 
-      if (response === undefined) {
-        console.warn('save-map rejected because Map returned null');
-        // TODO: add save-failed message
+  /**
+   * A matrix that tracks the location of assets in the map.
+   * Assets larger than 1x1 will be assigned to multiple cells.
+   * Shares the sames assets as in the list.
+   */
+  public assetLayer: Asset[][];
 
-        return; // return without making ipc call
-      }
+  /** A matrix of tiles that is drawn to the canvas. */
+  public drawLayer: Tile[][];
 
-      console.log('saving...');
-      ipcRenderer.send('map:save', response, this._filePath);
-    });
+  /** Used in the calculation of the tile index */
+  public partialBits: Uint8Array[];
 
-    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
-      this.map.setTileSet(terrainData);
-      this.drawAssets(); // drawAssets only after terrain is loaded
-    });
+  /** A list of players */
+  public players: Player[] = [];
 
-    this.subscribeToTilesUpdated({
-      next: reg => this.drawMap(reg),
-      error: err => console.error(err),
-      complete: null
-    });
-  }
+  /** The version of map file. */
+  public mapVersion: string;
 
-  public subscribeToMapLoaded(observer: Observer<Dimension>) {
-    return this.map.subscribeToMapLoaded(observer);
-  }
+  /** The relative path to the Terrain.dat file. */
+  public terrainPath: string;
 
-  public subscribeToTilesUpdated(observer: Observer<Region>) {
-    return this.map.subscribeToTilesUpdated(observer);
-  }
+  /** The tile set used to draw the map. */
+  public tileSet: Tileset;
 
-  // Save canvas context from map.component.ts
-  public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
-    this.canvas = c;
-    this.context = ctx;
-    this.setClickListeners();
-  }
 
-  // Handles clickEvents like clickdrag and panning.
-  private setClickListeners() {
-    let clickPos: Coordinate;
+  // Events
 
-    const placeMapElementAtCursor = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        const x = Math.floor(event.offsetX / this.TERRAIN_SIZE);
-        const y = Math.floor(event.offsetY / this.TERRAIN_SIZE);
-        this.userService.applySelectedType(
-          (tileType) => this.map.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-          (assetType) => { this.map.placeAsset(1, assetType, x, y, false); this.drawAssets(); },
-        );
-      }
-    };
+  /** @event mapResized When the dimension of the map have changed. */
+  public mapResized = new Subject<Dimension>();
 
-    // https://stackoverflow.com/a/34030504
-    const pan = (event: MouseEvent) => {
-      if (this.map !== undefined) {
-        document.body.style.cursor = 'move';
-        this.canvas.parentElement.scrollLeft += clickPos.x - event.offsetX;
-        this.canvas.parentElement.scrollTop += clickPos.y - event.offsetY;
-      }
-    };
+  /** @event mapLoaded When the assets and terrain have fully been parsed and initialized. */
+  public mapLoaded = new Subject<void>();
 
-    // Helper function to remove mousemove listeners. Called on mouseup or mouseleave.
-    const removeListeners = () => {
-      document.body.style.cursor = 'auto';
-      this.canvas.removeEventListener('mousemove', placeMapElementAtCursor, false);
-      this.canvas.removeEventListener('mousemove', pan, false);
-    };
+  /** @event tilesUpdated When the any tile types/indices have changed. */
+  public tilesUpdated = new Subject<Region>();
 
-    // On mousedown, route to appropriate function (clickdrag or pan)
-    // https://developer.mozilla.org/en-US/docs/Web/Events/mousedown
-    // 0 = left click, 1 = middle click, 2 = right click
-    this.canvas.addEventListener('mousedown', (event) => {
-      clickPos = { x: event.offsetX, y: event.offsetY };
-      this.canvas.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { placeMapElementAtCursor(event); this.canvas.addEventListener('mousemove', placeMapElementAtCursor, false); }
-      if (event.button === 2) { this.canvas.addEventListener('mousemove', pan, false); }
-    });
-
-    // On mouseup, remove listeners
-    this.canvas.addEventListener('mouseup', (event) => {
-      removeListeners();
-      this.canvas.removeEventListener('mouseleave', function () { }, false);
-    });
-  }
-
-  // TODO: read the .dat files for more information, filter readdir()
-  // Finds files in /assets/img/, and replaces .dat with .png.
-  // Creates Image() for each then inserts <string, image> into assetMap.
-  private loadAssets() {
-    const myPath = './src/assets/img/';
-    const myFiles = this.fs.readdirSync(myPath);
-
-    for (const i in myFiles) {
-      if (this.path.extname(myFiles[i]) === '.dat') {
-        const temp = String(myFiles[i]);
-        const temp2 = temp.substring(0, temp.length - 4);
-
-        const tempImage = new Image();
-        tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(strToAssetType[temp2], tempImage);
-      }
-    }
-  }
-
-  // Draws Map when loaded from file.
-  public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
-    if (reg.y < 0) reg.y = 0;
-    if (reg.x < 0) reg.x = 0;
-    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
-    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    const terrain = this.assetMap.get(AssetType.Terrain);
-    for (let x = reg.x; x < reg.x + reg.width; x++) {
-      for (let y = reg.y; y < reg.y + reg.width; y++) {
-        this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
-      }
-    }
-  }
-
-  // Draws Assets layer using Assets[] array from map.ts
-  public drawAssets(yStart: number = 0, xStart: number = 0, height: number = this.map.height, width: number = this.map.width): void {
-    console.log(this.map.mapLayer2);
-    for (const asset of this.map.assets) {
-      const img = this.assetMap.get(asset.assetType);
-      this.drawImage(img, img.width, asset.y, asset.x, 0);
-    }
-  }
-
-  // PARMS: image (assetMap.get(imgName), width (use image.width), y, x (in 32x32 pixels), index (position on spritesheet)
-  private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
-    this.context.drawImage(image, 0, index * width, width, width, x * this.TERRAIN_SIZE, y * this.TERRAIN_SIZE, width, width);
-  }
+  constructor() { }
 }
