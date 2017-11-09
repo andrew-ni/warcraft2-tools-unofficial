@@ -9,7 +9,6 @@ import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
-import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
@@ -20,9 +19,9 @@ import { Tileset } from 'tileset';
 interface IMap {
   width: number;
   height: number;
+  assets: Asset[];
   drawLayer: Tile[][];
   assetLayer: Asset[][];
-  assets: Asset[];
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
@@ -73,6 +72,12 @@ export class CanvasService {
     this.map = mapService;
   }
 
+  /**
+   * Initializes the events and spriteService.
+   * This must be done in separate function from the constructor
+   * because it is asynchronous. The spriteService needs to be
+   * Initialized before subscribing to the events.
+   */
   private async init() {
     await this.spriteService.init();
 
@@ -101,7 +106,6 @@ export class CanvasService {
       error: err => console.error(err),
       complete: null
     });
-
 
     // TEMP for convenience
     ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');

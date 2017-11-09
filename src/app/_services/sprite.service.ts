@@ -11,7 +11,7 @@ import { Coordinate } from 'interfaces';
 @Injectable()
 export class SpriteService {
   /**
-   * If the `init` is has been called.
+   * If `init` has been called.
    * Currently the only thing being initialized is the color map.
    */
   private isInitialized = false;
