@@ -93,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy {
     /** On mouseup, remove listeners */
     this.canvas.addEventListener('mouseup', (event) => {
       removeListeners();
-      this.canvas.removeEventListener('mouseleave', function () { }, false);
+      this.canvas.removeEventListener('mouseleave', function() { }, false);
     });
   }
 }
