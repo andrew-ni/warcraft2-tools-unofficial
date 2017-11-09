@@ -28,8 +28,8 @@ export class UserService {
   /** The TileType or AssetType of whatever is selected currently */
   private _selectedMapElement: TileType | AssetType;
 
-  /** The currently selected player's number */
-  private _selectedPlayer: number;
+  /** The currently selected player's number. Defaults to 1 */
+  private _selectedPlayer = 1;
 
   /** Used during new map creation */
   private newMapName: string;

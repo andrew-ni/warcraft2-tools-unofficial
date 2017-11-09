@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Rx';
 
+
 import { Coordinate } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
@@ -51,12 +52,13 @@ export class MapComponent implements OnInit, OnDestroy {
   private setClickListeners() {
     let clickPos: Coordinate;
 
+    // Regions sent on click are exactly 1x1. Subsequent functions should expand / modify this Region before drawing.
     const placeMapElementAtCursor = (event: MouseEvent) => {
       const x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
       const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
       this.userService.applySelectedType(
         (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
-        (assetType) => { this.assetsService.placeAsset(1, assetType, x, y, true); this.canvasService.drawAssets(); },
+        (assetType) => this.assetsService.placeAsset(this.userService.selectedPlayer, assetType, { x, y }),
       );
     };
 
@@ -91,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy {
     /** On mouseup, remove listeners */
     this.canvas.addEventListener('mouseup', (event) => {
       removeListeners();
-      this.canvas.removeEventListener('mouseleave', function() { }, false);
+      this.canvas.removeEventListener('mouseleave', () => { }, false);
     });
   }
 }

@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
+import { ipcRenderer } from 'electron';
+import { readdir } from 'fs';
+import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType } from 'asset';
-import { Dimension, Region } from 'interfaces';
+import { Asset, AssetType, neutralAssets } from 'asset';
+import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
+import { SpriteService } from 'services/sprite.service';
+import { UserService } from 'services/user.service';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
 
@@ -14,12 +19,13 @@ import { Tileset } from 'tileset';
 interface IMap {
   width: number;
   height: number;
-  assetLayer: Asset[][];
-  drawLayer: Tile[][];
   assets: Asset[];
+  drawLayer: Tile[][];
+  assetLayer: Asset[][];
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
+  assetsUpdated: Subject<Region>;
 }
 
 /**
@@ -34,6 +40,11 @@ export class CanvasService {
   public static readonly TERRAIN_SIZE = 32;
 
   /**
+  * max number of players
+  */
+  public static readonly MAX_PLAYERS = 8;
+
+  /**
    * Contains the canvas HTML element for output
    */
   private canvas: HTMLCanvasElement;
@@ -44,62 +55,61 @@ export class CanvasService {
   private context: CanvasRenderingContext2D;
 
   /**
-   * Map of assets to their image elements
-   */
-  private assetMap = new Map<AssetType, HTMLImageElement>();
-
-  /**
-   * For accessing assets and mapping file contents
-   */
-  private fs;
-
-  /**
-   * Asset location
-   */
-  private path;
-
-  /**
    * Map to be read from
    */
   private map: IMap;
 
   /**
-   * Registers tilesUpdated and mapResized events, and loads dose dat files.
+   * Registers tilesUpdated, assetsUpdated, and mapResized events, and loads dose dat files.
    * @param mapService Needs access to read from map for draw events
    */
   constructor(
     mapService: MapService,
+    private spriteService: SpriteService,
     private assetsService: AssetsService,
+    private userService: UserService,
   ) {
     this.map = mapService;
-    // Load assets before, and independently of map:loaded.
-    this.fs = require('fs');
-    this.path = require('path');
+  }
 
-    this.map.tilesUpdated.subscribe({
-      next: reg => {
-        this.drawMap(reg);
-        console.log('tilesupdated');
-        this.assetsService.removeInvalidAsset(reg);
-        this.drawAssets();
-      },
-      error: err => console.error(err),
-      complete: null
-    });
+  /**
+   * Initializes the events and spriteService.
+   * This must be done in separate function from the constructor
+   * because it is asynchronous. The spriteService needs to be
+   * Initialized before subscribing to the events.
+   */
+  private async init() {
+    await this.spriteService.init();
 
-    this.map.mapResized.subscribe({
+    this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
         if (this.canvas) {
           this.canvas.width = dim.width * 32;
           this.canvas.height = dim.height * 32;
-          console.log('Canvas Resized', dim.width, dim.height);
         }
       },
       error: error => console.error(error),
       complete: null
     });
 
-    this.loadDoseDatFiles();
+    this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
+      next: async reg => {
+        await this.drawMap(reg);
+        this.assetsService.removeInvalidAsset(reg);
+        this.drawAssets(reg);
+      },
+      error: err => console.error(err),
+      complete: null
+    });
+
+    this.map.assetsUpdated.do(x => console.log('assetsUpdated:Canvas: ', JSON.stringify(x))).subscribe({
+      next: reg => this.drawAssets(reg),
+      error: err => console.error(err),
+      complete: null
+    });
+
+    // TEMP for convenience
+    ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
   }
 
   /**
@@ -110,72 +120,80 @@ export class CanvasService {
   public setCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = c;
     this.context = ctx;
+    this.init();
   }
-
-
-  // TODO: read the .dat files for more information, filter readdir()
-  /**
-   * Finds files in /assets/img/, reads in all files .dat as .png. Creates
-   * Images for them and creates a mapping in assetMap
-   */
-  private loadDoseDatFiles() {
-    const myPath = './src/assets/img/';
-    const myFiles = this.fs.readdirSync(myPath);
-
-    for (const i in myFiles) {
-      if (this.path.extname(myFiles[i]) === '.dat') {
-        const temp = String(myFiles[i]);
-        const temp2 = temp.substring(0, temp.length - 4);
-
-        const tempImage = new Image();
-        tempImage.src = 'assets/img/' + temp2 + '.png';
-        this.assetMap.set(AssetType[temp2], tempImage);
-      }
-    }
-  }
-
 
   /**
    * Draws map
    * @param reg Region to be drawn (default entire map)
    */
-  public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }): void {
+  public async drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    const terrain = this.assetMap.get(AssetType.Terrain);
-    for (let x = reg.x; x < reg.x + reg.width; x++) {
-      for (let y = reg.y; y < reg.y + reg.height; y++) {
-        this.drawImage(terrain, terrain.width, y, x, this.map.drawLayer[y][x].index);
+    const terrain = await this.spriteService.get(AssetType.Terrain);
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        this.drawImage(terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
 
-  // TODO: Accept Regions / individual assets to redraw
   /**
-   * Draws all the assets
+   * Draws assets in the region specified. Uses a hashset to ensure an asset is only drawn once.
+   * Determines correct "slice" to draw from recolorized spritesheet based on owner.
+   * @param reg Region containing assets to be drawn (default entire map)
    */
-  public drawAssets(): void {
-    for (const asset of this.map.assets) {
-      const img = this.assetMap.get(asset.type);
-      this.drawImage(img, img.width, asset.y, asset.x, 0);
+  public async drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+
+    const hashSet = new Set<Asset>();
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        const currentAsset = this.map.assetLayer[y][x];
+        // only draw on hash miss (first time only)
+        if (currentAsset && !hashSet.has(currentAsset)) {
+          hashSet.add(currentAsset);
+          const img = await this.spriteService.get(currentAsset.type);
+          let single = img.width;
+          if (!neutralAssets.has(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
+          this.drawImage(img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
+        }
+      }
     }
   }
 
   /**
    * Used to draw terrain, units, and assets onto the canvas.
    * @param image Image stored in assetMap. Access with assetMap.get(imgName)
-   * @param width Use image.width.
+   * @param player Player 1 - 8. Used to calculate x offset in source image.
+   * @param width Width of a single sprite on the image.
    * @param y Y coordinate to draw on canvas.
    * @param x X coordinate to draw on canvas.
-   * @param index Position in the spritesheet. Starts at 0.
+   * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
+   * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */
-  private drawImage(image: HTMLImageElement, width: number, y: number, x: number, index: number): void {
+  private drawImage(image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
     let offset = 0;
     if (width % CanvasService.TERRAIN_SIZE !== 0) {
       offset = (width - CanvasService.TERRAIN_SIZE) / 2;
     }
-    this.context.drawImage(image, 0, index * width, width, width, x * CanvasService.TERRAIN_SIZE - offset, y * CanvasService.TERRAIN_SIZE - offset, width, width);
+    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
+    if (player === 0) { player = 1; }
+    this.context.drawImage(
+      image,
+      (player - 1) * width,
+      index * width,
+      width,
+      width,
+      pos.x * CanvasService.TERRAIN_SIZE - offset,
+      pos.y * CanvasService.TERRAIN_SIZE - offset,
+      width,
+      width
+    );
   }
 }
