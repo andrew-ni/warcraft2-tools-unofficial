@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { readdir } from 'fs';
 import { parse } from 'path';
 
-import { AssetType } from 'asset';
+import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
 
 /**
@@ -21,28 +21,6 @@ export class SpriteService {
 
   /** Contains all the sprites assets loaded */
   private sprites = new Map<AssetType, ImageBitmap>();
-
-  /** Configures which sprites should be recolored */
-  public isColored = new Map<AssetType, boolean>([
-    [AssetType.Archer, true],
-    [AssetType.Footman, true],
-    [AssetType.Peasant, true],
-    [AssetType.Ranger, true],
-    [AssetType.Barracks, true],
-    [AssetType.Blacksmith, true],
-    [AssetType.Farm, true],
-    [AssetType.CannonTower, true],
-    [AssetType.Castle, true],
-    [AssetType.GoldMine, false],
-    [AssetType.GuardTower, true],
-    [AssetType.Keep, true],
-    [AssetType.LumberMill, true],
-    [AssetType.ScoutTower, true],
-    [AssetType.TownHall, true],
-    [AssetType.Wall, true],
-    [AssetType.Terrain, false],
-    [AssetType.Colors, false],
-  ]);
 
   constructor() { }
 
@@ -70,10 +48,10 @@ export class SpriteService {
   public async get(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
       const img = await this.loadImage(AssetType[type]);
-      if (this.isColored.get(type)) {
-        this.sprites.set(type, await this.recolorSprite(img));
-      } else {
+      if (neutralAssets.has(type)) {
         this.sprites.set(type, await this.HTMLImageToBitmap(img));
+      } else {
+        this.sprites.set(type, await this.recolorSprite(img));
       }
     }
     return this.sprites.get(type);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType, Structure, Unit } from 'asset';
+import { Asset, AssetType, Structure, structureTypes, Unit, unitTypes } from 'asset';
 import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
@@ -31,30 +31,6 @@ interface IMap {
 export class AssetsService {
   private map: IMap;
 
-  /** The set of all unit assets. */
-  public readonly unitTypes = new Set<AssetType>([
-    AssetType.Peasant,
-    AssetType.Footman,
-    AssetType.Ranger,
-    AssetType.Archer,
-  ]);
-
-  /** The set of all structure assets. */
-  public readonly structureTypes = new Set<AssetType>([
-    AssetType.Barracks,
-    AssetType.Blacksmith,
-    AssetType.CannonTower,
-    AssetType.Castle,
-    AssetType.Farm,
-    AssetType.GoldMine,
-    AssetType.GuardTower,
-    AssetType.Keep,
-    AssetType.LumberMill,
-    AssetType.ScoutTower,
-    AssetType.TownHall,
-    AssetType.Wall
-  ]);
-
   constructor(
     mapService: MapService,
   ) {
@@ -76,9 +52,9 @@ export class AssetsService {
     if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) return;
     let asset: Asset;
 
-    if (this.unitTypes.has(type)) {
+    if (unitTypes.has(type)) {
       asset = new Unit(owner, type, pos);
-    } else if (this.structureTypes.has(type)) {
+    } else if (structureTypes.has(type)) {
       asset = new Structure(owner, type, pos);
     } else return;
 

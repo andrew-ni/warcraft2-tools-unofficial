@@ -43,6 +43,38 @@ const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Placeholder, 0]
 ]);
 
+/** The set of all unit assets. */
+export const unitTypes = new Set<AssetType>([
+  AssetType.Peasant,
+  AssetType.Footman,
+  AssetType.Ranger,
+  AssetType.Archer,
+]);
+
+/** The set of all structure assets. */
+export const structureTypes = new Set<AssetType>([
+  AssetType.Barracks,
+  AssetType.Blacksmith,
+  AssetType.CannonTower,
+  AssetType.Castle,
+  AssetType.Farm,
+  AssetType.GoldMine,
+  AssetType.GuardTower,
+  AssetType.Keep,
+  AssetType.LumberMill,
+  AssetType.ScoutTower,
+  AssetType.TownHall,
+  AssetType.Wall
+]);
+
+/** The set of neutral assets. */
+export const neutralAssets = new Set<AssetType>([
+  AssetType.GoldMine,
+  AssetType.Wall,
+  AssetType.Terrain,
+  AssetType.Colors,
+]);
+
 export class Asset {
   owner: number;
   type: AssetType;

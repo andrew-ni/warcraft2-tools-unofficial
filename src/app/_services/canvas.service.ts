@@ -4,7 +4,7 @@ import { readdir } from 'fs';
 import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType } from 'asset';
+import { Asset, AssetType, neutralAssets } from 'asset';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -159,7 +159,7 @@ export class CanvasService {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
           let single = img.width;
-          if (this.spriteService.isColored.get(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
+          if (!neutralAssets.has(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
           this.drawImage(img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
         }
       }
