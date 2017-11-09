@@ -4,12 +4,11 @@ import { readdir } from 'fs';
 import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType } from 'asset';
+import { Asset, AssetType, neutralAssets } from 'asset';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
-import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
@@ -20,9 +19,9 @@ import { Tileset } from 'tileset';
 interface IMap {
   width: number;
   height: number;
+  assets: Asset[];
   drawLayer: Tile[][];
   assetLayer: Asset[][];
-  assets: Asset[];
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
@@ -78,6 +77,12 @@ export class CanvasService {
     this.map = mapService;
   }
 
+  /**
+   * Initializes the events and spriteService.
+   * This must be done in separate function from the constructor
+   * because it is asynchronous. The spriteService needs to be
+   * Initialized before subscribing to the events.
+   */
   private async init() {
     await this.spriteService.init();
 
@@ -93,8 +98,10 @@ export class CanvasService {
     });
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
-      next: reg => {
-        this.drawMap(reg);
+      next: async reg => {
+        await this.drawMap(reg);
+        this.assetsService.removeInvalidAsset(reg);
+        this.drawAssets(reg);
       },
       error: err => console.error(err),
       complete: null
@@ -111,7 +118,6 @@ export class CanvasService {
       error: err => console.error(err),
       complete: null
     });
-
 
 
 
@@ -174,12 +180,13 @@ export class CanvasService {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         const currentAsset = this.map.assetLayer[y][x];
         // only draw on hash miss (first time only)
-        if (!hashSet.has(currentAsset)) {
+        if (currentAsset && !hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
           let single = img.width;
-          if (this.spriteService.isColored.get(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
+
+          if (!neutralAssets.has(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
+            this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
         }
       }
     }
