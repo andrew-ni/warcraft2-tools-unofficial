@@ -35,33 +35,23 @@ interface IMap {
  */
 @Injectable()
 export class CanvasService {
-  /**
-   * Sprite edge length in pixels
-   */
+  /** Sprite edge length in pixels */
   public static readonly TERRAIN_SIZE = 32;
 
-  /**
-  * max number of players
-  */
+  /** max number of players */
   public static readonly MAX_PLAYERS = 8;
 
-  /**
-   * Contains the canvas HTML element for output
-   */
+  /** Contains the canvas HTML element for terrain */
   private terrainCanvas: HTMLCanvasElement;
 
-
+  /** Contains the canvas HTML element for assets */
   private assetCanvas: HTMLCanvasElement;
 
-  /**
-   * This canvas's context
-   */
+  /** This canvas's context */
   private terrainContext: CanvasRenderingContext2D;
   private assetContext: CanvasRenderingContext2D;
 
-  /**
-   * Map to be read from
-   */
+  /** Map to be read from */
   private map: IMap;
 
   /**
@@ -125,6 +115,11 @@ export class CanvasService {
     ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
   }
 
+  /**
+   * A generic function to delete the region in a canvas
+   * @param ctx The canvas we want to clear
+   * @param reg The region we want to clear
+   */
   public clearRegion(ctx: CanvasRenderingContext2D, reg: Region) {
     ctx.clearRect(
       reg.x * CanvasService.TERRAIN_SIZE,
