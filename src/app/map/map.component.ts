@@ -55,8 +55,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.assetCanvas = document.getElementById('assetCanvas') as HTMLCanvasElement;
     this.assetContext = this.assetCanvas.getContext('2d');
     this.canvasService.setCanvases(this.terrainCanvas, this.terrainContext, this.assetCanvas, this.assetContext);
-    this.beginMouse = {x: 0, y: 0};
-    this.endMouse = {x: 0, y: 0};
+    this.beginMouse = { x: 0, y: 0 };
+    this.endMouse = { x: 0, y: 0 };
     // Pass canvas to map service for drawing
     this.setClickListeners();
   }
@@ -99,24 +99,17 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
     };
-
-    // this should eventually be uncommented to handle the keypresses for delete
-    // this.eventHandler.addEventListener('click', (event: KeyboardEvent) => {
-    //   console.log('hello');
-    //   console.log('before: ' + this.userService.selectedAssets);
-    //   console.log(event.code);
-    //   for (const asset of this.userService.selectedAssets){
-    //     this.assetsService.removeAsset(asset);
-    //   }
-    //   if (event.code === '2') {
-    //     console.log('pressed');
-    //     for (const asset of this.userService.selectedAssets){
-    //       this.assetsService.removeAsset(asset);
-    //     }
-    //   }
-    //   console.log('after: ' + this.userService.selectedAssets);
-
-    // });
+    /**
+     * Adds a listener to capture delete key presses and then deletes the appropriate selection
+     * TODO: move this into a method for keyboard events only? remove the listener?
+     */
+    this.eventHandler.addEventListener('keydown', (event) => {
+      if (event.keyCode === 46) {
+        for (const asset of this.userService.selectedAssets) {
+          this.assetsService.removeAsset(asset);
+        }
+      }
+    });
 
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
@@ -124,26 +117,26 @@ export class MapComponent implements OnInit, OnDestroy {
      */
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
-      if (this.userService.state === State.selectionTool){
+      if (this.userService.state === State.selectionTool) {
         console.log(this.beginMouse.x + '  ' + this.beginMouse.y);
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
-        if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
+        if (event.button === 1) { this.eventHandler.addEventListener('mousemove', pan, false); }
       }
     });
 
     /** On mouseup, remove listeners */
     this.eventHandler.addEventListener('mouseup', (event) => {
-      if (this.userService.state === State.selectionTool){
-        this.endMouse.x =  Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
+      if (this.userService.state === State.selectionTool) {
+        this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
-        const reg: Region = {x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x)};
+        const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
         console.log(this.userService.selectedAssets);
-        this.assetsService.removeSelectedAssets(reg); // for testing purposes
+        if (event.button === 2) { this.assetsService.removeInvalidAsset(reg, true); } // for testing purposes
 
       }
       removeListeners();

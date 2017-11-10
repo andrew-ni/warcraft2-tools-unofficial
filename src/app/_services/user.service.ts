@@ -55,10 +55,10 @@ export class UserService {
   get terrainToBeDrawn() { return this._terrainToBeDrawn; }
   get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
-  get state() {return this._state; }
+  get state() { return this._state; }
 
 
-  set state(currentState){
+  set state(currentState) {
     this._state = currentState;
   }
 

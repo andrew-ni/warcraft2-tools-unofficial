@@ -71,7 +71,7 @@ export class TerrainComponent implements OnInit {
     private userService: UserService,
   ) { }
 
-  private getState(){
+  private getState() {
     this.userService.state = State.selectionTool;
     console.log(this.userService.state);
   }

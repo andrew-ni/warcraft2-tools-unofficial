@@ -40,7 +40,7 @@ export class AssetsService {
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Asset: ', JSON.stringify(x))).subscribe({
       next: reg => {
-        this.removeInvalidAsset(reg);
+        this.removeInvalidAsset(reg, false);
       },
       error: err => console.error(err),
       complete: null
@@ -92,7 +92,7 @@ export class AssetsService {
    * Remove any assets placed invalidly within the given region.
    * @param reg The region to check for Assets.
    */
-  public removeInvalidAsset(reg: Region) {
+  public removeInvalidAsset(reg: Region, removedByUser: boolean) {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
@@ -102,29 +102,17 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          if (!(theAsset.validTiles.has(theTerrain.tileType))) { this.removeAsset(theAsset); }
+          if (removedByUser) {
+            this.removeAsset(theAsset);
+          } else if (!(theAsset.validTiles.has(theTerrain.tileType))) {
+            this.removeAsset(theAsset);
+          }
         }
       }
     }
   }
 
-  // for testing purposes
-  public removeSelectedAssets(reg: Region) {
-    if (reg.y < 0) reg.y = 0;
-    if (reg.x < 0) reg.x = 0;
-    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
-    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    for (let y = reg.y; y < reg.y + reg.height; y++) {
-      for (let x = reg.x; x < reg.x + reg.width; x++) {
-        if (this.map.assetLayer[y][x] !== undefined) {
-          const theAsset = this.map.assetLayer[y][x];
-          this.removeAsset(theAsset);
-        }
-      }
-    }
-  }
-
-  public selectAssets(reg: Region){
+  public selectAssets(reg: Region) {
     const assets: Asset[] = [];
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
@@ -134,10 +122,9 @@ export class AssetsService {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theAsset = this.map.assetLayer[y][x];
-          if (assets.indexOf(theAsset) === -1 ) {
+          if (assets.indexOf(theAsset) === -1) {
             assets.push(theAsset);
           }
-
         }
       }
     }
@@ -156,24 +143,20 @@ export class AssetsService {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
-    console.log(this.map.assetLayer);
     this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
   /**
   * Updates the owner ID of an asset at requested position.
-  * @param x x-coord of asset to be updated
-  * @param y y-coord of asset to be updated
+  * @param selectedAssets list of assets to be change the owner of
   * @param newOwner the new owner ID of asset to be updated
   */
-  public updateOwner(x: number, y: number, newOwner: number) {
+  public updateOwner(selectedAssets: Asset[], newOwner: number) {
     // invalid owner
     if (newOwner < 0 || newOwner > 7) throw Error('invalid player number');
-
-    // check if asset DNE at requested position
-    if (this.map.assetLayer[y][x] !== undefined) {
-      this.map.assetLayer[y][x].owner = newOwner;
+    for (const asset of selectedAssets) {
+      asset.owner = newOwner;
     }
   }
 }

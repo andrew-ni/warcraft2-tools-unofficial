@@ -90,7 +90,7 @@ export class CanvasService {
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
       next: async reg => {
         await this.drawMap(reg);
-        this.assetsService.removeInvalidAsset(reg);
+        this.assetsService.removeInvalidAsset(reg, false);
         this.drawAssets(reg);
       },
       error: err => console.error(err),
