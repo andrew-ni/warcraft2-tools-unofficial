@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Rx';
 
-import { Asset, AssetType, Structure, Unit } from 'asset';
+import { Asset, AssetType, Structure, structureTypes, Unit, unitTypes } from 'asset';
+import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
 import { Tile, TileType } from 'tile';
-import { Region } from '../_interfaces';
 
 /**
  * Narrow IMap interface to discourage access of unrelated attributes
@@ -17,6 +18,9 @@ interface IMap {
   drawLayer: Tile[][];
   players: Player[];
   assets: Asset[];
+  assetsUpdated: Subject<Region>;
+  assetRemoved: Subject<Region>;
+  tilesUpdated: Subject<Region>;
 }
 
 
@@ -29,34 +33,18 @@ interface IMap {
 export class AssetsService {
   private map: IMap;
 
-  /** The set of all unit assets. */
-  public readonly unitTypes = new Set<AssetType>([
-    AssetType.Peasant,
-    AssetType.Footman,
-    AssetType.Ranger,
-    AssetType.Archer,
-  ]);
-
-  /** The set of all structure assets. */
-  public readonly structureTypes = new Set<AssetType>([
-    AssetType.Barracks,
-    AssetType.Blacksmith,
-    AssetType.CannonTower,
-    AssetType.Castle,
-    AssetType.Farm,
-    AssetType.GoldMine,
-    AssetType.GuardTower,
-    AssetType.Keep,
-    AssetType.LumberMill,
-    AssetType.ScoutTower,
-    AssetType.TownHall,
-    AssetType.Wall
-  ]);
-
   constructor(
     mapService: MapService,
   ) {
     this.map = mapService;
+
+    this.map.tilesUpdated.do(x => console.log('tilesUpdated:Asset: ', JSON.stringify(x))).subscribe({
+      next: reg => {
+        this.removeInvalidAsset(reg);
+      },
+      error: err => console.error(err),
+      complete: null
+    });
   }
 
 
@@ -67,33 +55,36 @@ export class AssetsService {
    * @param x x-coord of asset to be placed
    * @param y y-coord of asset to be placed
    * @param validate whether to check for valid place, false means force placement.
+   * @fires assetsUpdated With the modified Region.
    */
-  public placeAsset(owner: number, type: AssetType, x: number, y: number, validate: boolean) {
+  public placeAsset(owner: number, type: AssetType, pos: Coordinate, validate = true) {
 
-    if (y < 0 || x < 0 || y > this.map.height - 1 || x > this.map.width - 1) return;
+    if (pos.y < 0 || pos.x < 0 || pos.y > this.map.height - 1 || pos.x > this.map.width - 1) return;
     let asset: Asset;
 
-    if (this.unitTypes.has(type)) {
-      asset = new Unit(owner, type, x, y);
-    } else if (this.structureTypes.has(type)) {
-      asset = new Structure(owner, type, x, y);
+    if (unitTypes.has(type)) {
+      asset = new Unit(owner, type, pos);
+    } else if (structureTypes.has(type)) {
+      asset = new Structure(owner, type, pos);
     } else return;
 
-    for (let ypos = y; ypos < y + asset.height; ypos++) {
-      for (let xpos = x; xpos < x + asset.width; xpos++) {
+    for (let ypos = pos.y; ypos < pos.y + asset.height; ypos++) {
+      for (let xpos = pos.x; xpos < pos.x + asset.width; xpos++) {
         if (this.map.assetLayer[ypos][xpos] !== undefined) { console.log('collision'); return; }
         const tileType = this.map.drawLayer[ypos][xpos].tileType;
         if (validate && !(asset.validTiles.has(tileType))) { console.log('terrain collision'); return; }
       }
     }
 
-    for (let ypos = y; ypos < y + asset.height; ypos++) {
-      for (let xpos = x; xpos < x + asset.width; xpos++) {
+    for (let ypos = pos.y; ypos < pos.y + asset.height; ypos++) {
+      for (let xpos = pos.x; xpos < pos.x + asset.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = asset;
       }
     }
     this.map.assets.push(asset);
     console.log('pushed');
+
+    this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
   }
 
 
@@ -102,6 +93,10 @@ export class AssetsService {
    * @param reg The region to check for Assets.
    */
   public removeInvalidAsset(reg: Region) {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         if (this.map.assetLayer[y][x] !== undefined) {
@@ -125,6 +120,8 @@ export class AssetsService {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
+    console.log(this.map.assetLayer);
+    this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.

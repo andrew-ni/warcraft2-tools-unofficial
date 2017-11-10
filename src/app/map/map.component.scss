@@ -4,4 +4,11 @@
     font-size: 18px;
     overflow: auto;
     image-rendering: pixelated;
+    position: relative;
+}
+
+#assetCanvas{
+    position: absolute;
+    top: 0;
+    left: 0;
 }
