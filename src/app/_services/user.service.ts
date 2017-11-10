@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { AssetType } from 'asset';
 import { Dimension } from 'interfaces';
 import { TileType } from 'tile';
+import { Asset } from '../_classes/asset';
 
 enum State {
   noSelection,
-  terrainSelected,
-  assetSelected,
+  terrainBrush,
+  assetBrush,
+  selectionTool,
 }
 
 /**
@@ -16,17 +18,17 @@ enum State {
  */
 @Injectable()
 export class UserService {
-  /** Either noSelection, terrainSelected, assetSelected */
+  /** Either noSelection, terrainBrush, assetBrush */
   private _state = State.noSelection;
 
   /** The TileType of the terrain that is selected currently */
-  private _selectedTerrain: TileType;
+  private _terrainToBeDrawn: TileType;
 
   /** The AssetType of the terrain that is selected currently */
-  private _selectedAsset: AssetType;
+  private _assetToBeDrawn: AssetType;
 
   /** The TileType or AssetType of whatever is selected currently */
-  private _selectedMapElement: TileType | AssetType;
+  private _mapElementToBeDrawn: TileType | AssetType;
 
   /** The currently selected player's number. Defaults to 1 */
   private _selectedPlayer = 1;
@@ -37,36 +39,45 @@ export class UserService {
   /** Used during new map creation */
   private newMapDimensions: Dimension;
 
+  public selectedAssets: Asset[];
+
   constructor() {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
-    this.selectedTerrain = TileType.Rock;
+    this.terrainToBeDrawn = TileType.Rock;
+    this.selectedAssets = [];
   }
 
   /**
    * Classes that inject UserService call these getters in order to change the current palette
    * In [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
    */
-  get selectedMapElement() { return this._selectedMapElement; }
-  get selectedTerrain() { return this._selectedTerrain; }
-  get selectedAsset() { return this._selectedAsset; }
+  get mapElementToBeDrawn() { return this._mapElementToBeDrawn; }
+  get terrainToBeDrawn() { return this._terrainToBeDrawn; }
+  get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
+  get state() {return this._state; }
 
-  /**
-   * On terrain select, change _selectedMapElement, _selectedTerrain, and _state
-   * @param tileType tileType to change state to
-   */
-  set selectedTerrain(tileType) {
-    this._selectedMapElement = this._selectedTerrain = tileType;
-    this._state = State.terrainSelected;
+
+  set state(currentState){
+    this._state = currentState;
   }
 
   /**
-   * On asset select, change _selectedMapElement, _selectedAsset, and _state
+   * On terrain select, change _mapElementToBeDrawn, _terrainToBeDrawn, and _state
+   * @param tileType tileType to change state to
+   */
+  set terrainToBeDrawn(tileType) {
+    this._mapElementToBeDrawn = this._terrainToBeDrawn = tileType;
+    this._state = State.terrainBrush;
+  }
+
+  /**
+   * On asset select, change _mapElementToBeDrawn, _assetToBeDrawn, and _state
    * @param assetType assetType to change state to
    */
-  set selectedAsset(assetType) {
-    this._selectedMapElement = this._selectedAsset = assetType;
-    this._state = State.assetSelected;
+  set assetToBeDrawn(assetType) {
+    this._mapElementToBeDrawn = this._assetToBeDrawn = assetType;
+    this._state = State.assetBrush;
   }
 
   /**
@@ -86,8 +97,8 @@ export class UserService {
    */
   applySelectedType(applyTerrain: (tt: TileType) => void, applyAsset: (at: AssetType) => void) {
     switch (this._state) {
-      case State.terrainSelected: applyTerrain(this._selectedTerrain); return;
-      case State.assetSelected: applyAsset(this._selectedAsset); return;
+      case State.terrainBrush: applyTerrain(this._terrainToBeDrawn); return;
+      case State.assetBrush: applyAsset(this._assetToBeDrawn); return;
 
       default: break;
     }

@@ -9,6 +9,13 @@ interface TerrainButton {
   tileType: TileType;
 }
 
+enum State {
+  noSelection,
+  terrainBrush,
+  assetBrush,
+  selectionTool,
+}
+
 @Component({
   selector: 'app-terrain',
   templateUrl: './terrain.component.html',
@@ -63,6 +70,11 @@ export class TerrainComponent implements OnInit {
   constructor(
     private userService: UserService,
   ) { }
+
+  private getState(){
+    this.userService.state = State.selectionTool;
+    console.log(this.userService.state);
+  }
 
   ngOnInit() {
   }

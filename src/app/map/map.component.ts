@@ -2,11 +2,19 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Rx';
 
 
-import { Coordinate } from 'interfaces';
+import { Coordinate, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
+
+
+enum State {
+  noSelection,
+  terrainBrush,
+  assetBrush,
+  selectionTool,
+}
 
 @Component({
   selector: 'app-map',
@@ -22,6 +30,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private assetCanvas: HTMLCanvasElement;
   private assetContext: CanvasRenderingContext2D;
+
+  private beginMouse: Coordinate;
+  private endMouse: Coordinate;
 
   mapLoadedSubscription: Subscription;
 
@@ -44,7 +55,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.assetCanvas = document.getElementById('assetCanvas') as HTMLCanvasElement;
     this.assetContext = this.assetCanvas.getContext('2d');
     this.canvasService.setCanvases(this.terrainCanvas, this.terrainContext, this.assetCanvas, this.assetContext);
-
+    this.beginMouse = {x: 0, y: 0};
+    this.endMouse = {x: 0, y: 0};
     // Pass canvas to map service for drawing
     this.setClickListeners();
   }
@@ -70,12 +82,14 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     // https://stackoverflow.com/a/34030504
-    const pan = (event: MouseEvent) => {
-      document.body.style.cursor = 'move';
-      this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
-      this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
-    };
+    // const pan = (event: MouseEvent) => {
+    //   document.body.style.cursor = 'move';
+    //   this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
+    //   this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
+    // };
 
+    const pan = (event: MouseEvent) => {
+    };
     /**
      * Helper function to remove mousemove listeners
      * Called on mouseup or mouseleave
@@ -86,19 +100,50 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', pan, false);
     };
 
+    this.eventHandler.addEventListener('click', (event: KeyboardEvent) => {
+      console.log('hello');
+      console.log('before: ' + this.userService.selectedAssets);
+      console.log(event.code);
+      for (const asset of this.userService.selectedAssets){
+        this.assetsService.removeAsset(asset);
+      }
+      if (event.code === '2') {
+        console.log('pressed');
+        for (const asset of this.userService.selectedAssets){
+          this.assetsService.removeAsset(asset);
+        }
+      }
+      console.log('after: ' + this.userService.selectedAssets);
+
+    });
+
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
      * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
      */
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
-      this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-      if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
-      if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
+      if (this.userService.state === State.selectionTool){
+        console.log(this.beginMouse.x + '  ' + this.beginMouse.y);
+        this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
+        this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+      } else {
+        this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
+        if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
+        if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
+      }
     });
 
     /** On mouseup, remove listeners */
     this.eventHandler.addEventListener('mouseup', (event) => {
+      if (this.userService.state === State.selectionTool){
+        this.endMouse.x =  Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
+        this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        const reg: Region = {x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x)};
+        this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+        console.log(this.userService.selectedAssets);
+
+      }
       removeListeners();
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
