@@ -108,6 +108,22 @@ export class AssetsService {
     }
   }
 
+  // for testing purposes
+  public removeSelectedAssets(reg: Region) {
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        if (this.map.assetLayer[y][x] !== undefined) {
+          const theAsset = this.map.assetLayer[y][x];
+          this.removeAsset(theAsset);
+        }
+      }
+    }
+  }
+
   public selectAssets(reg: Region){
     const assets: Asset[] = [];
     if (reg.y < 0) reg.y = 0;

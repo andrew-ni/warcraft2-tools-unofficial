@@ -100,22 +100,23 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', pan, false);
     };
 
-    this.eventHandler.addEventListener('click', (event: KeyboardEvent) => {
-      console.log('hello');
-      console.log('before: ' + this.userService.selectedAssets);
-      console.log(event.code);
-      for (const asset of this.userService.selectedAssets){
-        this.assetsService.removeAsset(asset);
-      }
-      if (event.code === '2') {
-        console.log('pressed');
-        for (const asset of this.userService.selectedAssets){
-          this.assetsService.removeAsset(asset);
-        }
-      }
-      console.log('after: ' + this.userService.selectedAssets);
+    // this should eventually be uncommented to handle the keypresses for delete
+    // this.eventHandler.addEventListener('click', (event: KeyboardEvent) => {
+    //   console.log('hello');
+    //   console.log('before: ' + this.userService.selectedAssets);
+    //   console.log(event.code);
+    //   for (const asset of this.userService.selectedAssets){
+    //     this.assetsService.removeAsset(asset);
+    //   }
+    //   if (event.code === '2') {
+    //     console.log('pressed');
+    //     for (const asset of this.userService.selectedAssets){
+    //       this.assetsService.removeAsset(asset);
+    //     }
+    //   }
+    //   console.log('after: ' + this.userService.selectedAssets);
 
-    });
+    // });
 
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
@@ -142,6 +143,7 @@ export class MapComponent implements OnInit, OnDestroy {
         const reg: Region = {x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x)};
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
         console.log(this.userService.selectedAssets);
+        this.assetsService.removeSelectedAssets(reg); // for testing purposes
 
       }
       removeListeners();
