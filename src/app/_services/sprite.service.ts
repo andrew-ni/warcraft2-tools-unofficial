@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { readdir } from 'fs';
+// import { readdir, } from 'fs';
+import * as fs from 'fs';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
@@ -47,6 +48,7 @@ export class SpriteService {
    */
   public async get(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
+      this.readDat(AssetType[type]);
       const img = await this.loadImage(AssetType[type]);
       if (neutralAssets.has(type)) {
         this.sprites.set(type, await this.HTMLImageToBitmap(img));
@@ -56,6 +58,28 @@ export class SpriteService {
     }
     return this.sprites.get(type);
   }
+
+  private readDat(name: string) {
+    fs.readFile('src/assets/img/' + name + '.dat', 'utf8', (err: Error, data: string) => {
+      if (err) {
+        console.log(err);
+      } else {
+        // window.send('map:loaded', data, filename);
+        const tokens = data.split(/\n/g);
+        // console.log(tokens);
+        for (const mystr of tokens) {
+          // tslint:disable-next-line:triple-equals
+          // if (mystr == '2') {
+          //   console.log(mystr);
+          // }
+          // console.log(mystr);
+          console.log(mystr === '2');
+        }
+      }
+    });
+  }
+
+
 
   /**
    * Loads given png filename from the img/ directory.
