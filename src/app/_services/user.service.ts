@@ -39,12 +39,13 @@ export class UserService {
   /** Used during new map creation */
   private newMapDimensions: Dimension;
 
-  public selectedAssets: Asset[];
+  /** The array of currently selected assets by mouse tool */
+  private _selectedAssets: Asset[];
 
   constructor() {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
-    this.selectedAssets = [];
+    this._selectedAssets = [];
   }
 
   /**
@@ -56,6 +57,7 @@ export class UserService {
   get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
   get state() { return this._state; }
+  get selectedAssets() {return this._selectedAssets; }
 
 
   set state(currentState) {
@@ -89,6 +91,13 @@ export class UserService {
     console.log('player number = ', id);
   }
 
+  /**
+   * On assigning to selected assets, change selectedAssetes
+   * @param assets assets to assign to
+   */
+  set selectedAssets(assets) {
+    this._selectedAssets = assets;
+  }
   /**
    * Will call one of the given callbacks based on whether terrain or asset is
    * selected in the sidebar.
