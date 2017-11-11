@@ -104,7 +104,7 @@ export class CanvasService {
     });
 
     this.map.assetRemoved.do(x => console.log('assetRemoved:Canvas: ', JSON.stringify(x))).subscribe({
-      next: reg => this.clearRegion(this.assetContext, reg),
+      next: reg => this.clearAsset(this.assetContext, reg),
       error: err => console.error(err),
       complete: null
     });
@@ -127,6 +127,78 @@ export class CanvasService {
       reg.width * CanvasService.TERRAIN_SIZE,
       reg.height * CanvasService.TERRAIN_SIZE
     );
+  }
+
+  public clearAsset(ctx: CanvasRenderingContext2D, reg: Region) {
+
+    do {
+      if (reg.y <= 0) reg.y = 0;
+      else reg.y--;
+      if (reg.x <= 0) reg.x = 0;
+      else reg.x--;
+      if (reg.y + reg.height >= this.map.height) reg.height = this.map.height - reg.y;
+      else reg.height = reg.height + 2;
+      if (reg.x + reg.width >= this.map.width) reg.width = this.map.width - reg.x;
+      else reg.width = reg.width + 2;
+      console.log('WHILE LOOP');
+
+    }while (this.assetInRegionBorders(reg));
+
+    this.clearRegion(ctx, reg);
+    // this.drawAssets(reg);
+    this.map.assetsUpdated.next();
+  }
+
+  private assetInRegionBorders(reg: Region) {
+    if (reg.x > 0) { // checks left region border, don't check if leftmost edge
+      if (reg.y > 0) {
+        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+      }
+      if (reg.y + reg.height < this.map.height) {
+        if (this.map.assetLayer[reg.y + reg.height][reg.x] !== undefined) return true;
+      }
+      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {
+        if (this.map.assetLayer[i][reg.x] !== undefined) return true;
+      }
+    }
+
+    if (reg.x + reg.width < this.map.width) { // checks right region border, don't check if rightmost edge
+      if (reg.y > 0) {
+        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+      }
+      if (reg.y + reg.height < this.map.height) {
+        if (this.map.assetLayer[reg.y + reg.height][reg.x + reg.width] !== undefined) return true;
+      }
+      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {
+        if (this.map.assetLayer[i][reg.x + reg.width] !== undefined) return true;
+      }
+    }
+
+    if (reg.y > 0) { // checks top region border, don't check if topmost edge
+      if (reg.x > 0) {
+        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+      }
+      if (reg.x + reg.width < this.map.width) {
+        if (this.map.assetLayer[reg.y][reg.x + reg.width]) return true;
+      }
+      for (let i = reg.x + 1; i < reg.x + reg.width - 1; i++) {
+        if (this.map.assetLayer[reg.y][i] !== undefined) return true;
+      }
+    }
+
+    if (reg.y + reg.height < this.map.height) { // checks bottom region border, don't check if topmost edge
+      if (reg.x > 0) {
+        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+      }
+      if (reg.x + reg.width < this.map.width) {
+        if (this.map.assetLayer[reg.y][reg.x + reg.width]) return true;
+      }
+      for (let i = reg.x + 1; i < reg.x + reg.width - 1; i++) {
+        if (this.map.assetLayer[reg.y + reg.height][i] !== undefined) return true;
+      }
+    }
+
+    return false;
   }
 
   /**
