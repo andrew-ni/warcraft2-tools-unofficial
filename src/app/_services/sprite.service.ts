@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
+import { ImgDat } from 'imgdat';
 import { Coordinate } from 'interfaces';
 
 /**
@@ -23,6 +24,8 @@ export class SpriteService {
   /** Contains all the sprites assets loaded */
   private sprites = new Map<AssetType, ImageBitmap>();
 
+  private sprites2 = new Map<AssetType, ImgDat>();
+
   constructor() { }
 
   /**
@@ -35,7 +38,8 @@ export class SpriteService {
     if (!this.isInitialized) {
       this.isInitialized = true;
       /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('Colors'));
+      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
+      // c:\Users\Brandon\Documents\GitHub\ECS160Tools\src\assets\img\Colors.png
     }
   }
 
@@ -47,37 +51,24 @@ export class SpriteService {
    * @returns An ImageBitmap Promise that will resolve when the image is loaded.
    */
   public async get(type: AssetType) {
-    if (this.sprites.get(type) === undefined) {
-      this.readDat(AssetType[type]);
-      const img = await this.loadImage(AssetType[type]);
+    if (this.sprites2.get(type) === undefined) {
+      const myimgdat = new ImgDat(AssetType[type]);
+      // const img = await this.loadImage(AssetType[type]);
+      const img = await this.loadImage(myimgdat.path);
       if (neutralAssets.has(type)) {
-        this.sprites.set(type, await this.HTMLImageToBitmap(img));
+        myimgdat.image = await this.HTMLImageToBitmap(img);
+        this.sprites2.set(type, myimgdat);
+        // this.sprites.set(type, await this.HTMLImageToBitmap(img));
       } else {
-        this.sprites.set(type, await this.recolorSprite(img));
+        myimgdat.image = await this.recolorSprite(img);
+        this.sprites2.set(type, myimgdat);
+        // this.sprites.set(type, await this.recolorSprite(img));
       }
     }
-    return this.sprites.get(type);
+    return this.sprites2.get(type);
   }
 
-  private readDat(name: string) {
-    fs.readFile('src/assets/img/' + name + '.dat', 'utf8', (err: Error, data: string) => {
-      if (err) {
-        console.log(err);
-      } else {
-        // window.send('map:loaded', data, filename);
-        const tokens = data.split(/\n/g);
-        // console.log(tokens);
-        for (const mystr of tokens) {
-          // tslint:disable-next-line:triple-equals
-          // if (mystr == '2') {
-          //   console.log(mystr);
-          // }
-          // console.log(mystr);
-          console.log(mystr === '2');
-        }
-      }
-    });
-  }
+
 
 
 
@@ -93,7 +84,8 @@ export class SpriteService {
         resolve(tempImage);
       };
     });
-    tempImage.src = 'assets/img/' + name + '.png';
+    // tempImage.src = 'assets/img/' + name + '.png';
+    tempImage.src = name;
     return imageLoaded;
   }
 
