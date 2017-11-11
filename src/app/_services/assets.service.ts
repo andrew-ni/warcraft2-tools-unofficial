@@ -112,6 +112,10 @@ export class AssetsService {
     }
   }
 
+  /**
+   * grabs assets given a region
+   * @param reg region to search for assets in
+   */
   public selectAssets(reg: Region) {
     const assets: Asset[] = [];
     if (reg.y < 0) reg.y = 0;
@@ -131,6 +135,8 @@ export class AssetsService {
     return assets;
   }
 
+
+
   /**
    * Removes a single asset
    * @param toBeRemoved asset to be removed
@@ -144,6 +150,21 @@ export class AssetsService {
       }
     }
     this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
+  }
+
+  /**
+   * Changes owner of asset by deleting and redrawing it
+   * @param asset asset to have owner switched
+   * @param newOwner owner to be switched to
+   */
+  public changeOwner(asset: Asset, newOwner: number){
+    const origX = asset.x;
+    const origY = asset.y;
+    const type = asset.type;
+
+    this.removeAsset(asset);
+    this.placeAsset(newOwner, type, {x: origX, y: origY}, false);
+
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.

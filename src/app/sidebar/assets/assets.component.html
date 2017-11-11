@@ -1,5 +1,5 @@
 <h5>Player Units</h5>
-<select [(ngModel)]="userService.selectedPlayer">
+<select [(ngModel)]="userService.selectedPlayer" (ngModelChange)="onclick()">
   <option *ngFor="let i of [1,2,3,4,5,6,7,8]"
           [value]="i">Player {{i}}</option>
 </select>

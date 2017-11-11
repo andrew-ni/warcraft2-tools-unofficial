@@ -81,15 +81,18 @@ export class MapComponent implements OnInit, OnDestroy {
       );
     };
 
+    /**
+     *
+     * @param event
+     */
     // https://stackoverflow.com/a/34030504
-    // const pan = (event: MouseEvent) => {
-    //   document.body.style.cursor = 'move';
-    //   this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
-    //   this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
-    // };
-
     const pan = (event: MouseEvent) => {
+      document.body.style.cursor = 'move';
+      this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
+      this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
+
+
     /**
      * Helper function to remove mousemove listeners
      * Called on mouseup or mouseleave
@@ -99,17 +102,19 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
     };
+
     /**
      * Adds a listener to capture delete key presses and then deletes the appropriate selection
      * TODO: move this into a method for keyboard events only? remove the listener?
      */
     this.eventHandler.addEventListener('keydown', (event) => {
-      if (event.key === 'Delete'|| event.key === 'Backspace') {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
         for (const asset of this.userService.selectedAssets) {
           this.assetsService.removeAsset(asset);
         }
       }
     });
+
 
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
@@ -124,7 +129,7 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
-        if (event.button === 1) { this.eventHandler.addEventListener('mousemove', pan, false); }
+        if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
       }
     });
 
