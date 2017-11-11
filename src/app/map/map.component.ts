@@ -25,6 +25,8 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private eventHandler: HTMLDivElement;
 
+  private selectionBox: HTMLDivElement;
+
   private terrainCanvas: HTMLCanvasElement;
   private terrainContext: CanvasRenderingContext2D;
 
@@ -49,6 +51,8 @@ export class MapComponent implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.eventHandler = document.getElementById('events') as HTMLDivElement;
+    this.selectionBox = document.getElementById('selectionBox') as HTMLDivElement;
+
     this.terrainCanvas = document.getElementById('terrainCanvas') as HTMLCanvasElement;
     this.terrainContext = this.terrainCanvas.getContext('2d');
 
@@ -141,8 +145,9 @@ export class MapComponent implements OnInit, OnDestroy {
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
         console.log(this.userService.selectedAssets);
-        if (event.button === 2) { this.assetsService.removeInvalidAsset(reg, true); } // for testing purposes
-
+        if (event.button === 0) {
+          this.canvasService.drawSelectionBox(this.selectionBox, reg);
+        }
       }
       removeListeners();
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
