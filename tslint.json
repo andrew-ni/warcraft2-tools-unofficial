@@ -141,6 +141,7 @@
     "directive-class-suffix": true,
     "invoke-injectable": true,
     "prefer-for-of": true,
-    "space-before-function-paren": false
+    "space-before-function-paren": false,
+    "ordered-imports": true
   }
 }

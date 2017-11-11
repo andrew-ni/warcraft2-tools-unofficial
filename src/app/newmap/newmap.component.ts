@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MapService } from 'services/map.service';
 import { Player } from 'player';
+import { IOService } from 'services/io.service';
+import { MapService } from 'services/map.service';
 import { TileType } from 'tile';
 
 @Component({
@@ -12,7 +13,7 @@ export class NewmapComponent implements OnInit {
   public allPlayerInfo: Player[];
   public currentPlayers: Player[];    // window of players visible to ui
 
-  constructor(private mapService: MapService) { }
+  constructor(private ioService: IOService) { }
 
   ngOnInit() {
     this.allPlayerInfo = [new Player(0, 0, 0),  // set default game assets
@@ -29,7 +30,7 @@ export class NewmapComponent implements OnInit {
     this.setListeners();
   }
 
-  fun_close(){
+  fun_close() {
     document.getElementById('newMapModal').setAttribute('style', 'display: none;');
   }
 
@@ -40,16 +41,15 @@ export class NewmapComponent implements OnInit {
     const numPlayersField: HTMLSelectElement = document.getElementById('NumPlayersField') as HTMLSelectElement;
     numPlayersField.addEventListener('click', () => this.updateNumPlayers(Number(numPlayersField.value)));
   }
-
   private buildMap(): void {
     console.log('buildmap');
     const name: string = (document.getElementById('NameField') as HTMLInputElement).value;
     const description: string = (document.getElementById('DescField') as HTMLInputElement).value;
     // const description = 'hello';
-    const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value);
-    const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value);
+    const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value, 10);
+    const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value, 10);
 
-    this.mapService.map.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
+    this.ioService.initNew(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
   private updateNumPlayers(num: number): void {
