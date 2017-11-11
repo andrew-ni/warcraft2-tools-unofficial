@@ -1,23 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@import "../src/app/_semanticUI/button.css";
-@import "../src/app/_semanticUI/grid.css";
 
-@import "../src/app/_semanticUI/dropdown.css";
-@import "../src/app/_semanticUI/icon.css";
-@import "../src/app/_semanticUI/card.css";
-@import "../src/app/_semanticUI/image.css";
-@import "../src/app/_semanticUI/button.css";
-@import "../src/app/_semanticUI/segment.css";
-@import "../src/app/_semanticUI/divider.css";
-@import "../src/app/_semanticUI/transition.css";
-@import "../src/app/_semanticUI/popup.css";
-@import "../src/app/_semanticUI/container.css";
-@import "../src/app/_semanticUI/input.css";
-@import "../src/app/_semanticUI/label.css";
-// <script type="text/javascript" src="../../dist/components/popup.js";</script;
-// <script type="text/javascript" src="../../dist/components/transition.js";</script;
-// <script type="text/javascript" src="../../dist/components/dropdown.js";</script;
-
+@import "../node_modules/semantic-ui-css/semantic.css";
 body {
     background: lightblue;
     position: absolute;
