@@ -17,7 +17,7 @@ h5 {
     padding: 0 0 10px 0;
     border: 0;
     margin: 0;
-  }
+}
 
 img {
     border: 2px solid #D4AF37;
@@ -25,4 +25,12 @@ img {
 
 label {
     font-size: 18px;
+}
+
+@media only screen {
+    .ui.container {
+        width: auto !important;
+        margin-left: 1em !important;
+        margin-right: 1em !important;
+    }
 }

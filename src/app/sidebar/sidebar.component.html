@@ -1,17 +1,23 @@
-<div class="ui container" id="properties">
+<div class="ui container"
+     id="properties">
     <h5>Map Properties</h5>
-    <label>Name:</label>
-    <div class="ui input">
-    <input type="text" placeholder="Map Name">
+    <div class="ui form">
+        <div class="inline field">
+            <label>Name:</label>
+            <input type="text"
+                   placeholder="Map Name">
+        </div>
+        <div class="inline field">
+            <label>Number of Players:</label>
+            <select class="ui dropdown">
+                <option *ngFor="let i of [2,3,4,5,6,7,8]"
+                        [value]="i">{{i}}</option>
+            </select>
+        </div>
     </div>
-
-<br>
-    <label>Number of Players:</label>
-    <select class = "ui dropdown">
-        <option *ngFor="let i of [2,3,4,5,6,7,8]"
-                [value]="i">{{i}}</option>
-    </select>
 </div>
+
+
 
 <div class="ui divider"></div>
 <app-terrain class="section"></app-terrain>
