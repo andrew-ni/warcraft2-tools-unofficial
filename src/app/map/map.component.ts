@@ -104,7 +104,7 @@ export class MapComponent implements OnInit, OnDestroy {
      * TODO: move this into a method for keyboard events only? remove the listener?
      */
     this.eventHandler.addEventListener('keydown', (event) => {
-      if (event.keyCode === 46) {
+      if (event.key === 'Delete'|| event.key === 'Backspace') {
         for (const asset of this.userService.selectedAssets) {
           this.assetsService.removeAsset(asset);
         }
