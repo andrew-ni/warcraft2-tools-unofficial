@@ -22,6 +22,7 @@ interface IMap {
   partialBits: Uint8Array[];
   players: Player[];
   assets: Asset[];
+  assetLayer: Asset[][];
   terrainPath: string;
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
@@ -102,7 +103,7 @@ export class IOService {
    * @param fillTile type of tile used to fill default map
    * @param players player number and starting resource
    */
-  public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+  public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
     this._mapFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
@@ -112,13 +113,15 @@ export class IOService {
 
     this.map.partialBits = [];
     this.map.terrainLayer = [];
+    this.map.assetLayer = [];
     this.map.drawLayer = [];
 
     for (let y = 0; y < height + 1; y++) {
       this.map.terrainLayer.push([]);
       this.map.drawLayer.push([]);
-
       this.map.partialBits.push(Uint8Array.from(new Array(width).fill(0xF)));
+      this.map.assetLayer.push([]);
+      this.map.assetLayer[y] = new Array(this.map.width);
 
       for (let x = 0; x < width + 1; x++) {
         this.map.terrainLayer[y].push(fillTile);
