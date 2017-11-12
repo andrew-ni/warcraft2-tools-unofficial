@@ -136,7 +136,6 @@ export class IOService {
     this.map.tileSet = undefined;
     this.map.terrainPath = '../img/Terrain.dat';
     ipcRenderer.send('terrain:load', this.map.terrainPath, '');
-
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }

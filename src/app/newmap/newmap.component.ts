@@ -47,6 +47,10 @@ export class NewmapComponent implements OnInit {
     const description: string = (document.getElementById('DescField') as HTMLInputElement).value;
     const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value, 10);
     const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value, 10);
+    const goldCap: number = parseInt((document.getElementById('GoldCapField') as HTMLInputElement).value, 10);
+    const lumberCap: number = parseInt((document.getElementById('LumberCapField') as HTMLInputElement).value, 10);
+    this.allPlayerInfo[0].gold = goldCap;
+    this.allPlayerInfo[0].lumber = lumberCap;
     this.ioService.initNewMap(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
