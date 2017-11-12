@@ -63,18 +63,18 @@ export class SpriteService {
   }
 
   /**
-   * Loads given png filename from the img/ directory.
-   * @param name The name of the png file to load.
-   * @returns An HTMLImageElement Promis that will resolve when the image is loaded from the filesystem.
+   * Loads a png from the specified path.
+   * @param path The path of the png file to load.
+   * @returns An HTMLImageElement Promise that will resolve when the image is loaded from the filesystem.
    */
-  private async loadImage(name: string) {
+  private async loadImage(path: string) {
     const tempImage = new Image();
     const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
       tempImage.onload = async () => {
         resolve(tempImage);
       };
     });
-    tempImage.src = name;
+    tempImage.src = path;
     return imageLoaded;
   }
 
