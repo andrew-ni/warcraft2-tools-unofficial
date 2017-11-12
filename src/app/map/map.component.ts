@@ -97,23 +97,49 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     const drawBox = (event: MouseEvent) => {
-      // SOMETHING WRONG WITH EVENTX, PAGEX WORKS BUT WITH SIDEBAR OFFSET
+
+      // METHOD 1
+      // deleting old div on mouse movement and creating new one
+      if (!document.getElementById('selectionBox') ) {
+        this.selectionBox = document.createElement('div');
+        this.selectionBox.setAttribute('id', 'selectionBox');
+        document.getElementById('events').appendChild(this.selectionBox);
+      } else {
+        const parentBox = document.getElementById('selectionBox').parentNode;
+        parentBox.removeChild(this.selectionBox);
+      }
+
+      // METHOD 2
+      // grabbing the parent offset
+      // for this to work, add <div id ='selectionBox'></div> back to map.component.html
+
+      // const startX = clickPos.x / 32;
+      // const startY = clickPos.y / 32;
+      // let endX: number;
+      // let endY: number;
+      // if (document.getElementById('selectionBox')){
+      //   const d = document.getElementById('terrainCanvas');
+      //   endY = (event.pageY - d.parentElement.offsetTop) / 32;
+      //   endX = (event.pageX - d.parentElement.offsetLeft) / 32;
+      // } else {
+      //   endX = event.offsetX / 32 ;
+      //   endY = event.offsetY / 32;
+      // }
+
+
+      // comment below 4 lines out if using method 2
       const startX = clickPos.x / 32;
       const startY = clickPos.y / 32;
-      const endX = event.pageX / 32;
-      const endY = event.pageY / 32;
+      const endX = event.offsetX / 32 ;
+      const endY = event.offsetY / 32;
       console.log('x: ', startX);
       console.log('y: ' , startY);
       console.log('ex' , endX);
       console.log('ey' , endY);
 
-      // console.log('x: ', Math.min(startX, endX));
-      // console.log('y: ' , Math.min(startY, endY));
-      // console.log('height' , Math.abs(endY - startY));
-      // console.log('width' , Math.abs(endX - startX));
-      // const reg: Region = {x: Math.min(clickPos.x / 32, event.offsetX / 32), y: Math.min(clickPos.y / 32, event.offsetY / 32), width: Math.abs(event.offsetX / 32 - clickPos.x / 32), height: Math.abs(event.offsetY / 32 - clickPos.y / 32)};
       const reg: Region = { x: Math.min(startX, endX), y: Math.min(startY, endY), height: Math.abs(endY - startY), width: Math.abs(endX - startX) };
       this.canvasService.drawSelectionBox(this.selectionBox, reg);
+
     };
 
     /**
@@ -125,6 +151,10 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
       this.eventHandler.removeEventListener('mousemove', drawBox, false);
+
+      // REMOVING BOX AT MOUSEUP
+      const parentBox = document.getElementById('selectionBox').parentNode;
+      parentBox.removeChild(this.selectionBox);
     };
 
     /**
