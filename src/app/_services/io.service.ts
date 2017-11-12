@@ -120,9 +120,10 @@ export class IOService {
       this.map.terrainLayer.push([]);
       this.map.drawLayer.push([]);
       this.map.partialBits.push(Uint8Array.from(new Array(width + 1).fill(0xF)));
-      this.map.assetLayer.push([]);
-      this.map.assetLayer[y] = new Array(this.map.width);
-
+      if (y < height) {
+        this.map.assetLayer.push([]);
+        this.map.assetLayer[y] = new Array(this.map.width);
+      }
       for (let x = 0; x < width + 1; x++) {
         this.map.terrainLayer[y].push(fillTile);
         this.map.drawLayer[y].push(new Tile(0));
