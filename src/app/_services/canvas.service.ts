@@ -254,6 +254,10 @@ export class CanvasService {
     return reg;
   }
 
+  /**
+   * Expands region by one unit downwards. Doesn't do anything if bottom of region is touching map boundary
+   * @param reg Region we would like to expand
+   */
   private expandRegionDown(reg: Region) {
     if (reg.y + reg.height < this.map.height) {
       reg.height++;
@@ -261,6 +265,10 @@ export class CanvasService {
     return reg;
   }
 
+  /**
+   * Expands region by one unit left. Doesn't do anything if left of region is touching map boundary
+   * @param reg Region we would like to expand
+   */
   private expandRegionLeft(reg: Region) {
     if (reg.x > 0) {
       reg.x--;
@@ -269,6 +277,10 @@ export class CanvasService {
     return reg;
   }
 
+  /**
+   * Expands region by one unit right. Doesn't do anything if right of region is touching map boundary
+   * @param reg Region we would like to expand
+   */
   private expandRegionRight(reg: Region) {
     if (reg.x + reg.width < this.map.width) {
       reg.width++;
@@ -318,9 +330,6 @@ export class CanvasService {
     if (reg.x < 0) reg.x = 0;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
-
-    console.log('DRAWING ASSETS');
-    console.log(reg);
 
     const hashSet = new Set<Asset>();
     for (let y = reg.y; y < reg.y + reg.height; y++) {
