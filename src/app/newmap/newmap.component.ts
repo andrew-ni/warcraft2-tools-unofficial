@@ -14,7 +14,9 @@ export class NewmapComponent implements OnInit {
   public currentPlayers: Player[];    // window of players visible to ui
 
   constructor(private ioService: IOService) { }
-
+  /**
+   * initialize Player resource and set event listeners
+   */
   ngOnInit() {
     this.allPlayerInfo = [new Player(0, 0, 0),  // set default game assets
     new Player(1, 0, 0),
@@ -29,11 +31,12 @@ export class NewmapComponent implements OnInit {
     this.updateNumPlayers(2);
     this.setListeners();
   }
-
   fun_close() {
     document.getElementById('newMapModal').setAttribute('style', 'display: none;');
   }
-
+  /**
+   * set listener for create map button and update player number
+   */
   private setListeners(): void {
     const createButton: HTMLButtonElement = document.getElementById('CreateMapButton') as HTMLButtonElement;
     createButton.addEventListener('click', () => this.buildMap());
@@ -41,6 +44,9 @@ export class NewmapComponent implements OnInit {
     const numPlayersField: HTMLSelectElement = document.getElementById('NumPlayersField') as HTMLSelectElement;
     numPlayersField.addEventListener('click', () => this.updateNumPlayers(Number(numPlayersField.value)));
   }
+  /**
+   * Initialize a new map with user input
+   */
   private buildMap(): void {
     console.log('buildmap');
     const name: string = (document.getElementById('NameField') as HTMLInputElement).value;
@@ -53,7 +59,10 @@ export class NewmapComponent implements OnInit {
     this.allPlayerInfo[0].lumber = lumberCap;
     this.ioService.initNewMap(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
-
+  /**
+   * update player number
+   * @param num number of current players
+   */
   private updateNumPlayers(num: number): void {
     console.log(num);
     this.currentPlayers = this.allPlayerInfo.slice(1, num + 1);   // get whole range
