@@ -119,7 +119,7 @@ export class IOService {
     for (let y = 0; y < height + 1; y++) {
       this.map.terrainLayer.push([]);
       this.map.drawLayer.push([]);
-      this.map.partialBits.push(Uint8Array.from(new Array(width).fill(0xF)));
+      this.map.partialBits.push(Uint8Array.from(new Array(width + 1).fill(0xF)));
       this.map.assetLayer.push([]);
       this.map.assetLayer[y] = new Array(this.map.width);
 
