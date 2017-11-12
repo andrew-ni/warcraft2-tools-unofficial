@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { readdir, } from 'fs';
-import * as fs from 'fs';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
@@ -22,9 +20,7 @@ export class SpriteService {
   private colorMap: ImageData;
 
   /** Contains all the sprites assets loaded */
-  private sprites = new Map<AssetType, ImageBitmap>();
-
-  private sprites2 = new Map<AssetType, ImgDat>();
+  private sprites = new Map<AssetType, Promise<ImgDat>>();
 
   constructor() { }
 
@@ -38,7 +34,7 @@ export class SpriteService {
     if (!this.isInitialized) {
       this.isInitialized = true;
       /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('Colors'));
+      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
       // c:\Users\Brandon\Documents\GitHub\ECS160Tools\src\assets\img\Colors.png
     }
   }
@@ -52,25 +48,20 @@ export class SpriteService {
    */
   public async get(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
-      const myimgdat = new ImgDat(AssetType[type]);
-      // const img = await this.loadImage(AssetType[type]);
-      const img = await this.loadImage2(myimgdat.path);
-      if (neutralAssets.has(type)) {
-        // myimgdat.image = await this.HTMLImageToBitmap(img);
-        // this.sprites.set(type, myimgdat);
-        this.sprites.set(type, await this.HTMLImageToBitmap(img));
-      } else {
-        // myimgdat.image = await this.recolorSprite(img);
-        // this.sprites.set(type, myimgdat);
-        this.sprites.set(type, await this.recolorSprite(img));
-      }
+      this.sprites.set(type, new Promise<ImgDat>(async (resolve) => {
+        const myImgDat = new ImgDat();
+        await myImgDat.readDat(AssetType[type]);
+        const img = await this.loadImage(myImgDat.path);
+        if (neutralAssets.has(type)) {
+          myImgDat.image = await this.HTMLImageToBitmap(img);
+        } else {
+          myImgDat.image = await this.recolorSprite(img);
+        }
+        resolve(myImgDat);
+      }));
     }
     return this.sprites.get(type);
   }
-
-
-
-
 
   /**
    * Loads given png filename from the img/ directory.
@@ -84,19 +75,6 @@ export class SpriteService {
         resolve(tempImage);
       };
     });
-    tempImage.src = 'assets/img/' + name + '.png';
-    // tempImage.src = name;
-    return imageLoaded;
-  }
-
-  private async loadImage2(name: string) {
-    const tempImage = new Image();
-    const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
-      tempImage.onload = async () => {
-        resolve(tempImage);
-      };
-    });
-    // tempImage.src = 'assets/img/' + name + '.png';
     tempImage.src = name;
     return imageLoaded;
   }
