@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType } from 'asset';
-import { Dimension } from 'interfaces';
+import { Dimension, Region } from 'interfaces';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -30,6 +30,7 @@ interface IMap {
   terrainPath: string;
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
+  assetsUpdated: Subject<Region>;
 }
 
 /**
@@ -168,6 +169,7 @@ export class SerializeService {
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
+    this.map.assetsUpdated.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
   }
 
   /**

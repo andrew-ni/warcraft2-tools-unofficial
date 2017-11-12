@@ -89,11 +89,7 @@ export class CanvasService {
     });
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Canvas: ', JSON.stringify(x))).subscribe({
-      next: async reg => {
-        await this.drawMap(reg);
-        this.assetsService.removeInvalidAsset(reg);
-        this.drawAssets(reg);
-      },
+      next: reg => this.drawMap(reg),
       error: err => console.error(err),
       complete: null
     });
@@ -150,8 +146,7 @@ export class CanvasService {
     }
 
     this.clearRegion(ctx, reg);
-    // this.drawAssets(reg); for some reason this draws some units that don't exist anymore
-    this.map.tilesUpdated.next(reg);
+    this.drawAssets(reg);
   }
 
   /**
@@ -308,12 +303,12 @@ export class CanvasService {
    * Draws map
    * @param reg Region to be drawn (default entire map)
    */
-  public async drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
+  public drawMap(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    const terrain = (await this.spriteService.get(AssetType.Terrain)).image;
+    const terrain = this.spriteService.get(AssetType.Terrain).image;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
@@ -326,7 +321,7 @@ export class CanvasService {
    * Determines correct "slice" to draw from recolorized spritesheet based on owner.
    * @param reg Region containing assets to be drawn (default entire map)
    */
-  public async drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
+  public drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
@@ -339,7 +334,7 @@ export class CanvasService {
         // only draw on hash miss (first time only)
         if (currentAsset && !hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
-          const img = await this.spriteService.get(currentAsset.type);
+          const img = this.spriteService.get(currentAsset.type);
           let single = img.image.width;
 
           if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }
