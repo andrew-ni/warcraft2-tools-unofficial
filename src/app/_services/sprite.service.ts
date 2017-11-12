@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { readdir } from 'fs';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
+import { ImgDat } from 'imgdat';
 import { Coordinate } from 'interfaces';
 
 /**
@@ -20,7 +20,7 @@ export class SpriteService {
   private colorMap: ImageData;
 
   /** Contains all the sprites assets loaded */
-  private sprites = new Map<AssetType, ImageBitmap>();
+  private sprites = new Map<AssetType, Promise<ImgDat>>();
 
   constructor() { }
 
@@ -34,7 +34,7 @@ export class SpriteService {
     if (!this.isInitialized) {
       this.isInitialized = true;
       /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('Colors'));
+      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
     }
   }
 
@@ -47,29 +47,34 @@ export class SpriteService {
    */
   public async get(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
-      const img = await this.loadImage(AssetType[type]);
-      if (neutralAssets.has(type)) {
-        this.sprites.set(type, await this.HTMLImageToBitmap(img));
-      } else {
-        this.sprites.set(type, await this.recolorSprite(img));
-      }
+      this.sprites.set(type, new Promise<ImgDat>(async (resolve) => {
+        const myImgDat = new ImgDat();
+        await myImgDat.readDat(AssetType[type]);
+        const img = await this.loadImage(myImgDat.path);
+        if (neutralAssets.has(type)) {
+          myImgDat.image = await this.HTMLImageToBitmap(img);
+        } else {
+          myImgDat.image = await this.recolorSprite(img);
+        }
+        resolve(myImgDat);
+      }));
     }
     return this.sprites.get(type);
   }
 
   /**
-   * Loads given png filename from the img/ directory.
-   * @param name The name of the png file to load.
-   * @returns An HTMLImageElement Promis that will resolve when the image is loaded from the filesystem.
+   * Loads a png from the specified path.
+   * @param path The path of the png file to load.
+   * @returns An HTMLImageElement Promise that will resolve when the image is loaded from the filesystem.
    */
-  private async loadImage(name: string) {
+  private async loadImage(path: string) {
     const tempImage = new Image();
     const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
       tempImage.onload = async () => {
         resolve(tempImage);
       };
     });
-    tempImage.src = 'assets/img/' + name + '.png';
+    tempImage.src = path;
     return imageLoaded;
   }
 

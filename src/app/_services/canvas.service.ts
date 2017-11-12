@@ -5,6 +5,7 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
+import { ImgDat } from 'imgdat';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -312,7 +313,7 @@ export class CanvasService {
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
-    const terrain = await this.spriteService.get(AssetType.Terrain);
+    const terrain = (await this.spriteService.get(AssetType.Terrain)).image;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
@@ -339,10 +340,10 @@ export class CanvasService {
         if (currentAsset && !hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
-          let single = img.width;
+          let single = img.image.width;
 
-          if (!neutralAssets.has(currentAsset.type)) { single = img.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(this.assetContext, img, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, 0);
+          if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }
+          this.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
         }
       }
     }

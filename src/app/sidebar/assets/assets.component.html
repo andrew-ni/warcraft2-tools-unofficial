@@ -1,15 +1,31 @@
-<h5>Player Units</h5>
-<select [(ngModel)]="userService.selectedPlayer">
-  <option *ngFor="let i of [1,2,3,4,5,6,7,8]"
-          [value]="i">Player {{i}}</option>
-</select>
-<label>Starting Resources:</label>
-<input type="text"
-       name="gold">
-<img src=":../../assets/frontend_icons/gold_icon.png">
-<input type="text"
-       name="wood">
-<img src=":../../assets/frontend_icons/lumber_icon.png">
+<div class="ui container">
+    <h5>Player Assets</h5>
+    <div class="ui form">
+        <div class="inline field">
+            <label>Current Player:</label>
+            <select class="ui dropdown"
+                    [(ngModel)]="userService.selectedPlayer">
+                <option class="item"
+                        *ngFor="let i of [1,2,3,4,5,6,7,8]"
+                        [value]="i">Player {{i}}</option>
+            </select>
+        </div>
+        <div class="inline field">
+            <img class="ui mini spaced image"
+                 src=":../../assets/frontend_icons/gold_icon_4x.png">
+            <input type="text"
+                   placeholder="Enter Gold">
+        </div>
+        <div class="inline field">
+            <img class="ui mini spaced image"
+                 src=":../../assets/frontend_icons/lumber_icon_4x.png">
+            <input type="text"
+                   placeholder="Enter Lumber">
+        </div>
+    </div>
+</div>
 
+<div class="ui divider"></div>
 <app-units class="section"></app-units>
+<div class="ui divider"></div>
 <app-structures class="section"></app-structures>
