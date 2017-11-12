@@ -129,76 +129,151 @@ export class CanvasService {
     );
   }
 
+  /**
+   * Called whenever an asset is removed
+   * Clears a region around an asset, then redraws the still existing assets to ensure that no stray pixels remain
+   * @param ctx Canvas context to clear. Always going to be the assets canvas
+   * @param reg The region that the asset is in
+   */
   public clearAsset(ctx: CanvasRenderingContext2D, reg: Region) {
+    reg = this.expandRegionUp(reg);
+    reg = this.expandRegionRight(reg);
+    reg = this.expandRegionDown(reg);
+    reg = this.expandRegionLeft(reg);
 
-    do {
-      if (reg.y <= 0) reg.y = 0;
-      else reg.y--;
-      if (reg.x <= 0) reg.x = 0;
-      else reg.x--;
-      if (reg.y + reg.height >= this.map.height) reg.height = this.map.height - reg.y;
-      else reg.height = reg.height + 2;
-      if (reg.x + reg.width >= this.map.width) reg.width = this.map.width - reg.x;
-      else reg.width = reg.width + 2;
-      console.log('WHILE LOOP');
-
-    }while (this.assetInRegionBorders(reg));
+    while (this.assetInRegionBorders(reg)) {
+      if (this.assetInTopBorder(reg)) reg = this.expandRegionUp(reg);
+      if (this.assetInRightBorder(reg)) reg = this.expandRegionRight(reg);
+      if (this.assetInBottomBorder(reg)) reg = this.expandRegionDown(reg);
+      if (this.assetInLeftBorder(reg)) reg = this.expandRegionLeft(reg);
+    }
 
     this.clearRegion(ctx, reg);
-    // this.drawAssets(reg);
-    this.map.assetsUpdated.next();
+    // this.drawAssets(reg); for some reason this draws some units that don't exist anymore
+    this.map.tilesUpdated.next(reg);
   }
 
+  /**
+   * Checks if there's an asset in the border of a region
+   * Used to decide the size of the region we need to clear, so region cannot expand past map boundaries
+   * @param reg Region to check for assets in
+   */
   private assetInRegionBorders(reg: Region) {
-    if (reg.x > 0) { // checks left region border, don't check if leftmost edge
-      if (reg.y > 0) {
-        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
-      }
-      if (reg.y + reg.height < this.map.height) {
-        if (this.map.assetLayer[reg.y + reg.height][reg.x] !== undefined) return true;
-      }
-      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {
-        if (this.map.assetLayer[i][reg.x] !== undefined) return true;
-      }
-    }
+    return (this.assetInTopBorder(reg) || this.assetInBottomBorder(reg) || this.assetInLeftBorder(reg) || this.assetInRightBorder(reg));
+  }
 
-    if (reg.x + reg.width < this.map.width) { // checks right region border, don't check if rightmost edge
-      if (reg.y > 0) {
-        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
-      }
-      if (reg.y + reg.height < this.map.height) {
-        if (this.map.assetLayer[reg.y + reg.height][reg.x + reg.width] !== undefined) return true;
-      }
-      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {
-        if (this.map.assetLayer[i][reg.x + reg.width] !== undefined) return true;
-      }
-    }
-
+  /**
+   * Checks if there's an asset in the top border of a region
+   * Doesn't consider the asset if the region is touching any of the map edges
+   * @param reg Region to check for assets
+   */
+  private assetInTopBorder(reg: Region) {
     if (reg.y > 0) { // checks top region border, don't check if topmost edge
       if (reg.x > 0) {
         if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
       }
       if (reg.x + reg.width < this.map.width) {
-        if (this.map.assetLayer[reg.y][reg.x + reg.width]) return true;
+        if (this.map.assetLayer[reg.y][reg.x + reg.width - 1] !== undefined) return true;
       }
       for (let i = reg.x + 1; i < reg.x + reg.width - 1; i++) {
         if (this.map.assetLayer[reg.y][i] !== undefined) return true;
       }
     }
+    return false;
+  }
 
+  /**
+   * Checks if there's an asset in the bottom border of a region
+   * Doesn't consider the asset if the region is touching any of the map edges
+   * @param reg Region to check for assets
+   */
+  private assetInBottomBorder(reg: Region) {
     if (reg.y + reg.height < this.map.height) { // checks bottom region border, don't check if topmost edge
       if (reg.x > 0) {
-        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+        if (this.map.assetLayer[reg.y + reg.height - 1][reg.x] !== undefined) return true;
       }
       if (reg.x + reg.width < this.map.width) {
-        if (this.map.assetLayer[reg.y][reg.x + reg.width]) return true;
+        if (this.map.assetLayer[reg.y + reg.height - 1][reg.x + reg.width - 1] !== undefined) return true;
       }
       for (let i = reg.x + 1; i < reg.x + reg.width - 1; i++) {
-        if (this.map.assetLayer[reg.y + reg.height][i] !== undefined) return true;
+        if (this.map.assetLayer[reg.y + reg.height - 1][i] !== undefined) return true;
       }
     }
-
     return false;
+  }
+
+  /**
+   * Checks if there's an asset in the right border of a region
+   * Doesn't consider the asset if the region is touching any of the map edges
+   * @param reg Region to check for assets
+   */
+  private assetInRightBorder(reg: Region) {
+    if (reg.x + reg.width < this.map.width) { // checks right region border, don't check if rightmost edge
+      if (reg.y > 0) {  // don't check topmost cell for asset
+        if (this.map.assetLayer[reg.y][reg.x + reg.width - 1] !== undefined) return true;
+      }
+      if (reg.y + reg.height < this.map.height) { // don't check bottommost cell for asset
+        if (this.map.assetLayer[reg.y + reg.height - 1][reg.x + reg.width - 1] !== undefined) return true;
+      }
+      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {  // check all cells in between topmost and bottommost cells
+        if (this.map.assetLayer[i][reg.x + reg.width - 1] !== undefined) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks if there's an asset in the left border of a region
+   * Doesn't consider the asset if the region is touching any of the map edges
+   * @param reg Region to check for assets
+   */
+  private assetInLeftBorder(reg: Region) {
+    if (reg.x > 0) { // checks left region border, don't check if leftmost edge
+      if (reg.y > 0) {
+        if (this.map.assetLayer[reg.y][reg.x] !== undefined) return true;
+      }
+      if (reg.y + reg.height < this.map.height) {
+        if (this.map.assetLayer[reg.y + reg.height - 1][reg.x] !== undefined) return true;
+      }
+      for (let i = reg.y + 1; i < reg.y + reg.height - 1; i++) {
+        if (this.map.assetLayer[i][reg.x] !== undefined) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Expands region by one unit upwards. Doesn't do anything if top of region is touching map boundary
+   * @param reg Region we would like to expand
+   */
+  private expandRegionUp(reg: Region) {
+    if (reg.y > 0) {
+      reg.y--;
+      reg.height++;
+    }
+    return reg;
+  }
+
+  private expandRegionDown(reg: Region) {
+    if (reg.y + reg.height < this.map.height) {
+      reg.height++;
+    }
+    return reg;
+  }
+
+  private expandRegionLeft(reg: Region) {
+    if (reg.x > 0) {
+      reg.x--;
+      reg.width++;
+    }
+    return reg;
+  }
+
+  private expandRegionRight(reg: Region) {
+    if (reg.x + reg.width < this.map.width) {
+      reg.width++;
+    }
+    return reg;
   }
 
   /**
@@ -243,6 +318,9 @@ export class CanvasService {
     if (reg.x < 0) reg.x = 0;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+
+    console.log('DRAWING ASSETS');
+    console.log(reg);
 
     const hashSet = new Set<Asset>();
     for (let y = reg.y; y < reg.y + reg.height; y++) {
