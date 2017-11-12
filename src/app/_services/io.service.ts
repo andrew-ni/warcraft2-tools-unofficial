@@ -116,16 +116,15 @@ export class IOService {
     this.map.assetLayer = [];
     this.map.drawLayer = [];
 
-    for (let y = 0; y < height + 1; y++) {
-      this.map.terrainLayer.push([]);
-      this.map.drawLayer.push([]);
+    for (let y = 0; ; y++) {
       this.map.partialBits.push(Uint8Array.from(new Array(width + 1).fill(0xF)));
-      if (y < height) {
-        this.map.assetLayer.push([]);
-        this.map.assetLayer[y] = new Array(this.map.width);
-      }
-      for (let x = 0; x < width + 1; x++) {
-        this.map.terrainLayer[y].push(fillTile);
+      this.map.terrainLayer.push(new Array(width + 1).fill(fillTile));
+
+      if (y >= height) break;
+
+      this.map.assetLayer.push(new Array<Asset>(width));
+      this.map.drawLayer.push([]);
+      for (let x = 0; x < width; x++) {
         this.map.drawLayer[y].push(new Tile(0));
       }
     }
