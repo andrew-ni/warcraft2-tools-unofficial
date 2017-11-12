@@ -155,7 +155,6 @@ export class CanvasService {
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
     const terrain = (await this.spriteService.get(AssetType.Terrain)).image;
-    // const terrain = await terraindat.image;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
         this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
@@ -182,7 +181,6 @@ export class CanvasService {
         if (currentAsset && !hashSet.has(currentAsset)) {
           hashSet.add(currentAsset);
           const img = await this.spriteService.get(currentAsset.type);
-          // const img = await imgdat.image;
           let single = img.image.width;
 
           if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }

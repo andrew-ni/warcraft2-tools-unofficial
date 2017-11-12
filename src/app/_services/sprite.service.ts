@@ -35,7 +35,6 @@ export class SpriteService {
       this.isInitialized = true;
       /** Initialize the colorMap with Colors.png */
       this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
-      // c:\Users\Brandon\Documents\GitHub\ECS160Tools\src\assets\img\Colors.png
     }
   }
 
