@@ -96,6 +96,25 @@ export class MapComponent implements OnInit, OnDestroy {
       this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
 
+    const drawBox = (event: MouseEvent) => {
+      // SOMETHING WRONG WITH EVENTX, PAGEX WORKS BUT WITH SIDEBAR OFFSET
+      const startX = clickPos.x / 32;
+      const startY = clickPos.y / 32;
+      const endX = event.pageX / 32;
+      const endY = event.pageY / 32;
+      console.log('x: ', startX);
+      console.log('y: ' , startY);
+      console.log('ex' , endX);
+      console.log('ey' , endY);
+
+      // console.log('x: ', Math.min(startX, endX));
+      // console.log('y: ' , Math.min(startY, endY));
+      // console.log('height' , Math.abs(endY - startY));
+      // console.log('width' , Math.abs(endX - startX));
+      // const reg: Region = {x: Math.min(clickPos.x / 32, event.offsetX / 32), y: Math.min(clickPos.y / 32, event.offsetY / 32), width: Math.abs(event.offsetX / 32 - clickPos.x / 32), height: Math.abs(event.offsetY / 32 - clickPos.y / 32)};
+      const reg: Region = { x: Math.min(startX, endX), y: Math.min(startY, endY), height: Math.abs(endY - startY), width: Math.abs(endX - startX) };
+      this.canvasService.drawSelectionBox(this.selectionBox, reg);
+    };
 
     /**
      * Helper function to remove mousemove listeners
@@ -105,6 +124,7 @@ export class MapComponent implements OnInit, OnDestroy {
       document.body.style.cursor = 'auto';
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
+      this.eventHandler.removeEventListener('mousemove', drawBox, false);
     };
 
     /**
@@ -127,13 +147,15 @@ export class MapComponent implements OnInit, OnDestroy {
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       if (this.userService.state === State.selectionTool) {
-        console.log(this.beginMouse.x + '  ' + this.beginMouse.y);
+        this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        this.eventHandler.addEventListener('mousemove', drawBox, false);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
         if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
+
       }
     });
 
@@ -144,10 +166,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
-        console.log(this.userService.selectedAssets);
-        if (event.button === 0) {
-          this.canvasService.drawSelectionBox(this.selectionBox, reg);
-        }
       }
       removeListeners();
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);

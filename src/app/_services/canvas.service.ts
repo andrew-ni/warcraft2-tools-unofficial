@@ -197,12 +197,14 @@ export class CanvasService {
     // if (reg.width === 0 || reg.height === 0) {
     //    selectionBox.parentElement.removeChild(selectionBox);
     //   } else {
+
       selectionBox.style.position = 'relative';
       selectionBox.style.border = 'dotted black 5px';
       selectionBox.style.top = (String(reg.y * CanvasService.TERRAIN_SIZE) + 'px');
       selectionBox.style.left = (String(reg.x * CanvasService.TERRAIN_SIZE) + 'px');
       selectionBox.style.width = (String(reg.width * CanvasService.TERRAIN_SIZE) + 'px');
       selectionBox.style.height = (String(reg.height * CanvasService.TERRAIN_SIZE) + 'px');
+
 //    }
   }
   /**
