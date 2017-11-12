@@ -27,6 +27,7 @@ interface IMap {
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
+  mapVersion: string;
 }
 
 
@@ -110,7 +111,6 @@ export class IOService {
     this.map.description = description;
     this.map.width = width;
     this.map.height = height;
-
     this.map.partialBits = [];
     this.map.terrainLayer = [];
     this.map.assetLayer = [];
@@ -129,6 +129,7 @@ export class IOService {
       }
     }
 
+    this.map.mapVersion = 'v1.0';
     this.map.players = players;
     this.map.assets = [];
     this.map.tileSet = undefined;
@@ -137,7 +138,6 @@ export class IOService {
 
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
-    // this.map.mapLoaded.next();
   }
 
 }

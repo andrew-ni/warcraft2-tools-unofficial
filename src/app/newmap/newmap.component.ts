@@ -45,10 +45,8 @@ export class NewmapComponent implements OnInit {
     console.log('buildmap');
     const name: string = (document.getElementById('NameField') as HTMLInputElement).value;
     const description: string = (document.getElementById('DescField') as HTMLInputElement).value;
-    // const description = 'hello';
     const width: number = parseInt((document.getElementById('WidthField') as HTMLInputElement).value, 10);
     const height: number = parseInt((document.getElementById('HeightField') as HTMLInputElement).value, 10);
-
     this.ioService.initNewMap(name, description, width, height, TileType.LightGrass, this.allPlayerInfo.slice(0, this.currentPlayers.length + 1));
   }
 
