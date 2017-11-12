@@ -1,4 +1,3 @@
-import { AssetType, neutralAssets } from 'asset';
 import * as fs from 'fs';
 
 export class ImgDat {

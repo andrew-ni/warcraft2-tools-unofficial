@@ -38,7 +38,7 @@ export class SpriteService {
     if (!this.isInitialized) {
       this.isInitialized = true;
       /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
+      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('Colors'));
       // c:\Users\Brandon\Documents\GitHub\ECS160Tools\src\assets\img\Colors.png
     }
   }
@@ -51,21 +51,21 @@ export class SpriteService {
    * @returns An ImageBitmap Promise that will resolve when the image is loaded.
    */
   public async get(type: AssetType) {
-    if (this.sprites2.get(type) === undefined) {
+    if (this.sprites.get(type) === undefined) {
       const myimgdat = new ImgDat(AssetType[type]);
       // const img = await this.loadImage(AssetType[type]);
-      const img = await this.loadImage(myimgdat.path);
+      const img = await this.loadImage2(myimgdat.path);
       if (neutralAssets.has(type)) {
-        myimgdat.image = await this.HTMLImageToBitmap(img);
-        this.sprites2.set(type, myimgdat);
-        // this.sprites.set(type, await this.HTMLImageToBitmap(img));
+        // myimgdat.image = await this.HTMLImageToBitmap(img);
+        // this.sprites.set(type, myimgdat);
+        this.sprites.set(type, await this.HTMLImageToBitmap(img));
       } else {
-        myimgdat.image = await this.recolorSprite(img);
-        this.sprites2.set(type, myimgdat);
-        // this.sprites.set(type, await this.recolorSprite(img));
+        // myimgdat.image = await this.recolorSprite(img);
+        // this.sprites.set(type, myimgdat);
+        this.sprites.set(type, await this.recolorSprite(img));
       }
     }
-    return this.sprites2.get(type);
+    return this.sprites.get(type);
   }
 
 
@@ -78,6 +78,18 @@ export class SpriteService {
    * @returns An HTMLImageElement Promis that will resolve when the image is loaded from the filesystem.
    */
   private async loadImage(name: string) {
+    const tempImage = new Image();
+    const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
+      tempImage.onload = async () => {
+        resolve(tempImage);
+      };
+    });
+    tempImage.src = 'assets/img/' + name + '.png';
+    // tempImage.src = name;
+    return imageLoaded;
+  }
+
+  private async loadImage2(name: string) {
     const tempImage = new Image();
     const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
       tempImage.onload = async () => {
