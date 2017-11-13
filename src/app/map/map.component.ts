@@ -149,6 +149,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        document.getElementById('unitsBox').innerHTML = '';
         // this.isSelection = true;
         this.eventHandler.addEventListener('mousemove', drawBox, false);
         const alx = Math.floor(clickPos.x / 32);
@@ -179,6 +180,7 @@ export class MapComponent implements OnInit, OnDestroy {
         for (const asset of this.userService.selectedAssets) {
           const nd = document.createElement('div');
           document.getElementById('unitsBox').appendChild(nd);
+          nd.style.pointerEvents = 'none';
           nd.style.position = 'absolute';
           nd.style.border = 'white solid 1px';
           nd.style.top = (asset.y * 32) + 'px';
