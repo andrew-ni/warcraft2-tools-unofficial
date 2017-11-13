@@ -6,7 +6,7 @@
 <div *ngIf="isSelection"
      #box
      id="selectionBox"
-     [style.left.px]="x"
-     [style.top.px]="y"
-     [style.width.px]="width"
-     [style.height.px]="height"></div>
+     [style.left.px]="selectionRegion.x"
+     [style.top.px]="selectionRegion.y"
+     [style.width.px]="selectionRegion.width"
+     [style.height.px]="selectionRegion.height"></div>

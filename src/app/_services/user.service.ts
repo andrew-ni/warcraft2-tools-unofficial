@@ -57,7 +57,7 @@ export class UserService {
   get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
   get state() { return this._state; }
-  get selectedAssets() {return this._selectedAssets; }
+  get selectedAssets() { return this._selectedAssets; }
 
 
   set state(currentState) {

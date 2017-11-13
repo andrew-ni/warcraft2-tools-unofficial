@@ -28,10 +28,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private eventHandler: HTMLDivElement;
 
   private isSelection = false;
-  private x = 0;
-  private y = 0;
-  private width = 0;
-  private height = 0;
+  private selectionRegion: Region;
 
   private terrainCanvas: HTMLCanvasElement;
   private terrainContext: CanvasRenderingContext2D;
@@ -67,14 +64,51 @@ export class MapComponent implements OnInit, OnDestroy {
     this.canvasService.setCanvases(this.terrainCanvas, this.terrainContext, this.assetCanvas, this.assetContext);
     this.beginMouse = { x: 0, y: 0 };
     this.endMouse = { x: 0, y: 0 };
+
+    this.selectionRegion = { x: 0, y: 0, width: 0, height: 0 };
     // Pass canvas to map service for drawing
     this.setClickListeners();
+    this.setKeyBoardListeners();
   }
 
   ngOnDestroy() {
     this.mapLoadedSubscription.unsubscribe();
   }
 
+  /**
+   * Handles keyboard events like pressing delete to delete a group of assets
+   */
+  private setKeyBoardListeners() {
+    /**
+    * Adds a listener to capture delete key presses and then deletes the appropriate selection
+    * TODO: remove the listener?
+    */
+    this.eventHandler.addEventListener('keydown', (event) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        for (const asset of this.userService.selectedAssets) {
+          this.assetsService.removeAsset(asset);
+        }
+        document.getElementById('unitsBox').innerHTML = '';
+      }
+    });
+  }
+
+  /**
+   * Draws a white box around each of the selected assets
+  */
+  private drawIndividualBoxes() {
+    for (const asset of this.userService.selectedAssets) {
+      const nd = document.createElement('div');
+      document.getElementById('unitsBox').appendChild(nd);
+      nd.style.pointerEvents = 'none';
+      nd.style.position = 'absolute';
+      nd.style.border = 'white solid 1px';
+      nd.style.top = (asset.y * CanvasService.TERRAIN_SIZE) + 'px';
+      nd.style.left = (asset.x * CanvasService.TERRAIN_SIZE) + 'px';
+      nd.style.height = (asset.height * CanvasService.TERRAIN_SIZE) + 'px';
+      nd.style.width = (asset.width * CanvasService.TERRAIN_SIZE) + 'px';
+    }
+  }
   /**
    * Handles click events like clickdrag and panning
    */
@@ -103,13 +137,11 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     const drawBox = (event: MouseEvent) => {
-      this.x = Math.min(clickPos.x, event.offsetX);
-      this.y = Math.min(clickPos.y, event.offsetY);
-      this.width = Math.abs(event.offsetX - clickPos.x);
-      this.height = Math.abs(event.offsetY - clickPos.y);
+      this.selectionRegion.x = Math.min(clickPos.x, event.offsetX);
+      this.selectionRegion.y = Math.min(clickPos.y, event.offsetY);
+      this.selectionRegion.width = Math.abs(event.offsetX - clickPos.x);
+      this.selectionRegion.height = Math.abs(event.offsetY - clickPos.y);
       this.isSelection = true;
-
-
     };
 
     /**
@@ -121,23 +153,8 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
       this.eventHandler.removeEventListener('mousemove', drawBox, false);
-
       // REMOVING BOX AT MOUSEUP
     };
-
-    /**
-     * Adds a listener to capture delete key presses and then deletes the appropriate selection
-     * TODO: move this into a method for keyboard events only? remove the listener?
-     */
-    this.eventHandler.addEventListener('keydown', (event) => {
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        for (const asset of this.userService.selectedAssets) {
-          this.assetsService.removeAsset(asset);
-        }
-      }
-    });
-
-
 
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
@@ -150,12 +167,11 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
-        // this.isSelection = true;
         this.eventHandler.addEventListener('mousemove', drawBox, false);
-        const alx = Math.floor(clickPos.x / 32);
-        const aly = Math.floor(clickPos.y / 32);
+        const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
+        const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
         console.log(alx + '   ' + aly);
-        if (this.mapService.assetLayer[aly][alx] !== undefined){
+        if (this.mapService.assetLayer[aly][alx] !== undefined) {
           const theAsset = this.mapService.assetLayer[aly][alx];
           console.log(theAsset.height);
           console.log(theAsset.width);
@@ -176,18 +192,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
-        // TODO clean up, separate into its own function
-        for (const asset of this.userService.selectedAssets) {
-          const nd = document.createElement('div');
-          document.getElementById('unitsBox').appendChild(nd);
-          nd.style.pointerEvents = 'none';
-          nd.style.position = 'absolute';
-          nd.style.border = 'white solid 1px';
-          nd.style.top = (asset.y * 32) + 'px';
-          nd.style.left = (asset.x * 32) + 'px';
-          nd.style.height = (asset.height * 32) + 'px';
-          nd.style.width = (asset.width * 32) + 'px';
-        }
+        this.drawIndividualBoxes();
       }
       this.isSelection = false;
       removeListeners();

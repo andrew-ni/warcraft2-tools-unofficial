@@ -24,16 +24,16 @@ export class AssetsComponent implements OnInit {
   ngOnInit() {
   }
 
-/**
- * iterates through selectedassets array and changes the owner if it differs from current owner
- */
-  onclick(){
-    if (this.userService.state === State.selectionTool){
-        for (const asset of this.userService.selectedAssets){
-          if (asset.type !== this.userService.selectedPlayer){
-            this.assetsService.changeOwner(asset, this.userService.selectedPlayer);
-          }
+  /**
+   * iterates through selectedassets array and changes the owner if it differs from current owner
+   */
+  onclick() {
+    if (this.userService.state === State.selectionTool) {
+      for (const asset of this.userService.selectedAssets) {
+        if (asset.type !== this.userService.selectedPlayer) {
+          this.assetsService.changeOwner(asset, this.userService.selectedPlayer);
         }
+      }
     }
   }
 }

@@ -157,13 +157,13 @@ export class AssetsService {
    * @param asset asset to have owner switched
    * @param newOwner owner to be switched to
    */
-  public changeOwner(asset: Asset, newOwner: number){
+  public changeOwner(asset: Asset, newOwner: number) {
     const origX = asset.x;
     const origY = asset.y;
     const type = asset.type;
 
     this.removeAsset(asset);
-    this.placeAsset(newOwner, type, {x: origX, y: origY}, false);
+    this.placeAsset(newOwner, type, { x: origX, y: origY }, false);
 
   }
 
