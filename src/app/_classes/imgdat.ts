@@ -1,7 +1,10 @@
 import { readFile } from 'fs';
 import { join as pathJoin } from 'path';
 
-
+/**
+ * Stores all the resources within assets/img/ in an accessible map for use
+ * in drawing functions.
+ */
 export class ImgDat {
   private _image: ImageBitmap;
   private _path: string;
