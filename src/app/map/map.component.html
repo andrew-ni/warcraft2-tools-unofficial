@@ -1,5 +1,12 @@
 <div id="events">
-
   <canvas id='terrainCanvas'></canvas>
-  <canvas id='assetCanvas' tabindex="1"></canvas>
+  <canvas id='assetCanvas'
+          tabindex="1"></canvas>
 </div>
+<div *ngIf="isSelection"
+     #box
+     id="selectionBox"
+     [style.left.px]="x"
+     [style.top.px]="y"
+     [style.width.px]="width"
+     [style.height.px]="height"></div>

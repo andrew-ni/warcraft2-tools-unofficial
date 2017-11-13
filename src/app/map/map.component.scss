@@ -6,23 +6,24 @@
     image-rendering: pixelated;
     position: relative;
 }
-#events{
+
+#events {
     position: relative;
 }
-#events canvas,#selectionBox{
+
+#events canvas,
+#selectionBox {
     position: absolute
 }
-#assetCanvas{
+
+#assetCanvas {
     position: absolute;
     top: 0;
     left: 0;
 }
 
-#selectionBox{
-    position: 'relative';
-    border: 'black dotted 10px';
-    top:'0px';
-    left:'0px';
-    width:'0px';
-    height:'0px';
+#selectionBox {
+    position: absolute;
+    pointer-events: none;
+    border: black dotted 10px;
 }

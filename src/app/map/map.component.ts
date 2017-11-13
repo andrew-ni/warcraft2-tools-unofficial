@@ -25,7 +25,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private eventHandler: HTMLDivElement;
 
-  private selectionBox: HTMLDivElement;
+  private isSelection = true;
+  private x = 0;
+  private y = 20;
+  private width = 0;
+  private height = 0;
 
   private terrainCanvas: HTMLCanvasElement;
   private terrainContext: CanvasRenderingContext2D;
@@ -51,7 +55,6 @@ export class MapComponent implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.eventHandler = document.getElementById('events') as HTMLDivElement;
-    this.selectionBox = document.getElementById('selectionBox') as HTMLDivElement;
 
     this.terrainCanvas = document.getElementById('terrainCanvas') as HTMLCanvasElement;
     this.terrainContext = this.terrainCanvas.getContext('2d');
@@ -97,48 +100,8 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     const drawBox = (event: MouseEvent) => {
-
-      // METHOD 1
-      // deleting old div on mouse movement and creating new one
-      if (!document.getElementById('selectionBox') ) {
-        this.selectionBox = document.createElement('div');
-        this.selectionBox.setAttribute('id', 'selectionBox');
-        document.getElementById('events').appendChild(this.selectionBox);
-      } else {
-        const parentBox = document.getElementById('selectionBox').parentNode;
-        parentBox.removeChild(this.selectionBox);
-      }
-
-      // METHOD 2
-      // grabbing the parent offset
-      // for this to work, add <div id ='selectionBox'></div> back to map.component.html
-
-      // const startX = clickPos.x / 32;
-      // const startY = clickPos.y / 32;
-      // let endX: number;
-      // let endY: number;
-      // if (document.getElementById('selectionBox')){
-      //   const d = document.getElementById('terrainCanvas');
-      //   endY = (event.pageY - d.parentElement.offsetTop) / 32;
-      //   endX = (event.pageX - d.parentElement.offsetLeft) / 32;
-      // } else {
-      //   endX = event.offsetX / 32 ;
-      //   endY = event.offsetY / 32;
-      // }
-
-
-      // comment below 4 lines out if using method 2
-      const startX = clickPos.x / 32;
-      const startY = clickPos.y / 32;
-      const endX = event.offsetX / 32 ;
-      const endY = event.offsetY / 32;
-      console.log('x: ', startX);
-      console.log('y: ' , startY);
-      console.log('ex' , endX);
-      console.log('ey' , endY);
-
-      const reg: Region = { x: Math.min(startX, endX), y: Math.min(startY, endY), height: Math.abs(endY - startY), width: Math.abs(endX - startX) };
-      this.canvasService.drawSelectionBox(this.selectionBox, reg);
+      this.width = event.offsetX - clickPos.x;
+      this.height = event.offsetY - clickPos.y;
 
     };
 
@@ -153,8 +116,6 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', drawBox, false);
 
       // REMOVING BOX AT MOUSEUP
-      const parentBox = document.getElementById('selectionBox').parentNode;
-      parentBox.removeChild(this.selectionBox);
     };
 
     /**
@@ -180,6 +141,9 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        this.isSelection = true;
+        this.x = clickPos.x;
+        this.y = clickPos.y;
         this.eventHandler.addEventListener('mousemove', drawBox, false);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
