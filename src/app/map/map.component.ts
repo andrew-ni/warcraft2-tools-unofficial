@@ -5,8 +5,10 @@ import { Subscription } from 'rxjs/Rx';
 import { Coordinate, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
+import { MapService } from 'services/map.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
+
 
 
 enum State {
@@ -47,6 +49,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
+    private mapService: MapService,
   ) { }
 
   /**
@@ -104,6 +107,8 @@ export class MapComponent implements OnInit, OnDestroy {
       this.y = Math.min(clickPos.y, event.offsetY);
       this.width = Math.abs(event.offsetX - clickPos.x);
       this.height = Math.abs(event.offsetY - clickPos.y);
+      this.isSelection = true;
+
 
     };
 
@@ -133,6 +138,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
 
+
     /**
      * On mousedown, route to appropriate function (clickdrag or pan)
      * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
@@ -143,8 +149,17 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
-        this.isSelection = true;
+        // this.isSelection = true;
         this.eventHandler.addEventListener('mousemove', drawBox, false);
+        const alx = Math.floor(clickPos.x / 32);
+        const aly = Math.floor(clickPos.y / 32);
+        console.log(alx + '   ' + aly);
+        if (this.mapService.assetLayer[aly][alx] !== undefined){
+          const theAsset = this.mapService.assetLayer[aly][alx];
+          console.log(theAsset.height);
+          console.log(theAsset.width);
+          console.log('clicked a unit');
+        }
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
@@ -160,7 +175,19 @@ export class MapComponent implements OnInit, OnDestroy {
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
         this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+        // TODO clean up, separate into its own function
+        for (const asset of this.userService.selectedAssets) {
+          const nd = document.createElement('div');
+          document.getElementById('unitsBox').appendChild(nd);
+          nd.style.position = 'absolute';
+          nd.style.border = 'white solid 1px';
+          nd.style.top = (asset.y * 32) + 'px';
+          nd.style.left = (asset.x * 32) + 'px';
+          nd.style.height = (asset.height * 32) + 'px';
+          nd.style.width = (asset.width * 32) + 'px';
+        }
       }
+      this.isSelection = false;
       removeListeners();
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
