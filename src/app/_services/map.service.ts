@@ -7,6 +7,9 @@ import { Player } from 'player';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
+/**
+ * MapService represents the map being edited. Supersedes MapObject.
+ */
 @Injectable()
 export class MapService {
   /** True if the map is in a valid state to save, False otherwise. */

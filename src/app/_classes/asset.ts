@@ -1,6 +1,9 @@
 import { Coordinate } from 'interfaces';
 import { TileType } from 'tile';
 
+/**
+ * Describes the type of Asset (includes units and structures)
+ */
 export enum AssetType {
   Archer,
   Footman,
@@ -23,6 +26,10 @@ export enum AssetType {
   MAX
 }
 
+/**
+ * Describes the size in tiles of various assets. All assets are squares so only
+ * one edge is needed for the full description.
+ */
 const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Archer, 1],
   [AssetType.Footman, 1],
@@ -74,6 +81,10 @@ export const neutralAssets = new Set<AssetType>([
   AssetType.Colors,
 ]);
 
+/**
+ * Represents an active Asset on the map, which contains various attributes
+ * in order to establish ownership, location, and occupancy
+ */
 export class Asset {
   owner: number;
   type: AssetType;
@@ -95,6 +106,9 @@ export class Asset {
   }
 }
 
+/**
+ * Unit subclass
+ */
 export class Unit extends Asset {
   constructor(owner: number, type: AssetType, pos: Coordinate) {
     super(owner, type, pos);
@@ -102,6 +116,9 @@ export class Unit extends Asset {
   }
 }
 
+/**
+ * Structure subclass
+ */
 export class Structure extends Asset {
   constructor(owner: number, type: AssetType, pos: Coordinate) {
     super(owner, type, pos);
