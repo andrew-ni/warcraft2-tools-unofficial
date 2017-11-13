@@ -188,25 +188,7 @@ export class CanvasService {
       }
     }
   }
-/**
- * This updates the html element in mapcomponent.html/scss to draw a box around the selected region
- * @param selectionBox the div element of the selectionbox to update
- * @param reg the region of the mouse drag to put the box around (in tile coords)
- */
-  public drawSelectionBox(selectionBox: HTMLDivElement, reg: Region) {
-    // if (reg.width === 0 || reg.height === 0) {
-    //    selectionBox.parentElement.removeChild(selectionBox);
-    //   } else {
 
-      selectionBox.style.position = 'relative';
-      selectionBox.style.border = 'dotted black 5px';
-      selectionBox.style.top = (String(reg.y * CanvasService.TERRAIN_SIZE) + 'px');
-      selectionBox.style.left = (String(reg.x * CanvasService.TERRAIN_SIZE) + 'px');
-      selectionBox.style.width = (String(reg.width * CanvasService.TERRAIN_SIZE) + 'px');
-      selectionBox.style.height = (String(reg.height * CanvasService.TERRAIN_SIZE) + 'px');
-
-//    }
-  }
   /**
    * Used to draw terrain, units, and assets onto the canvas.
    * @param layer The canvas context to draw on.

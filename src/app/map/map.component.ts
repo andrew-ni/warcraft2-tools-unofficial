@@ -25,9 +25,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private eventHandler: HTMLDivElement;
 
-  private isSelection = true;
+  private isSelection = false;
   private x = 0;
-  private y = 20;
+  private y = 0;
   private width = 0;
   private height = 0;
 
@@ -100,8 +100,10 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     const drawBox = (event: MouseEvent) => {
-      this.width = event.offsetX - clickPos.x;
-      this.height = event.offsetY - clickPos.y;
+      this.x = Math.min(clickPos.x, event.offsetX);
+      this.y = Math.min(clickPos.y, event.offsetY);
+      this.width = Math.abs(event.offsetX - clickPos.x);
+      this.height = Math.abs(event.offsetY - clickPos.y);
 
     };
 
@@ -142,8 +144,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         this.isSelection = true;
-        this.x = clickPos.x;
-        this.y = clickPos.y;
         this.eventHandler.addEventListener('mousemove', drawBox, false);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
