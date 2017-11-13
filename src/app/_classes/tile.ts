@@ -1,4 +1,7 @@
 // DON'T REORDER!
+/**
+ * TileType enum stores all the valid basic terrain tiles.
+ */
 export const enum TileType {
   LightDirt,
   DarkDirt,
@@ -11,6 +14,9 @@ export const enum TileType {
   MAX,
 }
 
+/**
+ * strToTileType maps strings to tile types for use in parsing terrain.dat
+ */
 export const strToTileType: TileType[] = [];
 
 strToTileType['shallow-water'] = TileType.ShallowWater;
@@ -22,10 +28,16 @@ strToTileType['light-dirt'] = TileType.LightDirt;
 strToTileType['light-grass'] = TileType.LightGrass;
 strToTileType['rock'] = TileType.Rock;
 
-
+/**
+ * TileTypeChar is the type that contains all possible tile types in character
+ * form. This is mainly used in the map save file.
+ */
 export type TileTypeChar = 'd' | 'D' | 'F' | 'g' | 'G' | 'w' | 'W' | 'R';
-export const numToChar: TileTypeChar[] = [];
 
+/**
+ * numToChar maps TileType to characters. Used for saving maps.
+ */
+export const numToChar: TileTypeChar[] = [];
 numToChar[TileType.DarkGrass] = 'G';
 numToChar[TileType.LightGrass] = 'g';
 numToChar[TileType.DarkDirt] = 'D';
@@ -35,7 +47,9 @@ numToChar[TileType.Forest] = 'F';
 numToChar[TileType.DeepWater] = 'W';
 numToChar[TileType.ShallowWater] = 'w';
 
-
+/**
+ * numToTileType maps nums to TileType.
+ */
 export const numToTileType: TileType[] = [];
 // TileType.xxx within the square brackets will implicitly be cast to number
 // but the TileType.xxx being assigned will not be casted.

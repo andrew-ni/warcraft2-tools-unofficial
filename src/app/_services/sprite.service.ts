@@ -6,7 +6,7 @@ import { ImgDat } from 'imgdat';
 import { Coordinate } from 'interfaces';
 
 /**
- * Handles all sprite loading and recoloring for assets
+ * Handles all sprite loading and recoloring for assets.
  */
 @Injectable()
 export class SpriteService {

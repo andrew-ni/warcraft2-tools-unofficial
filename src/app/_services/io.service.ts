@@ -28,11 +28,16 @@ interface IMap {
   mapLoaded: Subject<void>;
 }
 
-
+/**
+ * IOService contains information and functions necessary to handle menubar
+ * signals, load, save, and terrain events.
+ */
 @Injectable()
 export class IOService {
-
+  /** File path of the map to be saved. For menu item 'Save Map'. */
   private _mapFilePath: string;
+
+  /** Map to be accessed */
   private map: IMap;
 
   constructor(

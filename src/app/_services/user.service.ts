@@ -4,6 +4,11 @@ import { Dimension } from 'interfaces';
 import { TileType } from 'tile';
 import { Asset } from '../_classes/asset';
 
+/**
+ * State contains different user selection states. Allows for click events to
+ * be translated to different actions, depending on whether the user intends
+ * to place terrain or assets.
+ */
 enum State {
   noSelection,
   terrainBrush,

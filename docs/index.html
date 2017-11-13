@@ -1,0 +1,328 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>tools</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">tools</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> tools</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="ecs160tools">ECS160Tools</h1>
+				<p>ECS 160 Project Tools</p>
+				<h1 id="getting-started">Getting Started</h1>
+				<p>You will need <a href="https://nodejs.org/en/download/current/">Node</a> 7.9 or above, and <a href="https://git-scm.com/download/">Git</a> installed.</p>
+				<pre><code>git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/UCDClassNitta/ECS160Tools.git
+cd ECS160Tools
+npm install
+npm <span class="hljs-literal">start</span>
+</code></pre><p>It is highly recommended to use <a href="https://code.visualstudio.com/">Visual Studio Code</a> as your IDE. It has built in support for TypeScript and TSlint which makes writting TypeScript a pleasure.</p>
+				<h1 id="technologies">Technologies</h1>
+				<ul>
+					<li><a href="https://nodejs.org/en/about/">Node</a>: a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine</li>
+					<li><a href="https://electron.atom.io/">Electron</a>: a framework built on Node and Chromium for creating cross-platform native applications</li>
+					<li><a href="https://angular.io/docs">Angular</a>: a TypeScript-base front-end web application platform by Google</li>
+					<li><a href="https://www.typescriptlang.org/">TypeScript</a>: a typed superset of JavaScript that compiles to plain JavaScript</li>
+					<li><a href="http://sass-lang.com/">SASS/SCSS</a>: an extension of CSS that adds power and elegance to the basic language</li>
+				</ul>
+				<h1 id="introduction">Introduction</h1>
+				<p>Electron is what enables the app to run natively on all platforms.
+					Here&#39;s a <a href="https://youtu.be/8YP_nOCO-4Q">primer</a> on its features.
+				An electron app consists of two (or more) threads. The first is the Main Process and the other is a Renderer Process. Read more about them in the <a href="https://electron.atom.io/docs/tutorial/quick-start/">Quick Start</a>. Electron provides a way to display the GUI but it doesn&#39;t handle any of the GUI creation itself. For that, many frameworks exist that help create the user interface such as <a href="https://reactjs.org/">React</a>, <a href="https://vuejs.org/">Vue</a>, and of course <a href="https://angular.io/">Angular</a> (not to be confused with the older <a href="https://angular.io/guide/ajs-quick-reference">AngularJS</a>). We will be going with Angular for its support of TypeScript (here&#39;s an <a href="https://www.youtube.com/watch?v=rAy_3SIqT-E">video</a>, and the <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">handbook</a> on TypeScript). Angular will be used solely in the Renderer Process. Here&#39;s an <a href="https://www.youtube.com/watch?v=KhzGSHNhnbI">Intro Video</a> for Angular.</p>
+				<h1 id="contributing">Contributing</h1>
+				<p><code>dev</code> is the main development branch of the project. <code>dev</code> is a protected branch that prevents direct pushing. In order to merge into <code>dev</code> you must first push a new branch with your changes to GitHub and submit a Pull Request (PR). Someone will then review your code and approve the PR for merging.</p>
+				<p>Please try to follow this <a href="https://github.com/agis/git-style-guide#table-of-contents">Style Guide</a> when using Git.</p>
+				<h3 id="code-formatting">Code Formatting</h3>
+				<p>Keeping a consistent code format is important and reduces the occurrences of merge conflicts.</p>
+				<p>To keep a consistent style on all platforms we are using <a href="https://github.com/vvakame/typescript-formatter">TypeScript Formatter (tsfmt)</a> and <a href="https://github.com/palantir/tslint">TS Lint</a>.</p>
+				<h4 id="visual-studio-code">Visual Studio Code</h4>
+				<p>If you are using VS Code as your editor (and you&#39;ve install the recommended workspace extensions: <code>ctrl+shift+p</code> and type <code>workspace recommended</code> to view them) then the formatting should happen automatically.</p>
+				<h4 id="formatting-using-the-command-line">Formatting using the command line</h4>
+				<p>The following commands are available to help with formatting the code:</p>
+				<ul>
+					<li><code>npm run lint</code>  Checks the code for formatting errors but does not fix them</li>
+					<li><code>npm run format</code> Will check for errors and fix as many as it can automatically</li>
+				</ul>
+				<p><strong>Always format your code before commiting</strong></p>
+				<h3 id="sample-workflow-for-making-new-features-changes-">Sample workflow for making new features/changes:</h3>
+				<ol>
+					<li>Checkout <code>dev</code> and pull the latest changes from GitHub<ul>
+							<li><code>git checkout dev</code></li>
+							<li><code>git pull origin dev</code></li>
+						</ul>
+					</li>
+					<li>Make a new branch for your changes<ul>
+							<li><code>git checkout -b &lt;branch-name&gt;</code></li>
+						</ul>
+					</li>
+					<li>Make your changes and commits (There are many commands/options to accomplish this, these are just a few)<ul>
+							<li>See what changes you made:<ul>
+									<li><code>git status</code>  - Shows the modified files</li>
+									<li><code>git diff [&lt;file-name&gt;]</code> - Shows the modified lines</li>
+								</ul>
+							</li>
+							<li>Stage the changes (Choose what changes will be part of the commit)<ul>
+									<li><code>git add &lt;file-name&gt;</code> - Add a specific file or pattern</li>
+									<li><code>git add -p</code> - Interactively choose chunks of code to add (My favorite)</li>
+									<li><code>git add .</code> - Add all changes (Use sparingly)</li>
+								</ul>
+							</li>
+							<li>Make the commit<ul>
+									<li><code>git commit -m &quot;&lt;commit-message&gt;&quot;</code> - When the commit message is short</li>
+									<li><code>git commit</code> - Will open a text editor to enter longer commit messages</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>Get any new changes from <code>dev</code> (It is a good idea to do this throughout the development of your feature as well.)<ul>
+							<li><code>git pull -r origin dev</code></li>
+						</ul>
+					</li>
+					<li>Push your branch to GitHub<ul>
+							<li><code>git push origin &lt;branch-name&gt;</code></li>
+						</ul>
+					</li>
+					<li>Create a pull request on GitHub.<ul>
+							<li><code>GitHub</code> &gt; <code>Pull requests</code> &gt;  <code>New pull request</code> &gt; <code>compare: &lt;branch-name&gt;</code> &gt; <code>Create pull request</code> &gt; Fill in the description &gt; <code>Create pull request</code></li>
+						</ul>
+					</li>
+				</ol>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__classes_asset_.html">"app/_<wbr>classes/asset"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__classes_imgdat_.html">"app/_<wbr>classes/imgdat"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__classes_player_.html">"app/_<wbr>classes/player"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__classes_tile_.html">"app/_<wbr>classes/tile"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__classes_tileset_.html">"app/_<wbr>classes/tileset"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__interfaces_coordinate_.html">"app/_<wbr>interfaces/coordinate"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__interfaces_dimension_.html">"app/_<wbr>interfaces/dimension"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__interfaces_index_.html">"app/_<wbr>interfaces/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__interfaces_region_.html">"app/_<wbr>interfaces/region"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_assets_service_.html">"app/_<wbr>services/assets.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_canvas_service_.html">"app/_<wbr>services/canvas.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_io_service_.html">"app/_<wbr>services/io.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_map_service_.html">"app/_<wbr>services/map.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_serialize_service_.html">"app/_<wbr>services/serialize.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_sprite_service_.html">"app/_<wbr>services/sprite.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_terrain_service_.html">"app/_<wbr>services/terrain.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app__services_user_service_.html">"app/_<wbr>services/user.service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_app_component_.html">"app/app.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_app_module_.html">"app/app.module"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_footer_footer_component_.html">"app/footer/footer.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_map_map_component_.html">"app/map/map.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_newmap_newmap_component_.html">"app/newmap/newmap.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_sidebar_assets_assets_component_.html">"app/sidebar/assets/assets.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_sidebar_assets_structures_structures_component_.html">"app/sidebar/assets/structures/structures.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_sidebar_assets_units_units_component_.html">"app/sidebar/assets/units/units.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_sidebar_sidebar_component_.html">"app/sidebar/sidebar.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_sidebar_terrain_terrain_component_.html">"app/sidebar/terrain/terrain.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_uploadmap_uploadmap_component_.html">"app/uploadmap/uploadmap.component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_environments_environment_.html">"environments/environment"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_environments_environment_prod_.html">"environments/environment.prod"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_main_.html">"main"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_polyfills_.html">"polyfills"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_test_.html">"test"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
