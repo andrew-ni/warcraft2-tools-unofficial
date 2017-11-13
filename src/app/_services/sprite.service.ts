@@ -20,7 +20,7 @@ export class SpriteService {
   private colorMap: ImageData;
 
   /** Contains all the sprites assets loaded */
-  private sprites = new Map<AssetType, Promise<ImgDat>>();
+  private sprites = new Map<AssetType, ImgDat>();
 
   constructor() { }
 
@@ -33,8 +33,16 @@ export class SpriteService {
   public async init() {
     if (!this.isInitialized) {
       this.isInitialized = true;
+
+      const prefetches: Promise<void>[] = [];
+      for (let type = 0; type < AssetType.MAX; type++) {
+        prefetches.push(this.prefetch(type));
+      }
+
       /** Initialize the colorMap with Colors.png */
       this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
+
+      return Promise.all(prefetches);
     }
   }
 
@@ -43,22 +51,33 @@ export class SpriteService {
    * If `isColored` is true for the given type, the sprite will be recolored for each team.
    * If the sprite has not been loaded before it will be loaded from the filesystem.
    * @param type The asset type of the sprite
-   * @returns An ImageBitmap Promise that will resolve when the image is loaded.
    */
-  public async get(type: AssetType) {
+  private async prefetch(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
-      this.sprites.set(type, new Promise<ImgDat>(async (resolve) => {
-        const myImgDat = new ImgDat();
+      const myImgDat = new ImgDat();
+      this.sprites.set(type, myImgDat);
+
+      return new Promise<void>(async resolve => {
         await myImgDat.readDat(AssetType[type]);
         const img = await this.loadImage(myImgDat.path);
+
         if (neutralAssets.has(type)) {
           myImgDat.image = await this.HTMLImageToBitmap(img);
         } else {
           myImgDat.image = await this.recolorSprite(img);
         }
-        resolve(myImgDat);
-      }));
+        resolve();
+      });
     }
+  }
+
+  /**
+   * Returns the sprite object for the given asset type.
+   * @param type The asset type of the sprite.
+   * @throws If the asset sprite is not loaded.
+   */
+  public get(type: AssetType) {
+    if (!this.sprites.has(type)) throw new Error('Asset image not loaded!');
     return this.sprites.get(type);
   }
 

@@ -84,7 +84,7 @@ export class AssetsService {
     this.map.assets.push(asset);
     console.log('pushed');
 
-    this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
+    if (validate) this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
   }
 
 
@@ -120,7 +120,6 @@ export class AssetsService {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
-    console.log(this.map.assetLayer);
     this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
   }
 

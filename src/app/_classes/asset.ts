@@ -18,9 +18,9 @@ export enum AssetType {
   ScoutTower,
   TownHall,
   Wall,
-  Placeholder,
   Terrain,
   Colors,
+  MAX
 }
 
 const dimensionMap: Map<AssetType, number> = new Map([
@@ -40,7 +40,6 @@ const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.ScoutTower, 2],
   [AssetType.TownHall, 4],
   [AssetType.Wall, 1], // probably have to do something special with Wall
-  [AssetType.Placeholder, 0]
 ]);
 
 /** The set of all unit assets. */
