@@ -176,6 +176,8 @@ export class MapComponent implements OnInit, OnDestroy {
           console.log(theAsset.height);
           console.log(theAsset.width);
           console.log('clicked a unit');
+          this.userService.selectedAssets.push(theAsset);
+          this.drawIndividualBoxes();
         }
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
