@@ -84,7 +84,7 @@ export class AssetsService {
     this.map.assets.push(asset);
     console.log('pushed');
 
-    this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
+    if (validate) this.map.assetsUpdated.next({ ...pos, width: asset.width, height: asset.height });
   }
 
 

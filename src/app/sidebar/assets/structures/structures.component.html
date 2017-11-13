@@ -1,5 +1,11 @@
-<h5>Structures</h5>
-<div *ngFor="let button of structureButtons">
-  <img [src]="button.imgSrc"
-       (click)="userService.assetToBeDrawn = button.structureType">
+<!-- <div class="ui center aligned container"> -->
+<div class="ui container">
+  <h5>Structures</h5>
+  <div class="ui grid">
+    <div class="three wide column"
+         *ngFor="let button of structureButtons">
+      <img [src]="button.imgSrc"
+           (click)="userService.selectedAsset = button.structureType">
+    </div>
+  </div>
 </div>

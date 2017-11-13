@@ -1,11 +1,19 @@
-<h5>Terrain</h5>
-<div class="row">
-  <img *ngFor="let button of terrainButtons | slice:0:4"
-       [src]="button.imgSrc"
-       (click)="getState()">
-</div>
-<div class="row">
-  <img *ngFor="let button of terrainButtons | slice:4"
-       [src]="button.imgSrc"
-       (click)="userService.terrainToBeDrawn = button.tileType">
+<div class="ui container">
+  <h5>Terrain</h5>
+  <div class="ui grid">
+    <div class="three wide column"
+         *ngFor="let button of terrainButtons | slice:0:4">
+      <img [src]="button.imgSrc"
+           (click)="getState()">
+    </div>
+  </div>
+
+  <div class="ui grid">
+    <div class="three wide column"
+         *ngFor="let button of terrainButtons | slice:4">
+      <img [src]="button.imgSrc"
+           (click)="userService.selectedTerrain = button.tileType">
+    </div>
+
+  </div>
 </div>
