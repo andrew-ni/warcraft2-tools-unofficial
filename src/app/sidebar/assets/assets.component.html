@@ -3,24 +3,26 @@
     <div class="ui form">
         <div class="inline field">
             <label>Current Player:</label>
-            <select class="ui dropdown"
-                    [(ngModel)]="userService.selectedPlayer">
-                <option class="item"
-                        *ngFor="let i of [1,2,3,4,5,6,7,8]"
+                <select class="ui dropdown" [(ngModel)] = "SelectPlayer" (ngModelChange)="onChangeSelectPlayer($event)">
+                <option *ngFor="let i of PlayerNumber"
                         [value]="i">Player {{i}}</option>
             </select>
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/gold_icon_4x.png">
-            <input type="text"
-                   placeholder="Enter Gold">
+                <input type = "text" 
+                       [(ngModel)] = "GoldAmount"
+                       placeholder = "Enter Gold"
+                       (ngModelChange)="onChangeGold($event)">
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/lumber_icon_4x.png">
-            <input type="text"
-                   placeholder="Enter Lumber">
+                <input type="text"
+                        [(ngModel)] = "LumberAmount"
+                        placeholder="Enter Lumber"
+                        (ngModelChange)="onChangeLumber($event)">
         </div>
     </div>
 </div>
