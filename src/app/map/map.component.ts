@@ -84,8 +84,10 @@ export class MapComponent implements OnInit, OnDestroy {
     * TODO: remove the listener?
     */
     this.eventHandler.addEventListener('keydown', (event) => {
+      console.log(this.userService.selectedAssets);
       if (event.key === 'Delete' || event.key === 'Backspace') {
         for (const asset of this.userService.selectedAssets) {
+          // console.log(asset);
           this.assetsService.removeAsset(asset);
         }
         document.getElementById('unitsBox').innerHTML = '';
@@ -177,6 +179,7 @@ export class MapComponent implements OnInit, OnDestroy {
           console.log(theAsset.width);
           console.log('clicked a unit');
           this.userService.selectedAssets.push(theAsset);
+          console.log(this.userService.selectedAssets);
           this.drawIndividualBoxes();
         }
       } else {
@@ -193,7 +196,16 @@ export class MapComponent implements OnInit, OnDestroy {
         this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
-        this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+
+        const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
+        const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
+        console.log(alx + '   ' + aly);
+        if (this.mapService.assetLayer[aly][alx] !== undefined) {
+          const theAsset = this.mapService.assetLayer[aly][alx];
+          this.userService.selectedAssets.push(theAsset);
+        } else {
+          this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+        }
         this.drawIndividualBoxes();
       }
       this.isSelection = false;
