@@ -23,6 +23,8 @@ interface IMap {
   tilesUpdated: Subject<Region>;
 }
 
+
+
 /**
 * AssetsService handles the logic of placing and removing assets (units and buildings),
 * including asset and terrain collision and player logic.
