@@ -1,0 +1,33 @@
+<div id="audioModal" class="modal">
+    
+      <!-- Modal content -->
+      <div class="newmap">
+        <span class="close" (click)="fun_close();">&times;</span>
+        <h2 align="center">Customize Audio</h2>
+        <div style = "width:80%; height:100%; float:left;">
+            <h3>Customize Sounds </h3> <br>
+            <select id="TileSet" name = "TileSet">
+              <option value="2">BGM</option>
+              <option value="2">Peasant</option>
+              <option value="3">Archer</option>
+              <option value="4">Ranger</option>
+              <option value="5">Footman</option>
+            </select>
+            <div style = "width: 100%">
+                <button class="accordion" id="audio1" (click)="SelectedAudio();">Song #1</button>
+                <button class="accordion">Song #2</button>
+                <button class="accordion">Song #3</button>
+                <button class="accordion">Song #4</button>
+                <button class="accordion">Song #5</button>
+                <button class="accordion">Song #6</button>
+                <button class="accordion">Song #7</button>
+                <button class="accordion">Song #8</button>
+                <button class="accordion">Song #9</button>
+            </div>
+          </div>
+          <button>Add</button><br>
+          <button>Replace</button><br>
+          <button>Delete</button><br>
+      </div>
+    
+  </div>
