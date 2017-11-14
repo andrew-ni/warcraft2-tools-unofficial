@@ -1,22 +1,14 @@
 import { strToTileType, TileType } from 'tile';
 
-/**
- * TileSet represents the terrain.dat file that contains information about
- * orientation and location of terrain items in the massive terrain.png.
- */
 export class Tileset {
-  /**
-   * Constructs this TileSet to represent the contents of the parameter.
-   * @param datStr String containing contents of terrain.dat
-   */
   constructor(datStr: string) {
+
     for (let i = 0; i < 8; i++) {
       this.tileset[i] = new Array(16);
       for (let j = 0; j < 16; j++) {
         this.tileset[i][j] = new Array(4);
       }
     }
-
     this.parseDat(datStr);
   }
 
@@ -33,17 +25,14 @@ export class Tileset {
 
     for (const [i, row] of tiles.entries()) {
       const [, tileStr, , hex, , alt] = row.match(/(\w+(-\w+)?)-([0-9A-F]|(UK))-(\d)/);
-
       if (hex === 'UK') {
         continue;
       }
-
       const index = strToTileType[tileStr];
-
       if (index !== undefined) {
         this.tileset[index][parseInt(hex, 16)][parseInt(alt, 10)] = i;
       } else {
-        console.error('TileSet: invalid tile index');
+        // ERROR
       }
     }
   }
