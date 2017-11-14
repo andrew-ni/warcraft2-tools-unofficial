@@ -29,8 +29,9 @@ export class AssetsComponent implements OnInit {
    */
   onclick() {
     if (this.userService.state === State.selectionTool) {
+      console.log(this.userService.selectedAssets);
       for (const asset of this.userService.selectedAssets) {
-        if (asset.type !== this.userService.selectedPlayer) {
+        if (asset.owner !== this.userService.selectedPlayer) {
           this.assetsService.changeOwner(asset, this.userService.selectedPlayer);
         }
       }

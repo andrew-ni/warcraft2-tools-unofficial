@@ -4,7 +4,8 @@
         <div class="inline field">
             <label>Current Player:</label>
             <select class="ui dropdown"
-                    [(ngModel)]="userService.selectedPlayer">
+                    [(ngModel)]="userService.selectedPlayer" (ngModelChange)="onclick()"> 
+                      
                 <option class="item"
                         *ngFor="let i of [1,2,3,4,5,6,7,8]"
                         [value]="i">Player {{i}}</option>

@@ -98,6 +98,7 @@ export class MapComponent implements OnInit, OnDestroy {
    * Draws a white box around each of the selected assets
   */
   private drawIndividualBoxes() {
+    console.log(this.userService.selectedAssets);
     for (const asset of this.userService.selectedAssets) {
       const nd = document.createElement('div');
       document.getElementById('unitsBox').appendChild(nd);
