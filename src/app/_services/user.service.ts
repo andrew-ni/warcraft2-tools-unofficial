@@ -3,6 +3,7 @@ import { AssetType } from 'asset';
 import { Dimension } from 'interfaces';
 import { TileType } from 'tile';
 import { Asset } from '../_classes/asset';
+import { Region } from '../_interfaces/region';
 
 enum State {
   noSelection,
@@ -42,10 +43,15 @@ export class UserService {
   /** The array of currently selected assets by mouse tool */
   private _selectedAssets: Asset[];
 
+  /** THe array of regions selected by the mouse tool */
+  private _selectedRegions: Region[];
+
+
   constructor() {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];
+    this._selectedRegions = []; // = {x: 0, y: 0, width: 0, height: 0};
   }
 
   /**
@@ -58,6 +64,7 @@ export class UserService {
   get selectedPlayer() { return this._selectedPlayer; }
   get state() { return this._state; }
   get selectedAssets() { return this._selectedAssets; }
+  get selectedRegions() { return this._selectedRegions; }
 
 
   set state(currentState) {
@@ -97,6 +104,14 @@ export class UserService {
    */
   set selectedAssets(assets) {
     this._selectedAssets = assets;
+  }
+
+  /**
+   * When a region is selected by the mouse tool
+   * @param reg region to be assigned to
+   */
+  set selectedRegions(regArr) {
+    this._selectedRegions = regArr;
   }
   /**
    * Will call one of the given callbacks based on whether terrain or asset is

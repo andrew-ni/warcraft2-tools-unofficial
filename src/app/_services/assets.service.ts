@@ -166,6 +166,7 @@ export class AssetsService {
     this.removeAsset(asset);
     this.placeAsset(newOwner, type, { x: origX, y: origY }, false);
 
+
   }
 
   // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
@@ -176,7 +177,7 @@ export class AssetsService {
   */
   public updateOwner(selectedAssets: Asset[], newOwner: number) {
     // invalid owner
-    if (newOwner < 0 || newOwner > 7) throw Error('invalid player number');
+    if (newOwner < 0 || newOwner > 8) throw Error('invalid player number');
     for (const asset of selectedAssets) {
       asset.owner = newOwner;
     }

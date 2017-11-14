@@ -187,12 +187,15 @@ export class MapComponent implements OnInit, OnDestroy {
 
         const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
         const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        if ((alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) && this.mapService.assetLayer[aly][alx] !== undefined) {
+        if ((alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) && this.mapService.assetLayer[aly][alx] !== undefined && this.userService.selectedAssets.indexOf(this.mapService.assetLayer[aly][alx]) === -1) {
           const theAsset = this.mapService.assetLayer[aly][alx];
+          const singlereg: Region = {x: alx, y: aly, width: theAsset.width, height: theAsset.height};
           this.userService.selectedAssets.push(theAsset);
+          this.userService.selectedRegions.push(singlereg);
         } else {
           this.userService.selectedAssets = this.assetsService.selectAssets(reg);
         }
+        this.userService.selectedRegions.push(reg);
         this.drawIndividualBoxes();
       }
       this.isSelection = false;

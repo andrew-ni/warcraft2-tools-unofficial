@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AssetsService } from 'services/assets.service';
+import { MapService } from 'services/map.service';
 import { UserService } from 'services/user.service';
 
 enum State {
@@ -18,7 +19,8 @@ export class AssetsComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private assetsService: AssetsService
+    private assetsService: AssetsService,
+    private mapService: MapService
   ) { }
 
   ngOnInit() {
@@ -29,11 +31,12 @@ export class AssetsComponent implements OnInit {
    */
   onclick() {
     if (this.userService.state === State.selectionTool) {
-      console.log(this.userService.selectedAssets);
       for (const asset of this.userService.selectedAssets) {
-        if (asset.owner !== this.userService.selectedPlayer) {
-          this.assetsService.changeOwner(asset, this.userService.selectedPlayer);
-        }
+          this.assetsService.updateOwner(this.userService.selectedAssets, this.userService.selectedPlayer);
+      }
+      // update each region in the array
+      for (const reg of this.userService.selectedRegions){
+        this.mapService.assetsUpdated.next(reg);
       }
     }
   }
