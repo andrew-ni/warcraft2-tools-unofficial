@@ -17,11 +17,6 @@ interface IMap {
   mapLoaded: Subject<void>;
 }
 
-/**
- * TerrainService contains function regarding updating terrain tiles. It
- * handles calculating transitions between tile types as well as calculating
- * rotation indices so that all tiles that are stored are smooth-edged.
- */
 @Injectable()
 export class TerrainService {
   private map: IMap;
