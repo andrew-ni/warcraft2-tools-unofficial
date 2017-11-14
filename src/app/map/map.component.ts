@@ -175,8 +175,6 @@ export class MapComponent implements OnInit, OnDestroy {
         console.log(alx + '   ' + aly);
         if (this.mapService.assetLayer[aly][alx] !== undefined) {
           const theAsset = this.mapService.assetLayer[aly][alx];
-          console.log(theAsset.height);
-          console.log(theAsset.width);
           console.log('clicked a unit');
           this.userService.selectedAssets.push(theAsset);
           console.log(this.userService.selectedAssets);
@@ -199,7 +197,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
         const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
         const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        console.log(alx + '   ' + aly);
         if (this.mapService.assetLayer[aly][alx] !== undefined) {
           const theAsset = this.mapService.assetLayer[aly][alx];
           this.userService.selectedAssets.push(theAsset);

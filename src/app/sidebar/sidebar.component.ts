@@ -3,9 +3,17 @@ import { UserService } from 'services/user.service';
 
 import { AssetType } from 'asset';
 
+enum State {
+  noSelection,
+  terrainBrush,
+  assetBrush,
+  selectionTool,
+}
+
 interface CursorButton {
   name: string;
   imgSrc: string;
+  action: number;
 }
 
 @Component({
@@ -19,10 +27,12 @@ export class SidebarComponent implements OnInit {
     {
       name: 'Select',
       imgSrc: './assets/frontend_icons/select_tool.png',
+      action: 3,
     },
     {
       name: 'Paint',
       imgSrc: './assets/frontend_icons/paint_tool.png',
+      action: 2,
     },
   ];
 
@@ -30,4 +40,10 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  changeState(state: State) {
+    this.userService.state = state;
+    console.log(this.userService.state);
+  }
+
 }
