@@ -1,8 +1,6 @@
 import { Asset } from 'asset';
 
-/**
- * Represents default player colors based on player number
- */
+// Taken from game files
 export const enum PlayerColor {
   None,
   Red,
@@ -16,9 +14,6 @@ export const enum PlayerColor {
   Max
 }
 
-/**
- * Maps player number to enum
- */
 export const numToColor: PlayerColor[] = [];
 // numToColor[PlayerColor.None] = PlayerColor.None;
 numToColor[PlayerColor.Red] = PlayerColor.Red;
@@ -30,9 +25,7 @@ numToColor[PlayerColor.Yellow] = PlayerColor.Yellow;
 numToColor[PlayerColor.Black] = PlayerColor.Black;
 numToColor[PlayerColor.White] = PlayerColor.White;
 
-/**
- * Player represents a player and its resources, assets, and color
- */
+
 export class Player {
   id: number;
   gold: number;
