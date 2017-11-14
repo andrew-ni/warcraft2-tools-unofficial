@@ -1,0 +1,57 @@
+<div id="tilesetModal" class="modal">
+  
+    <!-- Modal content -->
+    <div class="newmap">
+      <span class="close" (click)="fun_close();">&times;</span>
+      <h2 align="center">Customize Tileset</h2>
+      <div style = "width:75%; height:100%; float:left;">
+          <h3>Customize Tileset </h3> 
+          <select id="TileSet" name = "TileSet">
+            <option value="2">Light Grass</option>
+            <option value="3">Dark Grass</option>
+            <option value="4">Shallow Water</option>
+            <option value="5">Deep Water</option>
+            <option value="6">Light Dirt</option>
+            <option value="7">Dark Dirt</option>
+            <option value="8">Rock</option>
+            <option value="8">Forest</option>
+        </select>
+        <div style = "width:40%; height:100%;float:left;">
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+          <div style = "width:32px; height:32px; background-color:gray;"></div>
+          <br><br>
+        </div>
+        <div style = "width:55%; height:100%; float:right;">
+          <div style = "width: 25%; height: 100%; float:left">
+              <br><br>
+              <button>Upload</button>
+              <br><br><br><br>
+              <button>Upload</button>
+              <br><br><br>
+              <button style = "margin-top:-5px;">Upload</button>
+              <br><br><br><br>
+              <button style = "margin-top:-15px;">Upload</button>
+              <br><br><br><br>
+              <button style = "margin-top:-5px;">Upload</button>
+              <br><br><br>
+              <button>Upload</button>
+          </div>
+        </div>
+      </div>
+      <div style = "width:23%; height:100%; float:right;">
+      <button id="ImportTileSet" align="right">Import TileSet</button>
+      <button id="ExportTileSet" align="right">Export TileSet</button>
+      </div>
+    </div>
+  
+</div>
