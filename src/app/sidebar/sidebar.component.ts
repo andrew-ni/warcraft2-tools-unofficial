@@ -13,7 +13,7 @@ export class SidebarComponent implements OnInit {
 
   playerCount = [2, 3, 4, 5, 6, 7, 8];
 
-  constructor(private mapService: MapService, private appRef: ApplicationRef) {
+  constructor(private mapService: MapService) {
   }
 
   ngOnInit() {
