@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from 'services/user.service';
-import { MapService } from 'services/map.service';
+
 import { Player } from 'player';
+import { MapService } from 'services/map.service';
+import { UserService } from 'services/user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,41 +11,32 @@ import { Player } from 'player';
 })
 export class SidebarComponent implements OnInit {
 
-  MapName;
-  NumPlayers = [2,3,4,5,6,7,8];
-  NumberPlayers = 1;
+  playerCount = [2, 3, 4, 5, 6, 7, 8];
 
-  constructor(private mapService: MapService) { 
-    this.mapService.mapLoaded.do(() => console.log('map:loaded')).subscribe({
-      next: () => this.setProperties(),
-      error: err => console.error(err),
-    });
+  constructor(private mapService: MapService, private appRef: ApplicationRef) {
+  }
+
+  ngOnInit() {
   }
 
   onChangeName(newValue) {
     console.log(newValue);
-    this.mapService.name = this.MapName;
+    this.mapService.name = newValue;
     // ... do other stuff here ...
   }
 
-  onChangeNumberPlayers(newValue) {
+  onChangeNumPlayers(newValue) {
     console.log(newValue);
-    if (newValue > this.mapService.players.length - 1)
-    {
-      for (var i = this.mapService.players.length; i <= newValue; i++) {
+    if (newValue > this.mapService.players.length - 1) {
+      for (let i = this.mapService.players.length; i <= newValue; i++) {
         console.log(i);
         this.mapService.players.push(new Player(i, 2000, 150));
       }
+    } else if (newValue < this.mapService.players.length - 1) {
+      for (let i = this.mapService.players.length; i >= newValue; i--) {
+        console.log(i);
+        this.mapService.players.pop();
+      }
     }
-    // ... do other stuff here ...
-  }
-
-  public setProperties() {
-    this.MapName = this.mapService.name;
-    this.NumberPlayers = this.mapService.players.length - 1;
-  }
-
-
-  ngOnInit() {
   }
 }

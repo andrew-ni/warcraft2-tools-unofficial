@@ -134,7 +134,6 @@ export class IOService {
 
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
-    // this.map.mapLoaded.next();
   }
 
 }

@@ -4,7 +4,7 @@
         <div class="inline field">
             <label>Current Player:</label>
                 <select class="ui dropdown" [(ngModel)] = "SelectPlayer" (ngModelChange)="onChangeSelectPlayer($event)">
-                <option *ngFor="let i of PlayerNumber"
+                <option *ngFor="let i of PlayerCount"
                         [value]="i">Player {{i}}</option>
             </select>
         </div>
