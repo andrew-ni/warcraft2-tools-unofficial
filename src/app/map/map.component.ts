@@ -84,14 +84,13 @@ export class MapComponent implements OnInit, OnDestroy {
     * TODO: remove the listener?
     */
     this.eventHandler.addEventListener('keydown', (event) => {
-      console.log(this.userService.selectedAssets);
       if (event.key === 'Delete' || event.key === 'Backspace') {
         for (const asset of this.userService.selectedAssets) {
-          // console.log(asset);
           this.assetsService.removeAsset(asset);
         }
         document.getElementById('unitsBox').innerHTML = '';
       }
+      this.userService.selectedAssets = [];
     });
   }
 
@@ -170,16 +169,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
-        const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
-        const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        console.log(alx + '   ' + aly);
-        if (this.mapService.assetLayer[aly][alx] !== undefined) {
-          const theAsset = this.mapService.assetLayer[aly][alx];
-          console.log('clicked a unit');
-          this.userService.selectedAssets.push(theAsset);
-          console.log(this.userService.selectedAssets);
-          this.drawIndividualBoxes();
-        }
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
@@ -197,7 +186,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
         const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        if (this.mapService.assetLayer[aly][alx] !== undefined) {
+        if ((alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) && this.mapService.assetLayer[aly][alx] !== undefined) {
           const theAsset = this.mapService.assetLayer[aly][alx];
           this.userService.selectedAssets.push(theAsset);
         } else {

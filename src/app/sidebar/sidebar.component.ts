@@ -32,7 +32,7 @@ export class SidebarComponent implements OnInit {
     {
       name: 'Paint',
       imgSrc: './assets/frontend_icons/paint_tool.png',
-      action: 2,
+      action: 1,
     },
   ];
 
@@ -43,7 +43,6 @@ export class SidebarComponent implements OnInit {
 
   changeState(state: State) {
     this.userService.state = state;
-    console.log(this.userService.state);
   }
 
 }

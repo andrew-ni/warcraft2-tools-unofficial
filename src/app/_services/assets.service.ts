@@ -148,6 +148,7 @@ export class AssetsService {
       }
     }
     this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
+
   }
 
   /**
