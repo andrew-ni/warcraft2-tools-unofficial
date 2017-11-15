@@ -53,7 +53,7 @@ export class AssetsComponent implements OnInit {
     if (newValue === null) {  // have to use null here
       this.mapService.players[this.userService.selectedPlayer].gold = 0;
     } else {
-      this.mapService.players[this.userService.selectedPlayer].gold = newValue;
+      this.mapService.players[this.userService.selectedPlayer].gold = Math.abs(Math.round(newValue));
     }
     console.log('gold value of selected player:', this.userService.selectedPlayer, 'is:', this.mapService.players[this.userService.selectedPlayer].gold);
   }
@@ -66,7 +66,7 @@ export class AssetsComponent implements OnInit {
     if (newValue === null) {
       this.mapService.players[this.userService.selectedPlayer].lumber = 0;
     } else {
-      this.mapService.players[this.userService.selectedPlayer].lumber = newValue;
+      this.mapService.players[this.userService.selectedPlayer].lumber = Math.abs(Math.round(newValue));
     }
     console.log(this.mapService.players[this.userService.selectedPlayer].lumber);
   }

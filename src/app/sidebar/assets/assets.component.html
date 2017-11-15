@@ -16,7 +16,7 @@
                 <select class="ui dropdown" 
                 [ngModel]="userService.selectedPlayer"
                 (ngModelChange)="onChangeSelectPlayer($event)">
-                
+
                 <option *ngFor="let i of range(1, mapService.players.length)"
                         [value]="i">{{i}}</option>
             </select>
@@ -24,15 +24,15 @@
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/gold_icon_4x.png">
-                <input type = "number" 
-                       [ngModel] = "mapService.players[userService.selectedPlayer].gold"
+                <input type="number"
+                       [ngModel]="mapService.players[userService.selectedPlayer].gold"
                        (ngModelChange)="onChangeGold($event)">
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/lumber_icon_4x.png">
                 <input type="number"
-                        [ngModel] = "mapService.players[userService.selectedPlayer].lumber"
+                        [ngModel]="mapService.players[userService.selectedPlayer].lumber"
                         (ngModelChange)="onChangeLumber($event)">
         </div>
     </div>
