@@ -184,25 +184,40 @@ export class MapComponent implements OnInit, OnDestroy {
       if (this.userService.state === State.selectionTool) {
         this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
-        const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
+        let reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
 
         const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
         const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        if ((alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) && this.mapService.assetLayer[aly][alx] !== undefined && this.userService.selectedAssets.indexOf(this.mapService.assetLayer[aly][alx]) === -1) {
-          const theAsset = this.mapService.assetLayer[aly][alx];
-          const singlereg: Region = {x: alx, y: aly, width: theAsset.width, height: theAsset.height};
-          this.userService.selectedAssets.push(theAsset);
-          this.userService.selectedRegions.push(singlereg);
-        } else {
-          this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+        // click
+        if (alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) {
+          if (this.mapService.assetLayer[aly][alx] !== undefined) {
+            if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[aly][alx]) === -1) {
+              const theAsset = this.mapService.assetLayer[aly][alx];
+              reg = {x: alx, y: aly, width: theAsset.width, height: theAsset.height};
+              this.assetsService.selectAssets(reg);
+              this.userService.selectedAssets.push(theAsset);
+              this.userService.selectedRegions.push(reg);
+            }
+          } else {
+            reg = {x: 0, y: 0, width: 0, height: 0};
+            this.assetsService.selectAssets(reg);
+            this.userService.selectedAssets=this.assetsService.selectAssets(reg);
+            this.userService.selectedRegions=[];
+          }
         }
-        this.userService.selectedRegions.push(reg);
+        //drag
+        if (!(alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0)) {
+          for (const asset of this.assetsService.selectAssets(reg)){
+            this.userService.selectedAssets.push(asset);
+            this.userService.selectedRegions.push(reg);
+          }
+        }
+
         this.drawIndividualBoxes();
       }
       this.isSelection = false;
       removeListeners();
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
-  }
 }
-
+}
