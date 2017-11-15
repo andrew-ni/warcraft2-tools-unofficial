@@ -16,6 +16,7 @@
                 <select class="ui dropdown" 
                 [ngModel]="userService.selectedPlayer"
                 (ngModelChange)="onChangeSelectPlayer($event)">
+                
                 <option *ngFor="let i of range(1, mapService.players.length)"
                         [value]="i">{{i}}</option>
             </select>

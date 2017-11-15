@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
 import { UserService } from 'services/user.service';
