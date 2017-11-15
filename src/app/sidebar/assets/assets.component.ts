@@ -8,96 +8,64 @@ import { UserService } from 'services/user.service';
   styleUrls: ['./assets.component.scss']
 })
 export class AssetsComponent implements OnInit {
-  PlayerCount = [];
-  SelectPlayer = 1;
-  GoldAmount;
-  LumberAmount;
+
+  /** selectPlayer is the currently selected player. This seems redundant, but is necessary for displaying the current player (1) on app startup */
+  selectPlayer = 1;
 
   constructor(private mapService: MapService, private userService: UserService) {
   }
 
   ngOnInit() {
-    this.mapService.mapLoaded.do(() => console.log('mapLoaded:assetsSidebar')).subscribe({
-      next: () => this.setProperties(),
-      error: err => console.error(err),
-    });
-   }
+  }
 
+   /**
+    * This helper function mimics python's range() function
+    * @param start Number to start at
+    * @param edge Number to end at
+    * @param step step size
+    * @returns an array of numbers counting up
+    */
+  range(start: number, edge?: number, step?: number) {
+    if (arguments.length === 1) {
+      edge = start;
+      start = 0;
+    }
+
+    edge = edge || 0;
+    step = step || 1;
+
+    const ret = [];
+    for (; (edge - start) * step > 0; start += step) {
+      ret.push(start);
+    }
+    return ret;
+  }
+
+  /**
+   * Updates userService based on user input
+   * @param newValue the new value that the user selected from the select player drop down menu
+   */
   onChangeSelectPlayer(newValue) {
-    console.log(newValue);
-    this.userService.selectedPlayer = this.SelectPlayer;
-    this.GoldAmount = this.mapService.players[this.SelectPlayer].gold;
-    this.LumberAmount = this.mapService.players[this.SelectPlayer].lumber;
-
-    switch (this.mapService.players.length - 1) {
-      case 2:
-        this.PlayerCount = [1, 2];
-        break;
-      case 3:
-        this.PlayerCount = [1, 2, 3];
-        break;
-      case 4:
-        this.PlayerCount = [1, 2, 3, 4];
-        break;
-      case 5:
-        this.PlayerCount = [1, 2, 3, 4, 5];
-        break;
-      case 6:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6];
-        break;
-      case 7:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6, 7];
-        break;
-      case 8:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6, 7, 8];
-        break;
-      default:
-        console.error();
-        break;
-      }
-    // ... do other stuff here ...
+    this.selectPlayer = newValue;
+    this.userService.selectedPlayer = this.selectPlayer;
+    console.log('selected player is:', this.userService.selectedPlayer);
   }
 
+  /**
+   * Updates mapService based on user input
+   * @param newValue the new value that the user input into the gold amount text box
+   */
   onChangeGold(newValue) {
-    console.log(newValue);
-    this.mapService.players[this.SelectPlayer].gold = this.GoldAmount;
-    // ... do other stuff here ...
+    this.mapService.players[this.selectPlayer].gold = newValue;
+    console.log('gold value of selected player:', this.userService.selectedPlayer, 'is:', this.mapService.players[this.selectPlayer].gold);
   }
 
+  /**
+  * Updates mapService based on user input
+  * @param newValue the new value that the user input into the lumber amount text box
+  */
   onChangeLumber(newValue) {
-    console.log(newValue);
-    this.mapService.players[this.SelectPlayer].lumber = this.LumberAmount;
-    // ... do other stuff here ...
-  }
-
-  public setProperties() {
-    this.GoldAmount = this.mapService.players[this.SelectPlayer].gold;
-    this.LumberAmount = this.mapService.players[this.SelectPlayer].lumber;
-    switch (this.mapService.players.length - 1) {
-      case 2:
-        this.PlayerCount = [1, 2];
-        break;
-      case 3:
-        this.PlayerCount = [1, 2, 3];
-        break;
-      case 4:
-        this.PlayerCount = [1, 2, 3, 4];
-        break;
-      case 5:
-        this.PlayerCount = [1, 2, 3, 4, 5];
-        break;
-      case 6:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6];
-        break;
-      case 7:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6, 7];
-        break;
-      case 8:
-        this.PlayerCount = [1, 2, 3, 4, 5, 6, 7, 8];
-        break;
-      default:
-        console.error();
-        break;
-      }
+    this.mapService.players[this.selectPlayer].lumber = newValue;
+    console.log(this.mapService.players[this.selectPlayer].lumber);
   }
 }
