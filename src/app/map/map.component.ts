@@ -112,6 +112,30 @@ export class MapComponent implements OnInit, OnDestroy {
       nd.style.width = (asset.width * CanvasService.TERRAIN_SIZE) + 'px';
     }
   }
+
+  private assetClicked(reg: Region){
+    if (this.mapService.assetLayer[reg.y][reg.x] !== undefined) {
+      if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[reg.y][reg.x]) === -1) {
+        const theAsset = this.mapService.assetLayer[reg.y][reg.x];
+        reg = {x: reg.x, y: reg.y, width: theAsset.width, height: theAsset.height};
+        this.userService.selectedAssets.push(theAsset);
+        this.userService.selectedRegions.push(reg);
+      }
+    } else {
+        this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+        this.userService.selectedRegions = [];
+    }
+  }
+
+  private assetDragged(reg: Region){
+    for (const asset of this.assetsService.selectAssets(reg)){
+      if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[asset.y][asset.x]) === -1) {
+      this.userService.selectedAssets.push(asset);
+      this.userService.selectedRegions.push(reg);
+      }
+    }
+  }
+
   /**
    * Handles click events like clickdrag and panning
    */
@@ -138,7 +162,6 @@ export class MapComponent implements OnInit, OnDestroy {
       this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
       this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
-
     const drawBox = (event: MouseEvent) => {
       this.selectionRegion.x = Math.min(clickPos.x, event.offsetX);
       this.selectionRegion.y = Math.min(clickPos.y, event.offsetY);
@@ -169,7 +192,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
-        this.userService.selectedRegions = [];
         this.eventHandler.addEventListener('mousemove', drawBox, false);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
@@ -184,39 +206,20 @@ export class MapComponent implements OnInit, OnDestroy {
       if (this.userService.state === State.selectionTool) {
         this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
-        let reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
+        const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
 
-        const alx = Math.floor(clickPos.x / CanvasService.TERRAIN_SIZE);
-        const aly = Math.floor(clickPos.y / CanvasService.TERRAIN_SIZE);
-        // click
-        if (alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0) {
-          if (this.mapService.assetLayer[aly][alx] !== undefined) {
-            if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[aly][alx]) === -1) {
-              const theAsset = this.mapService.assetLayer[aly][alx];
-              reg = {x: alx, y: aly, width: theAsset.width, height: theAsset.height};
-              this.assetsService.selectAssets(reg);
-              this.userService.selectedAssets.push(theAsset);
-              this.userService.selectedRegions.push(reg);
-            }
-          } else {
-            reg = {x: 0, y: 0, width: 0, height: 0};
-            this.assetsService.selectAssets(reg);
-            this.userService.selectedAssets=this.assetsService.selectAssets(reg);
-            this.userService.selectedRegions=[];
-          }
-        }
-        //drag
-        if (!(alx - this.endMouse.x === 0 || aly - this.endMouse.y === 0)) {
-          for (const asset of this.assetsService.selectAssets(reg)){
-            this.userService.selectedAssets.push(asset);
-            this.userService.selectedRegions.push(reg);
-          }
+
+        if (reg.width === 0 || reg.height === 0) {
+          this.assetClicked(reg);
+        } else {
+          this.assetDragged(reg);
         }
 
         this.drawIndividualBoxes();
       }
       this.isSelection = false;
       removeListeners();
+      console.log('asset',this.userService.selectedAssets,'reg',this.userService.selectedRegions);
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
 }
