@@ -53,7 +53,7 @@ export class AssetsComponent implements OnInit {
     if (newValue === null) {  // have to use null here
       this.mapService.players[this.userService.selectedPlayer].gold = 0;
     } else {
-      this.mapService.players[this.userService.selectedPlayer].gold = Math.abs(Math.round(newValue));
+      this.mapService.players[this.userService.selectedPlayer].gold = Math.abs(Math.round(newValue)); // hopefully someone can find a better way to do this. Would love to be able to restrict keypresses to 0-9 and backspace only, but the methods i've tried don't work
     }
     console.log('gold value of selected player:', this.userService.selectedPlayer, 'is:', this.mapService.players[this.userService.selectedPlayer].gold);
   }
