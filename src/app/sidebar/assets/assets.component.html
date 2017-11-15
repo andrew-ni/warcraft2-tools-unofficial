@@ -24,16 +24,24 @@
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/gold_icon_4x.png">
-                <input type="number"
-                       [ngModel]="mapService.players[userService.selectedPlayer].gold"
-                       (ngModelChange)="onChangeGold($event)">
+            <input *ngIf="mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   [ngModel]="mapService.players[userService.selectedPlayer].gold"
+                   (ngModelChange)="onChangeGold($event)">
+            <input *ngIf="!mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   disabled>
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/lumber_icon_4x.png">
-                <input type="number"
-                        [ngModel]="mapService.players[userService.selectedPlayer].lumber"
-                        (ngModelChange)="onChangeLumber($event)">
+            <input *ngIf="mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   [ngModel]="mapService.players[userService.selectedPlayer].lumber"
+                   (ngModelChange)="onChangeLumber($event)">
+            <input *ngIf="!mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   disabled>
         </div>
     </div>
 </div>
