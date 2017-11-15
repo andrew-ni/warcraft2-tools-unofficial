@@ -38,6 +38,10 @@ export class AssetsComponent implements OnInit {
       for (const reg of this.userService.selectedRegions){
         this.mapService.assetsUpdated.next(reg);
       }
+      // refocus onto the canvas instead of sidebar to allow eventhandlers to listen
+      const ac = document.getElementById( 'assetCanvas' );
+      ac.focus();
+
     }
   }
 }

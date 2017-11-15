@@ -91,6 +91,7 @@ export class MapComponent implements OnInit, OnDestroy {
         document.getElementById('unitsBox').innerHTML = '';
       }
       this.userService.selectedAssets = [];
+      this.userService.selectedRegions = [];
     });
   }
 
@@ -155,7 +156,6 @@ export class MapComponent implements OnInit, OnDestroy {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
       this.eventHandler.removeEventListener('mousemove', drawBox, false);
-      // REMOVING BOX AT MOUSEUP
     };
 
     /**
@@ -169,6 +169,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
+        this.userService.selectedRegions = [];
         this.eventHandler.addEventListener('mousemove', drawBox, false);
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
