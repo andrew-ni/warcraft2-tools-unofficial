@@ -4,18 +4,18 @@
         <div class="inline field">
             <label>Number of Players:</label>
             <select class="ui dropdown"
-                [ngModel]="mapService.players.length-1"
-                (ngModelChange)="onChangeNumPlayers($event)">
-                    
+                    [ngModel]="mapService.players.length-1"
+                    (ngModelChange)="onChangeNumPlayers($event)">
+
                 <option *ngFor="let i of PLAYER_NUM_OPTIONS"
                         [value]="i">{{i}}</option>
             </select>
         </div>
         <div class="inline field">
             <label>Current Player:</label>
-                <select class="ui dropdown" 
-                [ngModel]="userService.selectedPlayer"
-                (ngModelChange)="onChangeSelectPlayer($event)">
+            <select class="ui dropdown"
+                    [ngModel]="userService.selectedPlayer"
+                    (ngModelChange)="onChangeSelectPlayer($event)">
 
                 <option *ngFor="let i of range(1, mapService.players.length)"
                         [value]="i">{{i}}</option>
