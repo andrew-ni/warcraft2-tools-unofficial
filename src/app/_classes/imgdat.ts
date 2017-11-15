@@ -1,3 +1,4 @@
+import { unitTypes } from 'asset';
 import { readFile } from 'fs';
 import { join as pathJoin } from 'path';
 
@@ -23,7 +24,6 @@ export class ImgDat {
         this._path = pathJoin('assets/img/', relPath.trim());
 
         const frameNamesArray = frameNames.trim().split(/\r?\n/);
-
         for (const [i, framName] of frameNamesArray.entries()) {
           if (framName.includes('inactive')) {
             this._index = i;
