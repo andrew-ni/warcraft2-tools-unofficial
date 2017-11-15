@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Player } from 'player';
 import { MapService } from 'services/map.service';
 import { UserService } from 'services/user.service';
 
@@ -12,10 +13,66 @@ export class AssetsComponent implements OnInit {
   /** selectPlayer is the currently selected player. This seems redundant, but is necessary for displaying the current player (1) on app startup */
   selectPlayer = 1;
 
+  /** all the legal number of players the game is allowed to have */
+  readonly PLAYER_NUM_OPTIONS = [2, 3, 4, 5, 6, 7, 8];
+
   constructor(private mapService: MapService, private userService: UserService) {
   }
 
-  ngOnInit() {
+  /**
+   * Updates mapService and userService based on user input
+   * @param newValue the new number of players we would like this map to have
+   */
+  onChangeNumPlayers(newValue) {
+    if (newValue > this.mapService.players.length - 1) {
+      for (let i = this.mapService.players.length; i <= newValue; i++) {
+        this.mapService.players.push(new Player(i, 2000, 150));
+      }
+      console.log('number of human players is now:', this.mapService.players.length - 1);
+    } else if (newValue < this.mapService.players.length - 1) {
+      for (let i = this.mapService.players.length - 1; i > newValue; i--) {
+        this.mapService.players.pop();
+      }
+      console.log('number of human players is now:', this.mapService.players.length - 1);
+      this.userService.selectedPlayer = this.mapService.players.length - 1;
+      this.selectPlayer = this.mapService.players.length - 1;
+    }
+  }
+
+  /**
+   * Updates userService based on user input
+   * @param newValue the new value that the user selected from the select player drop down menu
+   */
+  onChangeSelectPlayer(newValue) {
+    this.selectPlayer = newValue;
+    this.userService.selectedPlayer = this.selectPlayer;
+    console.log('selected player is:', this.userService.selectedPlayer);
+  }
+
+  /**
+   * Updates mapService based on user input
+   * @param newValue the new value that the user input into the gold amount text box
+   */
+  onChangeGold(newValue) {
+    if (newValue === null) {  // have to use null here
+      this.mapService.players[this.selectPlayer].gold = 0;
+    } else {
+      this.mapService.players[this.selectPlayer].gold = newValue;
+    }
+    console.log('gold value of selected player:', this.userService.selectedPlayer, 'is:', this.mapService.players[this.selectPlayer].gold);
+  }
+
+  /**
+  * Updates mapService based on user input
+  * @param newValue the new value that the user input into the lumber amount text box
+  */
+  onChangeLumber(newValue) {
+    if (newValue === null) {
+      this.mapService.players[this.selectPlayer].lumber = 0;
+    } else {
+      this.mapService.players[this.selectPlayer].lumber = newValue;
+    }
+    console.log(this.mapService.players[this.selectPlayer].lumber);
   }
 
    /**
@@ -41,31 +98,6 @@ export class AssetsComponent implements OnInit {
     return ret;
   }
 
-  /**
-   * Updates userService based on user input
-   * @param newValue the new value that the user selected from the select player drop down menu
-   */
-  onChangeSelectPlayer(newValue) {
-    this.selectPlayer = newValue;
-    this.userService.selectedPlayer = this.selectPlayer;
-    console.log('selected player is:', this.userService.selectedPlayer);
-  }
-
-  /**
-   * Updates mapService based on user input
-   * @param newValue the new value that the user input into the gold amount text box
-   */
-  onChangeGold(newValue) {
-    this.mapService.players[this.selectPlayer].gold = newValue;
-    console.log('gold value of selected player:', this.userService.selectedPlayer, 'is:', this.mapService.players[this.selectPlayer].gold);
-  }
-
-  /**
-  * Updates mapService based on user input
-  * @param newValue the new value that the user input into the lumber amount text box
-  */
-  onChangeLumber(newValue) {
-    this.mapService.players[this.selectPlayer].lumber = newValue;
-    console.log(this.mapService.players[this.selectPlayer].lumber);
+  ngOnInit() {
   }
 }

@@ -12,31 +12,18 @@ import { log } from 'util';
 })
 export class SidebarComponent implements OnInit {
 
-  playerCount = [2, 3, 4, 5, 6, 7, 8];
-
   constructor(private mapService: MapService, private userService: UserService) {
   }
 
-  ngOnInit() {
-  }
-
+  /**
+   * Updates mapService based on user input
+   * @param newValue the new map name
+   */
   onChangeName(newValue) {
     this.mapService.name = newValue;
     console.log('map name is:', this.mapService.name);
   }
 
-  onChangeNumPlayers(newValue) {
-    if (newValue > this.mapService.players.length - 1) {
-      for (let i = this.mapService.players.length; i <= newValue; i++) {
-        this.mapService.players.push(new Player(i, 2000, 150));
-      }
-      console.log('number of human players is now:', this.mapService.players.length - 1);
-    } else if (newValue < this.mapService.players.length - 1) {
-      for (let i = this.mapService.players.length; i > newValue; i--) {
-        this.mapService.players.pop();
-      }
-      console.log('number of human players is now:', this.mapService.players.length - 1);
-      this.userService.selectedPlayer = this.mapService.players.length - 1;
-    }
+  ngOnInit() {
   }
 }

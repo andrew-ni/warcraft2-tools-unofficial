@@ -8,16 +8,6 @@
                 [(ngModel)]="mapService.name"
                 (ngModelChange)="onChangeName($event)">
         </div>
-        <div class="inline field">
-            <label>Number of Players:</label>
-            <select class="ui dropdown"
-                [ngModel]="mapService.players.length-1"
-                (ngModelChange)="onChangeNumPlayers($event)">
-                  
-                <option *ngFor="let i of playerCount"
-                        [value]="i">{{i}}</option>
-            </select>
-        </div>
     </div>
 </div>
 

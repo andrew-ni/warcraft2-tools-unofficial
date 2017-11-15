@@ -2,6 +2,16 @@
     <h5>Player Assets</h5>
     <div class="ui form">
         <div class="inline field">
+            <label>Number of Players:</label>
+            <select class="ui dropdown"
+                [ngModel]="mapService.players.length-1"
+                (ngModelChange)="onChangeNumPlayers($event)">
+                    
+                <option *ngFor="let i of PLAYER_NUM_OPTIONS"
+                        [value]="i">{{i}}</option>
+            </select>
+        </div>
+        <div class="inline field">
             <label>Current Player:</label>
                 <select class="ui dropdown" 
                 [ngModel]="selectPlayer"
@@ -13,14 +23,14 @@
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/gold_icon_4x.png">
-                <input type = "text" 
+                <input type = "number" 
                        [ngModel] = "mapService.players[selectPlayer].gold"
                        (ngModelChange)="onChangeGold($event)">
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/lumber_icon_4x.png">
-                <input type="text"
+                <input type="number"
                         [ngModel] = "mapService.players[selectPlayer].lumber"
                         (ngModelChange)="onChangeLumber($event)">
         </div>
