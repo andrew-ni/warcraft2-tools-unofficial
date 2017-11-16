@@ -119,17 +119,17 @@ export class MapComponent implements OnInit, OnDestroy {
    * meant for single click selecting assets to be added to selectedAssets and selectedRegions
    * @param reg region to be scanned and added
    */
-  private assetClicked(reg: Region){
+  private assetClicked(reg: Region) {
     if (this.mapService.assetLayer[reg.y][reg.x] !== undefined) {
       if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[reg.y][reg.x]) === -1) {
         const theAsset = this.mapService.assetLayer[reg.y][reg.x];
-        reg = {x: reg.x, y: reg.y, width: theAsset.width, height: theAsset.height};
+        reg = { x: reg.x, y: reg.y, width: theAsset.width, height: theAsset.height };
         this.userService.selectedAssets.push(theAsset);
         this.userService.selectedRegions.push(reg);
       }
     } else {
-        this.userService.selectedAssets = this.assetsService.selectAssets(reg);
-        this.userService.selectedRegions = [];
+      this.userService.selectedAssets = this.assetsService.selectAssets(reg);
+      this.userService.selectedRegions = [];
     }
   }
 
@@ -138,10 +138,10 @@ export class MapComponent implements OnInit, OnDestroy {
    * @param reg region to be scanned and added
    */
   private assetDragged(reg: Region) {
-    for (const asset of this.assetsService.selectAssets(reg)){
+    for (const asset of this.assetsService.selectAssets(reg)) {
       if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[asset.y][asset.x]) === -1) {
-      this.userService.selectedAssets.push(asset);
-      this.userService.selectedRegions.push(reg);
+        this.userService.selectedAssets.push(asset);
+        this.userService.selectedRegions.push(reg);
       }
     }
   }
@@ -207,7 +207,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
-      // otherwise could be tile/asset draw
+        // otherwise could be tile/asset draw
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
@@ -240,5 +240,5 @@ export class MapComponent implements OnInit, OnDestroy {
       // console.log('asset',this.userService.selectedAssets,'reg',this.userService.selectedRegions);
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
-}
+  }
 }
