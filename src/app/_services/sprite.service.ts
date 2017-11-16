@@ -5,7 +5,7 @@ import { join as pathJoin, parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
-import { Animation, AnimationSet, Sprite } from 'sprite';
+import { AnimationAction, AnimationDirection, Sprite } from 'sprite';
 
 /**
  * Handles all sprite loading and recoloring for assets
@@ -269,7 +269,7 @@ export class SpriteService {
        */
       const buildAnimations = (framaData: FrameData[]) => {
         const rawAnimations = new Map<string, number[]>();
-        const animations: Animation[] = [];
+        const animations: AnimationDirection[] = [];
 
         // Populate the rawAnimations.
         for (const frame of framaData) {
@@ -282,7 +282,7 @@ export class SpriteService {
 
         // Construct the Animation objects from the raw data.
         for (const [subType, indices] of rawAnimations) {
-          const anim = new Animation(subType, indices);
+          const anim = new AnimationDirection(subType, indices);
           animations.push(anim);
           animations[subType] = anim; // Also map by the subType.
         }
@@ -290,10 +290,10 @@ export class SpriteService {
         return animations;
       };
 
-      const animationSets: AnimationSet[] = [];
+      const animationSets: AnimationAction[] = [];
 
       for (const [animationName, frameData] of rawAnimationSets) {
-        const anim = new AnimationSet(animationName, buildAnimations(frameData));
+        const anim = new AnimationAction(animationName, buildAnimations(frameData));
         animationSets.push(anim);
         animationSets[animationName] = anim; // Also map by the animationName.
       }
@@ -332,7 +332,7 @@ export class SpriteService {
 interface ParsedData {
   defaultIndex: number;
   imagePath: string;
-  animationSets: AnimationSet[];
+  animationSets: AnimationAction[];
 }
 
 /**
