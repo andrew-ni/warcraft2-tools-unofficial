@@ -188,11 +188,17 @@ export class SpriteService {
 
   /**
    * Reads the .dat files for the desired asset.
-   * Saves the filepath to the .png and the correct drawing index.
+   * Parses the image path, the default index, and all of the animation information.
    * @param assetName AssetType to parse (e.g. 'Peasant')
+   * @returns The image path, animation data, and default index for the asset type.
    */
   private async readDataFile(assetName: string) {
 
+    /**
+     * Parses the relative image path and the frame names for the animations
+     * @param fileData The raw .dat file contents.
+     * @returns The relative path and an array of frame names.
+     */
     const parseMainSections = (fileData: string) => {
       const [, relativePath, , frameNames] = fileData.split(/#.*?\r?\n/);
 
@@ -202,6 +208,20 @@ export class SpriteService {
       };
     };
 
+    /**
+     * Parses the frames and maps the animation name to the data about the frames in the animation.
+     * Map: animationName => {subType, subIndex, index}[]
+     *
+     * For example if a frameName is 'lumber-nw-3',
+     * this becomes:
+     * animationName: 'lumber',
+     * subType: 'nw',
+     * subIndex: 3
+     *
+     * Which is then mapped 'lumber' => {'nw', 3, index}
+     *
+     * @param frameNames Array of frame names from a .dat file
+     */
     const parseFrames = (frameNames: string[]) => {
       const rawAnimationSets = new Map<string, FrameData[]>();
       let defaultIndex: number;
