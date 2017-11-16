@@ -27,12 +27,12 @@ export class SidebarComponent implements OnInit {
     {
       name: 'Select',
       imgSrc: './assets/frontend_icons/select_tool.png',
-      action: 3,
+      action: State.selectionTool,
     },
     {
       name: 'Paint',
       imgSrc: './assets/frontend_icons/paint_tool.png',
-      action: 1,
+      action: State.terrainBrush,
     },
   ];
 
