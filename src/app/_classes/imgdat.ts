@@ -3,7 +3,7 @@ import { readFile } from 'fs';
 import { join as pathJoin } from 'path';
 
 
-export class ImgDat {
+export class Sprite {
   private _image: ImageBitmap;
   private _path: string;
   private _index = 0; // Save index of the "inactive" frame for all structures, for drawing.

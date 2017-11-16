@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
-import { ImgDat } from 'imgdat';
+import { Sprite } from 'imgdat';
 import { Coordinate } from 'interfaces';
 
 /**
@@ -20,7 +20,7 @@ export class SpriteService {
   private colorMap: ImageData;
 
   /** Contains all the sprites assets loaded */
-  private sprites = new Map<AssetType, ImgDat>();
+  private sprites = new Map<AssetType, Sprite>();
 
   constructor() { }
 
@@ -54,7 +54,7 @@ export class SpriteService {
    */
   private async prefetch(type: AssetType) {
     if (this.sprites.get(type) === undefined) {
-      const myImgDat = new ImgDat();
+      const myImgDat = new Sprite();
       this.sprites.set(type, myImgDat);
 
       return new Promise<void>(async resolve => {
