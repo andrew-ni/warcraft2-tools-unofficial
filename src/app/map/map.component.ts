@@ -209,6 +209,9 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventHandler.addEventListener('mousemove', drawBox, false);
         // otherwise could be tile/asset draw
       } else {
+        document.getElementById('unitsBox').innerHTML = '';
+        this.userService.selectedAssets = [];
+        this.userService.selectedRegions = [];
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
         if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
