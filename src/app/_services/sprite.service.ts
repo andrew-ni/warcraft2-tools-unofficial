@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { parse } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
-import { Sprite } from 'imgdat';
 import { Coordinate } from 'interfaces';
+import { Sprite } from 'sprite';
 
 /**
  * Handles all sprite loading and recoloring for assets
