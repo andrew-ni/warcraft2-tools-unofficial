@@ -9,6 +9,10 @@ import { Tileset } from 'tileset';
 
 @Injectable()
 export class MapService {
+
+  /** maximum num of players of map */
+  public readonly MAX_PLAYERS = 8;
+
   /** True if the map is in a valid state to save, False otherwise. */
   public canSave = false;
 
@@ -29,6 +33,8 @@ export class MapService {
 
   /** A list of assets. */
   public assets: Asset[] = [];
+
+
 
   /**
    * A matrix that tracks the location of assets in the map.

@@ -5,6 +5,7 @@ import { Asset, AssetType, Structure, structureTypes, Unit, unitTypes } from 'as
 import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
+import { State, UserService } from 'services/user.service';
 import { Tile, TileType } from 'tile';
 
 /**
@@ -21,6 +22,7 @@ interface IMap {
   assetsUpdated: Subject<Region>;
   assetRemoved: Subject<Region>;
   tilesUpdated: Subject<Region>;
+  MAX_PLAYERS: number;
 }
 
 
@@ -32,9 +34,12 @@ interface IMap {
 @Injectable()
 export class AssetsService {
   private map: IMap;
+  private userService: UserService;
+  private mapService: MapService;
 
   constructor(
     mapService: MapService,
+    userService: UserService,
   ) {
     this.map = mapService;
 
@@ -169,7 +174,6 @@ export class AssetsService {
 
   }
 
-  // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
   /**
   * Updates the owner ID of an asset at requested position.
   * @param selectedAssets list of assets to be change the owner of
@@ -177,9 +181,30 @@ export class AssetsService {
   */
   public updateOwner(selectedAssets: Asset[], newOwner: number) {
     // invalid owner
-    if (newOwner < 0 || newOwner > 8) throw Error('invalid player number');
+    if (newOwner < 0 || newOwner > this.map.MAX_PLAYERS) throw Error('invalid player number');
     for (const asset of selectedAssets) {
       asset.owner = newOwner;
     }
+  }
+
+  /**
+   * iterates through selectedassets array and changes the owner if it differs from current owner
+   * @param selectedAssets list of assets to have owner changed
+   * @param selectedRegions corresponding regions to be passed to assetupdating for recoloring
+   * @param newOwner new owner for assets to switch to
+   */
+
+  switchPlayer(selectedAssets: Asset[], selectedRegions: Region[], newOwner: number) {
+    // update asset owners
+    this.updateOwner(selectedAssets, newOwner);
+
+    // update each region in the array to recolor assets
+    for (const reg of selectedRegions) {
+      this.map.assetsUpdated.next(reg);
+    }
+    // refocus onto the canvas instead of sidebar to allow eventhandlers to listen
+    const ac = document.getElementById('assetCanvas');
+    ac.focus();
+
   }
 }

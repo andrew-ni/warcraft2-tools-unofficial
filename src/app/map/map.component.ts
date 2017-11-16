@@ -7,16 +7,9 @@ import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { MapService } from 'services/map.service';
 import { TerrainService } from 'services/terrain.service';
-import { UserService } from 'services/user.service';
+import { State, UserService } from 'services/user.service';
 
 
-
-enum State {
-  noSelection,
-  terrainBrush,
-  assetBrush,
-  selectionTool,
-}
 
 @Component({
   selector: 'app-map',

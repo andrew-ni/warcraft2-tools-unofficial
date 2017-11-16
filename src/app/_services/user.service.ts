@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AssetType } from 'asset';
-import { Dimension } from 'interfaces';
+import { Asset, AssetType } from 'asset';
+import { Dimension, Region } from 'interfaces';
 import { TileType } from 'tile';
-import { Asset } from '../_classes/asset';
-import { Region } from '../_interfaces/region';
 
-enum State {
+ export enum State {
   noSelection,
   terrainBrush,
   assetBrush,

@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from 'services/user.service';
+import { State, UserService } from 'services/user.service';
 
 import { AssetType } from 'asset';
 
-enum State {
-  noSelection,
-  terrainBrush,
-  assetBrush,
-  selectionTool,
-}
 
 interface CursorButton {
   name: string;
