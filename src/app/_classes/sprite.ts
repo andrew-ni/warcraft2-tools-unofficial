@@ -23,13 +23,29 @@ export class Sprite {
         const [, relPath, , frameNames] = data.split(/#.*?\r?\n/);
         this._path = pathJoin('assets/img/', relPath.trim());
 
+        const animations = new Map<string, number[]>();
+
         const frameNamesArray = frameNames.trim().split(/\r?\n/);
         for (const [i, framName] of frameNamesArray.entries()) {
+
+          const match = framName.match(/\b(\w+(-\w+)?)(-(\d+))?\b/);
+          const animationName = match[1];
+          const localIndex = (match[4] === undefined) ? 0 : parseInt(match[4], 10);
+
+          if (!animations.has(animationName)) {
+            animations.set(animationName, []);
+          }
+
+          const indices = animations.get(animationName);
+          indices.length = (localIndex + 1) > indices.length ? localIndex + 1 : indices.length;
+          indices[localIndex] = i;
+
           if (framName.includes('inactive')) {
             this._index = i;
             break;
           }
         }
+        console.log(name, animations);
 
         resolve();
       });
