@@ -3,7 +3,7 @@ import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import { TileType } from 'tile';
 
- export enum State {
+export enum State {
   noSelection,
   terrainBrush,
   assetBrush,
