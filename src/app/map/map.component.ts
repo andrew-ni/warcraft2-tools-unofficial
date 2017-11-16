@@ -36,6 +36,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private assetCanvas: HTMLCanvasElement;
   private assetContext: CanvasRenderingContext2D;
 
+  // for selection tool
   private beginMouse: Coordinate;
   private endMouse: Coordinate;
 
@@ -79,6 +80,7 @@ export class MapComponent implements OnInit, OnDestroy {
    * Handles keyboard events like pressing delete to delete a group of assets
    */
   private setKeyBoardListeners() {
+
     /**
     * Adds a listener to capture delete key presses and then deletes the appropriate selection
     * TODO: remove the listener?
@@ -113,6 +115,10 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * meant for single click selecting assets to be added to selectedAssets and selectedRegions
+   * @param reg region to be scanned and added
+   */
   private assetClicked(reg: Region){
     if (this.mapService.assetLayer[reg.y][reg.x] !== undefined) {
       if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[reg.y][reg.x]) === -1) {
@@ -127,7 +133,11 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private assetDragged(reg: Region){
+  /**
+   *  meant for click dragging selecting assets to be added to selectedAsset and selectedRegions
+   * @param reg region to be scanned and added
+   */
+  private assetDragged(reg: Region) {
     for (const asset of this.assetsService.selectAssets(reg)){
       if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[asset.y][asset.x]) === -1) {
       this.userService.selectedAssets.push(asset);
@@ -153,8 +163,7 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     /**
-     *
-     * @param event
+     * pan around the canvas
      */
     // https://stackoverflow.com/a/34030504
     const pan = (event: MouseEvent) => {
@@ -162,6 +171,10 @@ export class MapComponent implements OnInit, OnDestroy {
       this.terrainCanvas.parentElement.parentElement.scrollLeft += clickPos.x - event.offsetX;
       this.terrainCanvas.parentElement.parentElement.scrollTop += clickPos.y - event.offsetY;
     };
+
+    /**
+     *  draw the selection box by changing selection div
+     */
     const drawBox = (event: MouseEvent) => {
       this.selectionRegion.x = Math.min(clickPos.x, event.offsetX);
       this.selectionRegion.y = Math.min(clickPos.y, event.offsetY);
@@ -182,17 +195,19 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     /**
-     * On mousedown, route to appropriate function (clickdrag or pan)
+     * On mousedown, route to appropriate function (clickdrag or pan, or begin selection)
      * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
      */
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
+      // draw selection box if on that tool
       if (this.userService.state === State.selectionTool) {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
+      // otherwise could be tile/asset draw
       } else {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
@@ -203,12 +218,14 @@ export class MapComponent implements OnInit, OnDestroy {
 
     /** On mouseup, remove listeners */
     this.eventHandler.addEventListener('mouseup', (event) => {
+
+      // calculate the selection are and draw the individual selection boxes
       if (this.userService.state === State.selectionTool) {
         this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
 
-
+        // if selection area is 0, then it was a click
         if (reg.width === 0 || reg.height === 0) {
           this.assetClicked(reg);
         } else {
@@ -217,9 +234,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
         this.drawIndividualBoxes();
       }
+
       this.isSelection = false;
       removeListeners();
-      console.log('asset',this.userService.selectedAssets,'reg',this.userService.selectedRegions);
+      // console.log('asset',this.userService.selectedAssets,'reg',this.userService.selectedRegions);
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);
     });
 }

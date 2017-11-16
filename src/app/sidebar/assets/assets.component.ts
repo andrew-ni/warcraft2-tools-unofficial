@@ -29,7 +29,7 @@ export class AssetsComponent implements OnInit {
   /**
    * iterates through selectedassets array and changes the owner if it differs from current owner
    */
-  onclick() {
+  switchPlayer() {
     if (this.userService.state === State.selectionTool) {
       for (const asset of this.userService.selectedAssets) {
           this.assetsService.updateOwner(this.userService.selectedAssets, this.userService.selectedPlayer);

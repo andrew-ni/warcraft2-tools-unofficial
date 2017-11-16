@@ -51,7 +51,7 @@ export class UserService {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];
-    this._selectedRegions = []; // = {x: 0, y: 0, width: 0, height: 0};
+    this._selectedRegions = [];
   }
 
   /**
