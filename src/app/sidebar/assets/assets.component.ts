@@ -24,18 +24,14 @@ export class AssetsComponent implements OnInit {
    * @param newValue the new number of players we would like this map to have
    */
   onChangeNumPlayers(newValue) {
-    if (newValue > this.mapService.players.length - 1) {
-      for (let i = this.mapService.players.length; i <= newValue; i++) {
-        this.mapService.players.push(new Player(i, 2000, 150));
-      }
-      console.log('number of human players is now:', this.mapService.players.length - 1);
-    } else if (newValue < this.mapService.players.length - 1) {
-      for (let i = this.mapService.players.length - 1; i > newValue; i--) {
-        this.mapService.players.pop();
-      }
-      console.log('number of human players is now:', this.mapService.players.length - 1);
-      this.userService.selectedPlayer = this.mapService.players.length - 1;
+    for (let i = this.mapService.players.length; i <= newValue; i++) {
+      this.mapService.players.push(new Player(i, 2000, 150));
     }
+    for (let i = this.mapService.players.length - 1; i > newValue; i--) {
+      this.mapService.players.pop();
+    }
+    console.log('number of human players is now:', this.mapService.players.length - 1);
+    this.userService.selectedPlayer = Math.min(this.userService.selectedPlayer, this.mapService.players.length - 1);
   }
 
   /**
