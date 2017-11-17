@@ -22,10 +22,12 @@ interface IMap {
   partialBits: Uint8Array[];
   players: Player[];
   assets: Asset[];
+  assetLayer: Asset[][];
   terrainPath: string;
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
+  mapVersion: string;
 }
 
 
@@ -102,36 +104,37 @@ export class IOService {
    * @param fillTile type of tile used to fill default map
    * @param players player number and starting resource
    */
-  public initNew(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+  public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
     this._mapFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
     this.map.description = description;
     this.map.width = width;
     this.map.height = height;
-
     this.map.partialBits = [];
     this.map.terrainLayer = [];
+    this.map.assetLayer = [];
     this.map.drawLayer = [];
 
-    for (let y = 0; y < height + 1; y++) {
-      this.map.terrainLayer.push([]);
+    for (let y = 0; ; y++) {
+      this.map.partialBits.push(Uint8Array.from(new Array(width + 1).fill(0xF)));
+      this.map.terrainLayer.push(new Array(width + 1).fill(fillTile));
+
+      if (y >= height) break;
+
+      this.map.assetLayer.push(new Array<Asset>(width));
       this.map.drawLayer.push([]);
-
-      this.map.partialBits.push(Uint8Array.from(new Array(width).fill(0xF)));
-
-      for (let x = 0; x < width + 1; x++) {
-        this.map.terrainLayer[y].push(fillTile);
+      for (let x = 0; x < width; x++) {
         this.map.drawLayer[y].push(new Tile(0));
       }
     }
 
+    this.map.mapVersion = 'v1.0';
     this.map.players = players;
     this.map.assets = [];
     this.map.tileSet = undefined;
     this.map.terrainPath = '../img/Terrain.dat';
     ipcRenderer.send('terrain:load', this.map.terrainPath, '');
-
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
