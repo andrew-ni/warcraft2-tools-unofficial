@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from 'services/user.service';
-import { MapService } from 'services/map.service';
 import { Player } from 'player';
+import { MapService } from 'services/map.service';
+import { UserService } from 'services/user.service';
 
 import { AssetType } from 'asset';
 
@@ -19,7 +19,7 @@ interface CursorButton {
 export class SidebarComponent implements OnInit {
 
   MapName;
-  NumPlayers = [2,3,4,5,6,7,8];
+  NumPlayers = [2, 3, 4, 5, 6, 7, 8];
   NumberPlayers = 1;
 
   cursorButtons: CursorButton[] = [

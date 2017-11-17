@@ -1,5 +1,21 @@
-
-<app-footer></app-footer>
+<div>
+    <button class="ui button" (click)="openTab('map')">Map Tool</button>
+    <button class="ui button" (click)="openTab('sprite')">Sprite Tool</button>
+    <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
+</div>
+<div id="map" class="tab" style="display:none">
+    <app-sidebar></app-sidebar>
+    <app-map></app-map>
+    <app-footer></app-footer>
+</div>
+<div id="sprite" class="tab" style="display:none">
+    <h2>Sprite Tab</h2>
+    <p>Insert sprite and animation tool here</p>
+</div>
+<div id="audio" class="tab" style="display:none">
+    <h2>Audio Tab</h2>
+    <p>Insert audio tool here</p>
+</div>
 <app-newmap></app-newmap>
 <!-- <app-animation></app-animation> -->
 <!-- <app-audio></app-audio> -->
@@ -9,8 +25,6 @@
   [ngSwitch]="userService._activeView">
 
   <div id="main" *ngSwitchCase="0">
-      <app-sidebar></app-sidebar>
-      <app-map></app-map>
   </div>
 
   <app-animation *ngSwitchCase="1"
