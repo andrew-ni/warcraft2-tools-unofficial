@@ -1,10 +1,28 @@
-<div id="main">
-  <app-sidebar></app-sidebar>
-  <app-map></app-map>
-</div>
+
 <app-footer></app-footer>
 <app-newmap></app-newmap>
-<app-tileset></app-tileset>
-<app-animation></app-animation>
-<app-audio></app-audio>
+<!-- <app-animation></app-animation> -->
+<!-- <app-audio></app-audio> -->
 <!-- <app-uploadmap></app-uploadmap> -->
+
+<div id="main"
+  [ngSwitch]="userService._activeView">
+
+  <div id="main" *ngSwitchCase="0">
+      <app-sidebar></app-sidebar>
+      <app-map></app-map>
+  </div>
+
+  <app-animation *ngSwitchCase="1"
+              class="view"></app-animation>
+
+  <!-- <app-devices *ngSwitchCase="ActiveView.Devices"
+              class="view"></app-devices>
+
+  <app-variables *ngSwitchCase="ActiveView.Variables"
+                class="view"></app-variables>
+
+  <app-routines *ngSwitchCase="ActiveView.Routines"
+              class="view"></app-routines> -->
+
+</div>

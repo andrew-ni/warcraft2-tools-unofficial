@@ -13,7 +13,7 @@ import { UserService } from 'services/user.service';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements OnInit {
 
   private eventHandler: HTMLDivElement;
 
@@ -49,9 +49,6 @@ export class MapComponent implements OnInit, OnDestroy {
     this.setClickListeners();
   }
 
-  ngOnDestroy() {
-    this.mapLoadedSubscription.unsubscribe();
-  }
 
   /**
    * Handles click events like clickdrag and panning

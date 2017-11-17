@@ -22,6 +22,3 @@ export class AudioComponent implements OnInit {
 
 }
 
-require('electron').ipcRenderer.on('menu:file:audio', () => {
-  document.getElementById('audioModal').setAttribute('style', 'display: inline;');
-});

@@ -65,7 +65,7 @@ export function buildMenu(window: Electron.WebContents): void {
         },
         {
           label: 'Edit Audio',
-          click() { window.send('menu:file:audio')}
+          click() { window.send('menu:file:audio');}
         }
       ]
     }
