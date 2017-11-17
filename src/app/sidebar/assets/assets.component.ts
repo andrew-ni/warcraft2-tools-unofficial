@@ -71,13 +71,13 @@ export class AssetsComponent implements OnInit {
     console.log(this.mapService.players[this.userService.selectedPlayer].lumber);
   }
 
-   /**
-    * This helper function mimics python's range() function
-    * @param start Number to start at
-    * @param edge Number to end at
-    * @param step step size
-    * @returns an array of numbers counting up
-    */
+  /**
+   * This helper function mimics python's range() function
+   * @param start Number to start at
+   * @param edge Number to end at
+   * @param step step size
+   * @returns an array of numbers counting up
+   */
   range(start: number, edge?: number, step?: number) {
     if (arguments.length === 1) {
       edge = start;
