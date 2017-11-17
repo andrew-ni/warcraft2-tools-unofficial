@@ -132,11 +132,16 @@ export class MapComponent implements OnInit, OnDestroy {
    */
   private assetDragged(reg: Region) {
     for (const asset of this.assetsService.selectAssets(reg)) {
-      if (this.userService.selectedAssets.indexOf(this.mapService.assetLayer[asset.y][asset.x]) === -1) {
+      // check if it's not already in selectedAssets
+      if (this.userService.selectedAssets.indexOf(asset) === -1) {
         this.userService.selectedAssets.push(asset);
-        this.userService.selectedRegions.push(reg);
       }
     }
+    // add the region if there is an asset found
+    if (this.userService.selectedAssets.length > 0){
+      this.userService.selectedRegions.push(reg);
+    }
+
   }
 
   /**
@@ -203,8 +208,8 @@ export class MapComponent implements OnInit, OnDestroy {
         // otherwise could be tile/asset draw
       } else {
         document.getElementById('unitsBox').innerHTML = '';
-        this.userService.selectedAssets = [];
-        this.userService.selectedRegions = [];
+        // this.userService.selectedAssets = [];
+        // this.userService.selectedRegions = [];
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
         if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }

@@ -69,6 +69,7 @@ export class UserService {
    * @param tileType tileType to change state to
    */
   set terrainToBeDrawn(tileType) {
+    this.clearSelections();
     this._mapElementToBeDrawn = this._terrainToBeDrawn = tileType;
     this._state = State.terrainBrush;
   }
@@ -78,6 +79,7 @@ export class UserService {
    * @param assetType assetType to change state to
    */
   set assetToBeDrawn(assetType) {
+    this.clearSelections();
     this._mapElementToBeDrawn = this._assetToBeDrawn = assetType;
     this._state = State.assetBrush;
   }
@@ -108,6 +110,15 @@ export class UserService {
     this._selectedRegions = regArr;
     this._state = State.selectionTool;
   }
+
+  /**
+   * empties selected regions and assets when switching states
+   */
+  clearSelections() {
+    this._selectedRegions = [];
+    this._selectedAssets = [];
+  }
+
   /**
    * Will call one of the given callbacks based on whether terrain or asset is
    * selected in the sidebar.

@@ -107,9 +107,7 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          if (removedByUser) {
-            this.removeAsset(theAsset);
-          } else if (!(theAsset.validTiles.has(theTerrain.tileType))) {
+          if (removedByUser || !(theAsset.validTiles.has(theTerrain.tileType))){
             this.removeAsset(theAsset);
           }
         }
@@ -175,7 +173,7 @@ export class AssetsService {
   }
 
   /**
-  * Updates the owner ID of an asset at requested position.
+  * Updates the owner of an array of assets to a new one
   * @param selectedAssets list of assets to be change the owner of
   * @param newOwner the new owner ID of asset to be updated
   */
@@ -204,7 +202,7 @@ export class AssetsService {
     for (const reg of selectedRegions) {
       this.map.assetsUpdated.next(reg);
     }
-    // refocus onto the canvas instead of sidebar to allow eventhandlers to listen
+    // refocus onto the canvas to allow deletion if desired
     const ac = document.getElementById('assetCanvas');
     ac.focus();
 
