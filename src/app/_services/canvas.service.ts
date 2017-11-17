@@ -5,6 +5,7 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
+import { Deferred } from 'deferred';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -54,6 +55,8 @@ export class CanvasService {
 
   /** Map to be read from */
   private map: IMap;
+
+  private canvasSetting = new Deferred<void>();
 
   /**
    * Registers tilesUpdated, assetsUpdated, and mapResized events, and loads dose dat files.
@@ -348,14 +351,14 @@ export class CanvasService {
   /**
    * Used to draw terrain, units, and assets onto the canvas.
    * @param layer The canvas context to draw on.
-   * @param image Image stored in assetMap. Access with assetMap.get(imgName)
+   * @param image Bitmap image to draw. Access with spriteService.get(assetType).image
    * @param player Player 1 - 8. Used to calculate x offset in source image.
    * @param width Width of a single sprite on the image.
    * @param pos X, Y coordinate to draw on canvas.
    * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
    * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */
-  private static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+  public static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
     let offset = 0;
     if (width % CanvasService.TERRAIN_SIZE !== 0) {
       offset = (width - CanvasService.TERRAIN_SIZE) / 2;
