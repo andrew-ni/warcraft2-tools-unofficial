@@ -64,11 +64,6 @@ export class UserService {
   get selectedAssets() { return this._selectedAssets; }
   get selectedRegions() { return this._selectedRegions; }
 
-
-  set state(currentState) {
-    this._state = currentState;
-  }
-
   /**
    * On terrain select, change _mapElementToBeDrawn, _terrainToBeDrawn, and _state
    * @param tileType tileType to change state to
@@ -102,6 +97,7 @@ export class UserService {
    */
   set selectedAssets(assets) {
     this._selectedAssets = assets;
+    this._state = State.selectionTool;
   }
 
   /**
@@ -110,6 +106,7 @@ export class UserService {
    */
   set selectedRegions(regArr) {
     this._selectedRegions = regArr;
+    this._state = State.selectionTool;
   }
   /**
    * Will call one of the given callbacks based on whether terrain or asset is

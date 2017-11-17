@@ -7,7 +7,6 @@ import { AssetType } from 'asset';
 interface CursorButton {
   name: string;
   imgSrc: string;
-  action: number;
 }
 
 @Component({
@@ -21,22 +20,16 @@ export class SidebarComponent implements OnInit {
     {
       name: 'Select',
       imgSrc: './assets/frontend_icons/select_tool.png',
-      action: State.selectionTool,
-    },
-    {
-      name: 'Paint',
-      imgSrc: './assets/frontend_icons/paint_tool.png',
-      action: State.terrainBrush,
-    },
+    }
+
+    // { THIS NEEDS TO MOVE TO TERRAIN.COMPONENT
+    //   name: 'Paint',
+    //   imgSrc: './assets/frontend_icons/paint_tool.png',
+    // },
   ];
 
   constructor(private userService: UserService) { }
 
   ngOnInit() {
   }
-
-  changeState(state: State) {
-    this.userService.state = state;
-  }
-
 }
