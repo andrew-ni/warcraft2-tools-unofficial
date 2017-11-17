@@ -183,7 +183,9 @@ export class AssetsService {
     // invalid owner
     if (newOwner < 0 || newOwner > this.map.MAX_PLAYERS) throw Error('invalid player number');
     for (const asset of selectedAssets) {
-      asset.owner = newOwner;
+      if (asset.type !== AssetType.GoldMine) {
+        asset.owner = newOwner;
+      }
     }
   }
 
