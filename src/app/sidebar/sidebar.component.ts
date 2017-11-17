@@ -3,6 +3,14 @@ import { UserService } from 'services/user.service';
 import { MapService } from 'services/map.service';
 import { Player } from 'player';
 
+import { AssetType } from 'asset';
+
+interface CursorButton {
+  name: string;
+  imgSrc: string;
+}
+
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -14,7 +22,18 @@ export class SidebarComponent implements OnInit {
   NumPlayers = [2,3,4,5,6,7,8];
   NumberPlayers = 1;
 
-  constructor(private mapService: MapService) { 
+  cursorButtons: CursorButton[] = [
+    {
+      name: 'Select',
+      imgSrc: './assets/frontend_icons/select_tool.png',
+    },
+    {
+      name: 'Paint',
+      imgSrc: './assets/frontend_icons/paint_tool.png',
+    },
+  ];
+
+  constructor(private mapService: MapService) {
     this.mapService.mapLoaded.do(() => console.log('map:loaded')).subscribe({
       next: () => this.setProperties(),
       error: err => console.error(err),
@@ -31,7 +50,7 @@ export class SidebarComponent implements OnInit {
     console.log(newValue);
     if (newValue > this.mapService.players.length - 1)
     {
-      for (var i = this.mapService.players.length; i <= newValue; i++) {
+      for (let i = this.mapService.players.length; i <= newValue; i++) {
         console.log(i);
         this.mapService.players.push(new Player(i, 2000, 150));
       }
@@ -43,7 +62,6 @@ export class SidebarComponent implements OnInit {
     this.MapName = this.mapService.name;
     this.NumberPlayers = this.mapService.players.length - 1;
   }
-
 
   ngOnInit() {
   }

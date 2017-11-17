@@ -24,3 +24,13 @@
 <app-terrain class="section"></app-terrain>
 <div class="ui divider"></div>
 <app-assets class="section"></app-assets>
+
+<div class="ui divider"></div>
+<div class="ui container">
+    <h5>Cursors</h5>
+    <div class="ui grid">
+        <div class="three wide column"
+             *ngFor="let button of cursorButtons">
+            <img [src]="button.imgSrc">
+        </div>
+</div>
