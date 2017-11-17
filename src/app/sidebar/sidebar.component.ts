@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Player } from 'player';
 import { MapService } from 'services/map.service';
-import { UserService } from 'services/user.service';
-import { log } from 'util';
-
 import { AssetType } from 'asset';
 
 interface CursorButton {
@@ -30,8 +26,9 @@ export class SidebarComponent implements OnInit {
     },
   ];
 
-  constructor(private mapService: MapService, private userService: UserService) {
-  }
+  constructor(
+    private mapService: MapService,
+  ) { }
 
   /**
    * Updates mapService based on user input

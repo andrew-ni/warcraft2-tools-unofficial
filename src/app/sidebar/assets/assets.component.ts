@@ -14,8 +14,10 @@ export class AssetsComponent implements OnInit {
   /** all the legal number of players the game is allowed to have */
   readonly PLAYER_NUM_OPTIONS = [2, 3, 4, 5, 6, 7, 8];
 
-  constructor(private mapService: MapService, private userService: UserService) {
-  }
+  constructor(
+    private mapService: MapService,
+    private userService: UserService,
+  ) { }
 
   /**
    * Updates mapService and userService based on user input
