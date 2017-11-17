@@ -15,6 +15,7 @@ import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
+import { AnimationComponent } from './animation/animation.component';
 import { FooterComponent } from './footer/footer.component';
 import { MapComponent } from './map/map.component';
 import { NewmapComponent } from './newmap/newmap.component';
@@ -37,6 +38,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     AssetsComponent,
     NewmapComponent,
     UploadmapComponent,
+    AnimationComponent,
   ],
   imports: [
     BrowserModule,

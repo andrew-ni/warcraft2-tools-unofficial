@@ -5,12 +5,12 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
-import { Sprite } from 'sprite';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
 import { UserService } from 'services/user.service';
+import { Sprite } from 'sprite';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
 
@@ -299,6 +299,7 @@ export class CanvasService {
     this.init();
   }
 
+
   /**
    * Draws map
    * @param reg Region to be drawn (default entire map)
@@ -311,7 +312,7 @@ export class CanvasService {
     const terrain = this.spriteService.get(AssetType.Terrain).image;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
+        CanvasService.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
@@ -338,7 +339,7 @@ export class CanvasService {
           let single = img.image.width;
 
           if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
+          CanvasService.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
         }
       }
     }
@@ -354,7 +355,7 @@ export class CanvasService {
    * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
    * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
    */
-  private drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+  private static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
     let offset = 0;
     if (width % CanvasService.TERRAIN_SIZE !== 0) {
       offset = (width - CanvasService.TERRAIN_SIZE) / 2;
