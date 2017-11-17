@@ -51,7 +51,6 @@ export class UserService {
     this._selectedAssets = [];
     this._selectedRegions = [];
   }
-
   /**
    * Classes that inject UserService call these getters in order to change the current palette
    * In [sidebar].component.html, call these on button clicks, e.g. (click)="userService.changeTerrain(button.tileType)"
@@ -63,6 +62,7 @@ export class UserService {
   get state() { return this._state; }
   get selectedAssets() { return this._selectedAssets; }
   get selectedRegions() { return this._selectedRegions; }
+
 
   /**
    * On terrain select, change _mapElementToBeDrawn, _terrainToBeDrawn, and _state
