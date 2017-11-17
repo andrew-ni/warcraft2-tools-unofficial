@@ -299,7 +299,7 @@ export class CanvasService {
     this.terrainContext = terrainCtx;
     this.assetCanvas = assetCanvas;
     this.assetContext = assetCtx;
-    this.init();
+    this.spriteService.initializing.then(() => this.init());
   }
 
 

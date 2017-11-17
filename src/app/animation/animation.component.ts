@@ -25,13 +25,6 @@ export class AnimationComponent implements OnInit {
     this.animationCanvas = document.getElementById('animationCanvas') as HTMLCanvasElement;
     this.animationContext = this.animationCanvas.getContext('2d');
     this.animationService.setCanvas(this.animationCanvas, this.animationContext);
-    this.draw();
-  }
-
-  private draw() {
-    const peasant = this.spriteService.get(AssetType.Peasant);
-    CanvasService.drawImage(
-      this.animationContext, peasant.image, 1, peasant.image.width, {x: 2, y: 2}, 1);
   }
 
 }
