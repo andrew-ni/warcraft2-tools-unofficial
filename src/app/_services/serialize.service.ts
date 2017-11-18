@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
 import { Subject } from 'rxjs/Rx';
 
@@ -60,6 +60,7 @@ export class SerializeService {
     mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
+    private appRef: ApplicationRef
   ) {
     this.map = mapService;
   }
@@ -170,6 +171,7 @@ export class SerializeService {
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
     this.map.assetsUpdated.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
+    this.appRef.tick(); // we can optimize this to not update the whole app
   }
 
   /**
