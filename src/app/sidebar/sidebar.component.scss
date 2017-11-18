@@ -1,14 +1,11 @@
 :host {
-    width: 204px;
-    background: rgb(255, 255, 127);
-    font-size: 18px;
-    overflow-y: auto;
+    width: 300px;
+    background: rgb(126, 219, 219);
+    font-family: "Open Sans";
+    font-size: 20px;
 }
 
-.section {
-    width: 100%;
-}
-
-div#properties {
-    background: rgb(32, 104, 32);
+img {
+    height: 50px;
+    width: 50px;
 }
