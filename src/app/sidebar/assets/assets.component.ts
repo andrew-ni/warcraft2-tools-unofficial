@@ -41,7 +41,7 @@ export class AssetsComponent implements OnInit {
    */
   onChangeSelectPlayer(newValue) {
     this.userService.selectedPlayer = newValue;
-    this.assetsService.switchPlayer(this.userService.selectedAssets,this.userService.selectedRegions, newValue);
+    this.assetsService.switchPlayer(this.userService.selectedAssets, this.userService.selectedRegions, newValue);
     console.log('selected player is:', this.userService.selectedPlayer);
   }
 

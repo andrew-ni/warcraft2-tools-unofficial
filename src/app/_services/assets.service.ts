@@ -107,7 +107,7 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          if (removedByUser || !(theAsset.validTiles.has(theTerrain.tileType))){
+          if (removedByUser || !(theAsset.validTiles.has(theTerrain.tileType))) {
             this.removeAsset(theAsset);
           }
         }

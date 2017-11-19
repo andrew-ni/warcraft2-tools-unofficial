@@ -138,7 +138,7 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     }
     // add the region if there is an asset found
-    if (this.userService.selectedAssets.length > 0){
+    if (this.userService.selectedAssets.length > 0) {
       this.userService.selectedRegions.push(reg);
     }
 
