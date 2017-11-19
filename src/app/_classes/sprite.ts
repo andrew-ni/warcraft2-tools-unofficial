@@ -59,15 +59,19 @@ export class AnimationContext {
 
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
-   * @param sprite The new sprite this AnimationContext should reflect.
+   * @param _sprite The new sprite this AnimationContext should reflect.
    * @param frameNum Frame number to initialize to. Default is 0.
    */
   constructor(
-    private sprite: Sprite,
+    private _sprite: Sprite,
     private frameNum: number = 0,
   ) {
-    this.action = this.sprite.actions[0];   // default to first actionm
+    this.action = this._sprite.actions[0];   // default to first actionm
     this.direction = this.action.directions[0]; // default to first direction
+  }
+
+  public get sprite(): Sprite {
+    return this._sprite;
   }
 
   /**
@@ -75,7 +79,7 @@ export class AnimationContext {
    * @param a String or number, index of action within this Sprite to take on.
    */
   public setAction(a: string|number): void {
-    this.action = this.sprite.actions[a];
+    this.action = this._sprite.actions[a];
     this.setDirection(0);
   }
 
