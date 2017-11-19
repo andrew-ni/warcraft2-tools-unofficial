@@ -104,6 +104,7 @@ export class IOService {
 
         if ((height === TERRAIN_PNG_HEIGHT) && (width === TERRAIN_PNG_WIDTH)) {
           console.log('changing tileset image to', filepath);
+          // redraw the map using the changed tileset
         } else {
           console.log('DIMENSIONS INVALID');
         }
