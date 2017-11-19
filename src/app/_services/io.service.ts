@@ -30,7 +30,6 @@ interface IMap {
   mapVersion: string;
 }
 
-
 @Injectable()
 export class IOService {
 
@@ -95,9 +94,25 @@ export class IOService {
     });
 
     ipcRenderer.on('menu:file:loadtilesetimg', (event: Electron.IpcMessageEvent, filepath) => {
-      console.log('changing tileset image to', filepath);
+      const img = new Image();
+      const TERRAIN_PNG_HEIGHT = 10304;
+      const TERRAIN_PNG_WIDTH = 32;
+
+      img.onload = function(){
+        const height = img.height;
+        const width = img.width;
+
+        if ((height === TERRAIN_PNG_HEIGHT) && (width === TERRAIN_PNG_WIDTH)) {
+          console.log('changing tileset image to', filepath);
+        } else {
+          console.log('DIMENSIONS INVALID');
+        }
+      };
+
+      img.src = filepath;
     });
   }
+
   /**
    * Initialize the map when new menu is used
    * @param name map name created.
