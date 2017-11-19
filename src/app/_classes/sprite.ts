@@ -89,7 +89,7 @@ export class AnimationContext {
 
   /** Get the current frame number. Index in animation sprite sheet. */
   public getCurFrame(): number {
-    return this.frameNum;
+    return this.direction.frames[this.frameNum];
   }
 
   /** Advance to next frame and return updated frame number. */

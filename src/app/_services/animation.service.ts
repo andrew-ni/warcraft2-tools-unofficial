@@ -3,7 +3,7 @@ import { AssetType } from 'asset';
 import { ipcRenderer } from 'electron';
 import { CanvasService } from 'services/canvas.service';
 import { SpriteService } from 'services/sprite.service';
-import { Sprite } from 'sprite';
+import { AnimationContext, Sprite } from 'sprite';
 
 /**
  *
@@ -33,7 +33,14 @@ export class AnimationService {
 
   private draw() {
     const peasant = this.spriteService.get(AssetType.Peasant);
-    CanvasService.drawImage(
-      this.animationContext, peasant.image, 1, peasant.image.width, { x: 2, y: 2 }, 1);
+    const ctx = new AnimationContext(peasant, 3);
+
+    ctx.setAction('attack');
+    ctx.setDirection('ne');
+
+    // CanvasService.drawImage(
+    //   this.animationContext, peasant.image, 1, peasant.image.width, { x: 2, y: 2 }, 1);
+
+    CanvasService.drawImage(this.animationContext, peasant.image, 1, peasant.image.width / CanvasService.MAX_PLAYERS, { x: 2, y: 2}, ctx.getCurFrame());
   }
 }
