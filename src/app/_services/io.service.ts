@@ -94,6 +94,9 @@ export class IOService {
       this.map.mapLoaded.next();
     });
 
+    ipcRenderer.on('menu:file:loadtilesetimg', (event: Electron.IpcMessageEvent, filepath) => {
+      console.log('changing tileset image to', filepath);
+    });
   }
   /**
    * Initialize the map when new menu is used
