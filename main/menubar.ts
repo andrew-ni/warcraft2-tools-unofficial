@@ -4,7 +4,12 @@ import { IO } from './fileIO';
 
 const options = {
   filters: [
-    { name: 'Map File (.map)', extensions: ['map'] }
+    { name: 'Map Files', extensions: ['map'] }
+  ]
+};
+const tilesetpng = {
+  filters: [
+    { name: 'Tileset Images', extensions: ['png'] }
   ]
 };
 
@@ -49,7 +54,19 @@ export function buildMenu(window: Electron.WebContents): void {
               }
             });
           }
-        }
+        },
+        {
+          label: 'Load Tileset Image',
+          async click() {
+            dialog.showOpenDialog(tilesetpng, (paths: string[]) => {
+                if (paths === undefined) return;
+
+                console.log(paths[0]);
+                window.send('menu:file:loadtilesetimg', paths[0]);
+              }
+            );
+          }
+        },
       ]
     }
   ];
