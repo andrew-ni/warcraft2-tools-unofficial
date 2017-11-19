@@ -157,22 +157,6 @@ export class AssetsService {
   }
 
   /**
-   * Changes owner of asset by deleting and redrawing it
-   * @param asset asset to have owner switched
-   * @param newOwner owner to be switched to
-   */
-  public changeOwner(asset: Asset, newOwner: number) {
-    const origX = asset.x;
-    const origY = asset.y;
-    const type = asset.type;
-
-    this.removeAsset(asset);
-    this.placeAsset(newOwner, type, { x: origX, y: origY }, false);
-
-
-  }
-
-  /**
   * Updates the owner of an array of assets to a new one
   * @param selectedAssets list of assets to be change the owner of
   * @param newOwner the new owner ID of asset to be updated
