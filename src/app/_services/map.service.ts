@@ -61,7 +61,6 @@ export class MapService {
   /** The tile set used to draw the map. */
   public tileSet: Tileset;
 
-
   // Events
 
   /** @event mapResized When the dimension of the map have changed. */

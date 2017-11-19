@@ -2,26 +2,46 @@
     <h5>Player Assets</h5>
     <div class="ui form">
         <div class="inline field">
+            <label>Number of Players:</label>
+            <select class="ui dropdown"
+                    [ngModel]="mapService.players.length-1"
+                    (ngModelChange)="onChangeNumPlayers($event)">
+
+                <option *ngFor="let i of PLAYER_NUM_OPTIONS"
+                        [value]="i">{{i}}</option>
+            </select>
+        </div>
+        <div class="inline field">
             <label>Current Player:</label>
             <select class="ui dropdown"
-                    [(ngModel)]="userService.selectedPlayer" (ngModelChange)="assetsService.switchPlayer(userService.selectedAssets,userService.selectedRegions,userService.selectedPlayer)"> 
-                      
-                <option class="item"
-                        *ngFor="let i of [1,2,3,4,5,6,7,8]"
-                        [value]="i">Player {{i}}</option>
+                    [ngModel]="userService.selectedPlayer"
+                    (ngModelChange)="onChangeSelectPlayer($event)">
+
+                <option *ngFor="let i of range(1, mapService.players.length)"
+                        [value]="i">{{i}}</option>
             </select>
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/gold_icon_4x.png">
-            <input type="text"
-                   placeholder="Enter Gold">
+            <input *ngIf="mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   [ngModel]="mapService.players[userService.selectedPlayer].gold"
+                   (ngModelChange)="onChangeGold($event)">
+            <input *ngIf="!mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   disabled>
         </div>
         <div class="inline field">
             <img class="ui mini spaced image"
                  src=":../../assets/frontend_icons/lumber_icon_4x.png">
-            <input type="text"
-                   placeholder="Enter Lumber">
+            <input *ngIf="mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   [ngModel]="mapService.players[userService.selectedPlayer].lumber"
+                   (ngModelChange)="onChangeLumber($event)">
+            <input *ngIf="!mapService.players[userService.selectedPlayer]"
+                   type="number"
+                   disabled>
         </div>
     </div>
 </div>

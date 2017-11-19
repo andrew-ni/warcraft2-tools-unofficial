@@ -49,6 +49,10 @@ The following commands are available to help with formatting the code:
 
 **Always format your code before commiting**
 
+### Generating documentation using the command line
+The following command is available to generate TypeDocs documentation reflecting the code:
+`npm run docs` Generates documentation of code in the `src/` directory and saves into the `docs/` folder.
+
 ### Sample workflow for making new features/changes:
   1. Checkout `dev` and pull the latest changes from GitHub
      - `git checkout dev`

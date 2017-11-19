@@ -4,15 +4,9 @@
     <div class="ui form">
         <div class="inline field">
             <label>Name:</label>
-            <input type="text"
-                   placeholder="Map Name">
-        </div>
-        <div class="inline field">
-            <label>Number of Players:</label>
-            <select class="ui dropdown">
-                <option *ngFor="let i of [2,3,4,5,6,7,8]"
-                        [value]="i">{{i}}</option>
-            </select>
+            <input type = "text" 
+                [(ngModel)]="mapService.name"
+                (ngModelChange)="onChangeName($event)">
         </div>
     </div>
 </div>
@@ -30,5 +24,4 @@
              *ngFor="let button of cursorButtons">
             <img [src]="button.imgSrc" (click) = "userService.selectedAssets = []">
         </div>
-
 </div>

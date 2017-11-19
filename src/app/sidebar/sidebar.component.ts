@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { State, UserService } from 'services/user.service';
-
 import { AssetType } from 'asset';
+import { MapService } from 'services/map.service';
+import { State, UserService } from 'services/user.service';
 
 
 interface CursorButton {
@@ -28,7 +28,18 @@ export class SidebarComponent implements OnInit {
     // },
   ];
 
-  constructor(private userService: UserService) { }
+  constructor(
+    private mapService: MapService,
+  ) { }
+
+  /**
+   * Updates mapService based on user input
+   * @param newValue the new map name
+   */
+  onChangeName(newValue) {
+    this.mapService.name = newValue;
+    console.log('map name is:', this.mapService.name);
+  }
 
   ngOnInit() {
   }
