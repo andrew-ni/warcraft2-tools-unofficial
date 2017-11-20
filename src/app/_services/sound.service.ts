@@ -26,4 +26,16 @@ export class SoundService {
 
     return content;
   }
+
+  public checkForCustomSound(filepath: string): string {
+    const [, , , type, file] = filepath.split('/');
+    const customFilePath = 'src/assets/customSnd/' + type + '/' + file;
+
+    try {
+      fs.accessSync(customFilePath);
+      return customFilePath;
+    } catch (e) {      
+      return filepath;
+    }
+  }
 }
