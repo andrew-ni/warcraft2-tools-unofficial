@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Asset } from 'asset';
+import { Asset, AssetType } from 'asset';
 import { ipcRenderer } from 'electron';
 import * as fs from 'fs';
 import { Dimension } from 'interfaces';
@@ -7,6 +7,7 @@ import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -41,6 +42,7 @@ export class IOService {
     mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
+    private spriteService: SpriteService,
   ) {
     this.map = mapService;
 
@@ -102,16 +104,19 @@ export class IOService {
       img.onload = function(){
         const height = img.height;
         const width = img.width;
+        const resolve = require('path').resolve;
 
         if ((height % TERRAIN_PNG_HEIGHT === 0) && (width % TERRAIN_PNG_WIDTH === 0)) {
-          console.log('changing tileset image to', filepath);
-          fs.createReadStream(filepath).pipe(fs.createWriteStream('./src/assets/img/Terrain.png'));
+          console.log('Copying:', filepath, 'to:', resolve('../../../testing.png'));  // will change this to map project directory
+          fs.createReadStream(filepath).pipe(fs.createWriteStream('../../../testing.png'));
         } else {
           console.log('DIMENSIONS INVALID');
         }
       };
-
       img.src = filepath;
+
+      this.spriteService.updatePNG(AssetType.Terrain);
+      this.map.mapLoaded.next();
     });
   }
 

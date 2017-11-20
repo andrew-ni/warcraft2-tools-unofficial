@@ -71,6 +71,17 @@ export class SpriteService {
     }
   }
 
+  public async updatePNG(type: AssetType) {
+    const myImgDat = new ImgDat();
+    this.sprites.set(type, myImgDat);
+
+    return new Promise<void>(async resolve => {
+      await myImgDat.readDat(AssetType[type]);
+      const img = await this.loadImage(myImgDat.path);
+      resolve();
+    });
+  }
+
   /**
    * Returns the sprite object for the given asset type.
    * @param type The asset type of the sprite.
