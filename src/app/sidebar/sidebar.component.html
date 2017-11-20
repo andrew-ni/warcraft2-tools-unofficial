@@ -22,6 +22,6 @@
     <div class="ui grid">
         <div class="three wide column"
              *ngFor="let button of cursorButtons">
-            <img [src]="button.imgSrc">
+            <img [src]="button.imgSrc" (click) = "userService.selectedAssets = []">
         </div>
 </div>

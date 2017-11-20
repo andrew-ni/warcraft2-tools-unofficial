@@ -4,7 +4,7 @@
     <div class="three wide column"
          *ngFor="let button of unitButtons">
       <img [src]="button.imgSrc"
-           (click)="userService.selectedAsset = button.unitType">
+           (click)="userService.assetToBeDrawn = button.unitType">
     </div>
   </div>
 </div>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
-import { MapService } from 'services/map.service';
 import { AssetType } from 'asset';
+import { MapService } from 'services/map.service';
+import { State, UserService } from 'services/user.service';
+
 
 interface CursorButton {
   name: string;
@@ -19,15 +20,17 @@ export class SidebarComponent implements OnInit {
     {
       name: 'Select',
       imgSrc: './assets/frontend_icons/select_tool.png',
-    },
-    {
-      name: 'Paint',
-      imgSrc: './assets/frontend_icons/paint_tool.png',
-    },
+    }
+
+    // { THIS NEEDS TO MOVE TO TERRAIN.COMPONENT
+    //   name: 'Paint',
+    //   imgSrc: './assets/frontend_icons/paint_tool.png',
+    // },
   ];
 
   constructor(
     private mapService: MapService,
+    private userService: UserService
   ) { }
 
   /**

@@ -7,8 +7,23 @@
     position: relative;
 }
 
-#assetCanvas{
+#events {
+    position: relative;
+}
+
+#events canvas,
+#selectionBox {
+    position: absolute
+}
+
+#assetCanvas {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+#selectionBox {
+    position: absolute;
+    pointer-events: none;
+    border: white dotted 2px;
 }

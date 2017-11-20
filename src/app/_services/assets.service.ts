@@ -5,6 +5,7 @@ import { Asset, AssetType, Structure, structureTypes, Unit, unitTypes } from 'as
 import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
+import { State, UserService } from 'services/user.service';
 import { Tile, TileType } from 'tile';
 
 /**
@@ -21,6 +22,7 @@ interface IMap {
   assetsUpdated: Subject<Region>;
   assetRemoved: Subject<Region>;
   tilesUpdated: Subject<Region>;
+  MAX_PLAYERS: number;
 }
 
 
@@ -32,15 +34,18 @@ interface IMap {
 @Injectable()
 export class AssetsService {
   private map: IMap;
+  private userService: UserService;
+  private mapService: MapService;
 
   constructor(
     mapService: MapService,
+    userService: UserService,
   ) {
     this.map = mapService;
 
     this.map.tilesUpdated.do(x => console.log('tilesUpdated:Asset: ', JSON.stringify(x))).subscribe({
       next: reg => {
-        this.removeInvalidAsset(reg);
+        this.removeInvalidAsset(reg, false);
       },
       error: err => console.error(err),
       complete: null
@@ -92,7 +97,7 @@ export class AssetsService {
    * Remove any assets placed invalidly within the given region.
    * @param reg The region to check for Assets.
    */
-  public removeInvalidAsset(reg: Region) {
+  public removeInvalidAsset(reg: Region, removedByUser: boolean) {
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
@@ -102,11 +107,38 @@ export class AssetsService {
         if (this.map.assetLayer[y][x] !== undefined) {
           const theTerrain = this.map.drawLayer[y][x];
           const theAsset = this.map.assetLayer[y][x];
-          if (!(theAsset.validTiles.has(theTerrain.tileType))) { this.removeAsset(theAsset); }
+          if (removedByUser || !(theAsset.validTiles.has(theTerrain.tileType))) {
+            this.removeAsset(theAsset);
+          }
         }
       }
     }
   }
+
+  /**
+   * grabs assets given a region
+   * @param reg region to search for assets in
+   */
+  public selectAssets(reg: Region) {
+    const assets: Asset[] = [];
+    if (reg.y < 0) reg.y = 0;
+    if (reg.x < 0) reg.x = 0;
+    if (reg.y + reg.height > this.map.height) reg.height = this.map.height - reg.y;
+    if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
+    for (let y = reg.y; y < reg.y + reg.height; y++) {
+      for (let x = reg.x; x < reg.x + reg.width; x++) {
+        if (this.map.assetLayer[y][x] !== undefined) {
+          const theAsset = this.map.assetLayer[y][x];
+          if (assets.indexOf(theAsset) === -1) {
+            assets.push(theAsset);
+          }
+        }
+      }
+    }
+    return assets;
+  }
+
+
 
   /**
    * Removes a single asset
@@ -121,22 +153,42 @@ export class AssetsService {
       }
     }
     this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
+
   }
 
-  // TODO why do we need this? UserService should keep track of the selected assets and then apply the change of ownership to them.
   /**
-  * Updates the owner ID of an asset at requested position.
-  * @param x x-coord of asset to be updated
-  * @param y y-coord of asset to be updated
+  * Updates the owner of an array of assets to a new one
+  * @param selectedAssets list of assets to be change the owner of
   * @param newOwner the new owner ID of asset to be updated
   */
-  public updateOwner(x: number, y: number, newOwner: number) {
+  public updateOwner(selectedAssets: Asset[], newOwner: number) {
     // invalid owner
-    if (newOwner < 0 || newOwner > 7) throw Error('invalid player number');
-
-    // check if asset DNE at requested position
-    if (this.map.assetLayer[y][x] !== undefined) {
-      this.map.assetLayer[y][x].owner = newOwner;
+    if (newOwner < 0 || newOwner > this.map.MAX_PLAYERS) throw Error('invalid player number');
+    for (const asset of selectedAssets) {
+      if (asset.type !== AssetType.GoldMine) {
+        asset.owner = newOwner;
+      }
     }
+  }
+
+  /**
+   * iterates through selectedassets array and changes the owner if it differs from current owner
+   * @param selectedAssets list of assets to have owner changed
+   * @param selectedRegions corresponding regions to be passed to assetupdating for recoloring
+   * @param newOwner new owner for assets to switch to
+   */
+
+  switchPlayer(selectedAssets: Asset[], selectedRegions: Region[], newOwner: number) {
+    // update asset owners
+    this.updateOwner(selectedAssets, newOwner);
+
+    // update each region in the array to recolor assets
+    for (const reg of selectedRegions) {
+      this.map.assetsUpdated.next(reg);
+    }
+    // refocus onto the canvas to allow deletion if desired
+    const ac = document.getElementById('assetCanvas');
+    ac.focus();
+
   }
 }
