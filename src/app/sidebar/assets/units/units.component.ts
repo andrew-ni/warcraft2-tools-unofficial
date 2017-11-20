@@ -15,6 +15,14 @@ interface UnitButton {
 })
 export class UnitsComponent implements OnInit {
 
+  cursorButtons: UnitButton[] = [
+    {
+      name: 'Cursor',
+      imgSrc: './assets/frontend_icons/cursor_icon.png',
+      unitType: AssetType.Peasant,
+    },
+  ];
+
   unitButtons: UnitButton[] = [
     {
       name: 'Peasant',
@@ -25,6 +33,16 @@ export class UnitsComponent implements OnInit {
       name: 'Footman',
       imgSrc: './assets/frontend_icons/footman_icon.png',
       unitType: AssetType.Footman,
+    },
+    {
+      name: 'Archer',
+      imgSrc: './assets/frontend_icons/archer_icon.png',
+      unitType: AssetType.Archer,
+    },
+    {
+      name: 'Ranger',
+      imgSrc: './assets/frontend_icons/ranger_icon.png',
+      unitType: AssetType.Ranger,
     },
   ];
 
