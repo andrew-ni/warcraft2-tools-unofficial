@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
 import { ipcRenderer } from 'electron';
 import * as fs from 'fs';
-import { Dimension } from 'interfaces';
+import { Dimension, Region } from 'interfaces';
 import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
@@ -29,6 +29,7 @@ interface IMap {
   tileSet: Tileset;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
+  tilesUpdated: Subject<Region>;
   mapVersion: string;
 }
 
@@ -106,20 +107,25 @@ export class IOService {
 
       const onLoaded = async () => {
         await this.spriteService.updatePNG(AssetType.Terrain);
-        this.map.mapLoaded.next();
+        // this.map.mapLoaded.next();
+        this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
       };
 
       img.onload = function(){
         const resolve = require('path').resolve;
 
         if ((img.height === TERRAIN_PNG_HEIGHT && img.width === TERRAIN_PNG_WIDTH)) {
-          console.log('Copying:', filepath, 'to:', resolve('../../../testing.png'));
-          fs.createReadStream(filepath).pipe(fs.createWriteStream('../../../testing.png'));
-          onLoaded();
+          // console.log('Copying:', filepath, 'to:', resolve('../../../testing.png'));
+          // fs.createReadStream(filepath).pipe(fs.createWriteStream('../../../testing.png'));
+
+          console.log('Copying:', filepath, 'to:', resolve('src/assets/img/Terrain.png'));
+          const stream = fs.createReadStream(filepath).pipe(fs.createWriteStream('src/assets/img/Terrain.png'));
+          stream.on('close', onLoaded);
         } else {
           console.log('DIMENSIONS INVALID');
         }
       };
+
       img.src = filepath;
     });
   }
@@ -168,31 +174,3 @@ export class IOService {
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
 }
-
-
-// const img = new Image();
-
-//       img.onload = function(){
-//         const height = img.height;
-//         const width = img.width;
-//         const resolve = require('path').resolve;
-
-//         if ((height % TERRAIN_PNG_HEIGHT === 0) && (width % TERRAIN_PNG_WIDTH === 0)) {
-
-//           // for testing
-//           console.log('Copying:', filepath, 'to:', resolve('../../../testing.png'));
-//           fs.createReadStream(filepath).pipe(fs.createWriteStream('../../../testing.png'));
-
-//           // console.log('Copying:', filepath, 'to:', resolve('img/Terrain.png'));
-//           // fs.createReadStream(filepath).pipe(fs.createWriteStream('img/Terrain.png'));
-
-//           // spriteService.updatePNG(AssetType.Terrain);
-//           // mapService.mapLoaded.next(null);
-//         } else {
-//           console.log('DIMENSIONS INVALID');
-//         }
-//       };
-//       img.src = filepath;
-
-//       // this.spriteService.updatePNG(AssetType.Terrain);
-//       // this.map.mapLoaded.next();
