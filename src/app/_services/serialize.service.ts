@@ -7,6 +7,7 @@ import { Dimension, Region } from 'interfaces';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
+import { SoundService } from 'services/sound.service';
 import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -60,6 +61,7 @@ export class SerializeService {
     mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
+    private soundService: SoundService,
     private appRef: ApplicationRef
   ) {
     this.map = mapService;
@@ -144,6 +146,7 @@ export class SerializeService {
     this.map.assets = [];
     this.map.tileSet = undefined;
     this.parseMapData(mapData);
+    this.parseSndData();
     console.log('init Map');
 
     ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
@@ -272,5 +275,11 @@ export class SerializeService {
       this.map.assetLayer.push([]);
       this.map.assetLayer[row] = new Array(this.map.width);
     }
+  }
+
+  private parseSndData() {
+    const sndData = this.soundService.readSndDat();
+    console.log('test');
+    console.log(sndData);
   }
 }
