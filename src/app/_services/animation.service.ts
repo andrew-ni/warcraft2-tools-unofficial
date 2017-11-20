@@ -72,6 +72,7 @@ export class AnimationService {
   public updateState() {
     this._currentAction = this.animation.action.name;
     this._currentDirection = this.animation.direction.name;
+    this.draw();
   }
 
   /** Passes various HTML elements to this Service for control. */
@@ -102,7 +103,7 @@ export class AnimationService {
 
   // INTERACTION FUNCTIONS
   /** Plays the animation depending on double speed state. */
-  private playAnimation() {
+  public playAnimation() {
     if (this.intervalFunction === undefined) {      // do not play if already playing
       let delay = AnimationService.ANIMATION_DELAY;
       if (this.isDoubleSpeed) {       // half delay time if double speed s et
@@ -117,19 +118,19 @@ export class AnimationService {
   }
 
   /** Pauses the animation. */
-  private pauseAnimation() {
+  public pauseAnimation() {
     clearInterval(this.intervalFunction);
     this.intervalFunction = undefined;
   }
 
   /** Advances and draws the next frame. */
-  private nextFrame() {
+  public nextFrame() {
     this.animation.nextFrame();
     this.draw();
   }
 
   /** Backtracks and draws the previous frame. */
-  private prevFrame() {
+  public prevFrame() {
     this.animation.prevFrame();
     this.draw();
   }
@@ -139,7 +140,7 @@ export class AnimationService {
    * the animation interval and resume animating.
    * @param state True for double speed.
    */
-  private setDoubleSpeed(state: boolean) {
+  public setDoubleSpeed(state: boolean) {
     this.isDoubleSpeed = state;
 
     if (this.intervalFunction !== undefined) {    // if animation IS PLAYING

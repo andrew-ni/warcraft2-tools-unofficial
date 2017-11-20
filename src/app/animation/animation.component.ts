@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AssetType, structureTypes, unitTypes } from 'asset';
 import { AnimationService } from 'services/animation.service';
 import { AssetsService } from 'services/assets.service';
@@ -9,7 +9,7 @@ import { AssetsService } from 'services/assets.service';
   styleUrls: ['./animation.component.scss']
 })
 export class AnimationComponent implements OnInit {
-
+ @ViewChild('container') containerRef: ElementRef;
   private animationCanvas: HTMLCanvasElement;
   private animationContext: CanvasRenderingContext2D;
 
@@ -22,6 +22,21 @@ export class AnimationComponent implements OnInit {
   constructor(
     private animationService: AnimationService,
   ) { }
+
+  /**
+   * Manages arrow keys pressed to move between frames.
+   * @param event Key press event.
+   */
+  onKeyPress(event) {
+    switch (event.key) {
+      case 'ArrowRight' :
+        this.animationService.nextFrame();
+        break;
+      case 'ArrowLeft' :
+        this.animationService.prevFrame();
+        break;
+    }
+  }
 
   /**
    * Updates asset based on dropdown selection and updates state to validate the dropdowns.
@@ -54,6 +69,14 @@ export class AnimationComponent implements OnInit {
     this.animationCanvas = document.getElementById('animationCanvas') as HTMLCanvasElement;
     this.animationContext = this.animationCanvas.getContext('2d');
     this.animationService.setCanvas(this.animationCanvas, this.animationContext);
+  }
+
+  /**
+   * Focuses the element so that key presses are registered.
+   */
+  public focus() {
+    setTimeout(() => this.containerRef.nativeElement.focus(), 0);
+    console.log('focus');
   }
 
   fun_close() {
