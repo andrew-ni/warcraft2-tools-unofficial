@@ -111,13 +111,10 @@ export class IOService {
         this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
       };
 
-      img.onload = function(){
+      img.onload = function() {
         const resolve = require('path').resolve;
 
         if ((img.height === TERRAIN_PNG_HEIGHT && img.width === TERRAIN_PNG_WIDTH)) {
-          // console.log('Copying:', filepath, 'to:', resolve('../../../testing.png'));
-          // fs.createReadStream(filepath).pipe(fs.createWriteStream('../../../testing.png'));
-
           console.log('Copying:', filepath, 'to:', resolve('src/assets/img/Terrain.png'));
           const stream = fs.createReadStream(filepath).pipe(fs.createWriteStream('src/assets/img/Terrain.png'));
           stream.on('close', onLoaded);

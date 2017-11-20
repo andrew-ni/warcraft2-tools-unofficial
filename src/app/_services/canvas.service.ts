@@ -5,12 +5,12 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
-import { Sprite } from 'sprite';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
 import { UserService } from 'services/user.service';
+import { Sprite } from 'sprite';
 import { Tile } from 'tile';
 import { Tileset } from 'tileset';
 
