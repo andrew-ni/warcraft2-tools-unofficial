@@ -1,6 +1,21 @@
 <p>
   Animation Canvas:
 </p>
+
+<!-- <div class="ui dropdown" *ngFor="let i of assets">
+  <div class="item">{{i}}</div>
+</div> -->
+<div>
+  <label>Asset type:</label>
+  <select class="ui dropdown"
+  [(ngModel)]="animationService._currentAsset"
+  (ngModelChange)="onChangeAsset($event)">
+  
+  <option *ngFor="let i of assets">{{i}}</option>
+</select>
+</div>
+
+
 <div>
   <canvas id='animationCanvas'></canvas>
 </div>

@@ -30,6 +30,10 @@ export class AnimationService {
   /** Keeps track of whether double speed animation time is set. */
   private isDoubleSpeed = false;
 
+  /** Currently selected asset */
+  private _currentAsset: AssetType = AssetType.Peasant;
+
+
   /** Constructs this AnimationService with SpriteService injected. */
   constructor(
     private spriteService: SpriteService,
@@ -43,6 +47,7 @@ export class AnimationService {
 
     // set up sample AnimationContext
     this.animation = new AnimationContext(this.spriteService.get(AssetType.Peasant));
+    this._currentAsset = AssetType.Peasant;
     this.animation.setAction('walk');
     this.animation.setDirection('e');
     this.draw();
@@ -51,6 +56,10 @@ export class AnimationService {
     this.setDoubleSpeed(true);
     // this.pauseAnimation();
   }
+
+  get currentAsset() { return this._currentAsset; }
+
+  set currentAsset(asset: AssetType) { this._currentAsset = asset; }
 
   /** Passes various HTML elements to this Service for control. */
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
@@ -122,5 +131,11 @@ export class AnimationService {
       this.pauseAnimation();
       this.playAnimation();
     }
+  }
+
+  public setSprite(asset: AssetType) {
+    this.animation = new AnimationContext(this.spriteService.get(asset));
+    this._currentAsset = asset;
+    this.draw();
   }
 }
