@@ -18,12 +18,15 @@ export class AppComponent {
   ) { }
 
   openTab(tabName) {
-    console.log('User clicked on button');
     let i;
     const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
     for (i = 0; i < x.length; i++) {
         x[i].style.display = 'none';
     }
-    document.getElementById(tabName).style.display = 'block';
+    if (tabName === 'main') {
+      document.getElementById(tabName).style.display = 'flex';
+    } else {
+      document.getElementById(tabName).style.display = 'inline-block';
+    }
 }
 }
