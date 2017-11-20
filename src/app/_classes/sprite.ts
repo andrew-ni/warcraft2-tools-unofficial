@@ -57,6 +57,7 @@ export class AnimationContext {
   /** The direction of this current animation. */
   private direction: AnimationDirection;
 
+
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
    * @param _sprite The new sprite this AnimationContext should reflect.
@@ -73,6 +74,15 @@ export class AnimationContext {
   public get sprite(): Sprite {
     return this._sprite;
   }
+
+  public get actionList() {
+    return this.sprite.actions;
+  }
+
+  public get directionList() {
+    return this.action.directions;
+  }
+
 
   /**
    * Set the action to the index specified.

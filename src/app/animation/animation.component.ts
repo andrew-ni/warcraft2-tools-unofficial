@@ -17,6 +17,7 @@ export class AnimationComponent implements OnInit {
   private animationContext: CanvasRenderingContext2D;
 
   private assets: Set<string> = new Set<string>();
+  // private actions: Set<string>
 
   constructor(
     private animationService: AnimationService,
@@ -29,6 +30,13 @@ export class AnimationComponent implements OnInit {
    */
   onChangeAsset(newValue) {
     this.animationService.setSprite(strToAsset[newValue]);
+    // todo: refresh all other lists
+    for (const key of this.animationService.animation.actionList){
+      console.log(key);
+    }
+    for (const key2 of this.animationService.animation.directionList) {
+      console.log(key2);
+    }
     // console.log('selected asset is:', strToAsset[newValue]);
   }
 

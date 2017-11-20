@@ -8,12 +8,22 @@
 <div>
   <label>Asset type:</label>
   <select class="ui dropdown"
-  [(ngModel)]="animationService._currentAsset"
+  [ngModel]="animationService._currentAsset"
   (ngModelChange)="onChangeAsset($event)">
   
   <option *ngFor="let i of assets">{{i}}</option>
 </select>
 </div>
+
+<!-- <div>
+    <label>Action type:</label>
+    <select class="ui dropdown"
+    [(ngModel)]="animationService._currentAction"
+    (ngModelChange)="onChangeAsset($event)">
+    
+    <option *ngFor="let i of assets">{{i}}</option>
+  </select>
+  </div> -->
 
 
 <div>

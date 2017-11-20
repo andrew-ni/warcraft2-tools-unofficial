@@ -22,7 +22,7 @@ export class AnimationService {
   private context: CanvasRenderingContext2D;
 
   /** Current animation context to reflect on screen. */
-  private animation: AnimationContext;
+  public animation: AnimationContext;
 
   /** Interval function ID returned from setInterval. */
   private intervalFunction = undefined;
@@ -33,6 +33,7 @@ export class AnimationService {
   /** Currently selected asset */
   private _currentAsset: AssetType = AssetType.Peasant;
 
+  private _currentAction: string;
 
   /** Constructs this AnimationService with SpriteService injected. */
   constructor(
