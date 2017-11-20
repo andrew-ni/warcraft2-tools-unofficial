@@ -80,6 +80,7 @@ export class SpriteService {
       const rawImage = await this.loadImage(imagePath);
       const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
       this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
+      console.log(this.sprites);
       resolve();
     });
   }
