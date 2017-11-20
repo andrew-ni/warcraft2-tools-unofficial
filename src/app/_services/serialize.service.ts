@@ -285,9 +285,10 @@ export class SerializeService {
     const lines = clips.split(/\r?\n/);
     for (var i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
-      const filepath = 'src/assets/snd/' + type + '/' + file;
+      // const filepath = 'src/assets/snd/' + type + '/' + file;
+      const filepath = 'assets/snd/' + type + '/' + file;
       const checkedPath = this.soundService.checkForCustomSound(filepath);
-      
+
       this.map.soundMap.set(lines[i], checkedPath);
     }
     console.log(this.map.soundMap);
