@@ -72,6 +72,36 @@ export class CanvasService {
   }
 
   /**
+   * Used to draw terrain, units, and assets onto the canvas.
+   * @param layer The canvas context to draw on.
+   * @param image Bitmap image to draw. Access with spriteService.get(assetType).image
+   * @param player Player 1 - 8. Used to calculate x offset in source image.
+   * @param width Width of a single sprite on the image.
+   * @param pos X, Y coordinate to draw on canvas.
+   * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
+   * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+   */
+  public static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+    let offset = 0;
+    if (width % CanvasService.TERRAIN_SIZE !== 0) {
+      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
+    }
+    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
+    if (player === 0) { player = 1; }
+    layer.drawImage(
+      image,
+      (player - 1) * width,
+      index * width,
+      width,
+      width,
+      pos.x * CanvasService.TERRAIN_SIZE - offset,
+      pos.y * CanvasService.TERRAIN_SIZE - offset,
+      width,
+      width
+    );
+  }
+
+  /**
    * Initializes the events and spriteService.
    * This must be done in separate function from the constructor
    * because it is asynchronous. The spriteService needs to be
@@ -346,35 +376,5 @@ export class CanvasService {
         }
       }
     }
-  }
-
-  /**
-   * Used to draw terrain, units, and assets onto the canvas.
-   * @param layer The canvas context to draw on.
-   * @param image Bitmap image to draw. Access with spriteService.get(assetType).image
-   * @param player Player 1 - 8. Used to calculate x offset in source image.
-   * @param width Width of a single sprite on the image.
-   * @param pos X, Y coordinate to draw on canvas.
-   * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
-   * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-   */
-  public static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
-    let offset = 0;
-    if (width % CanvasService.TERRAIN_SIZE !== 0) {
-      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
-    }
-    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
-    if (player === 0) { player = 1; }
-    layer.drawImage(
-      image,
-      (player - 1) * width,
-      index * width,
-      width,
-      width,
-      pos.x * CanvasService.TERRAIN_SIZE - offset,
-      pos.y * CanvasService.TERRAIN_SIZE - offset,
-      width,
-      width
-    );
   }
 }
