@@ -17,27 +17,37 @@ export class AnimationComponent implements OnInit {
   private animationContext: CanvasRenderingContext2D;
 
   private assets: Set<string> = new Set<string>();
-  // private actions: Set<string>
 
   constructor(
     private animationService: AnimationService,
     private spriteService: SpriteService,
   ) { }
 
-    /**
+  /**
    * Updates asset based on dropdown selection
-   * @param newValue the new value that the user selected from the select asset drop down menu
+   * @param newValue new value selected from drop down menu
    */
   onChangeAsset(newValue) {
+    console.log('change asset to:', strToAsset[newValue]);
     this.animationService.setSprite(strToAsset[newValue]);
-    // todo: refresh all other lists
-    for (const key of this.animationService.animation.actionList){
-      console.log(key);
-    }
-    for (const key2 of this.animationService.animation.directionList) {
-      console.log(key2);
-    }
-    // console.log('selected asset is:', strToAsset[newValue]);
+  }
+
+  /**
+   * Updates action based on dropdown selection
+   * @param newValue new value selected from drop down menu
+   */
+  onChangeAction(newValue) {
+    console.log('change action to:', newValue);
+    this.animationService.animation.setAction(newValue);
+  }
+
+  /**
+   * Updates direction based on dropdown selection
+   * @param newValue new value selected from drop down menu
+   */
+  onChangeDirection(newValue) {
+    console.log('change direction to:', newValue);
+    this.animationService.animation.setDirection(newValue);
   }
 
   ngOnInit() {
@@ -47,6 +57,7 @@ export class AnimationComponent implements OnInit {
 
     const notStringAssets = new Set<AssetType>([...unitTypes, ...structureTypes]);
 
+    // todo: clean up asset Set to populate asset dropdown
     for (const asset of notStringAssets) {
       this.assets.add(assetToString[asset]);
     }

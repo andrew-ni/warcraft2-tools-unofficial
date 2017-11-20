@@ -33,7 +33,9 @@ export class AnimationService {
   /** Currently selected asset */
   private _currentAsset: AssetType = AssetType.Peasant;
 
-  private _currentAction: string;
+  private _currentAction = 'walk';
+
+  private _currentDirection = 'n';
 
   /** Constructs this AnimationService with SpriteService injected. */
   constructor(
@@ -54,13 +56,18 @@ export class AnimationService {
     this.draw();
 
     this.playAnimation();
-    this.setDoubleSpeed(true);
+    this.setDoubleSpeed(false);
     // this.pauseAnimation();
   }
 
   get currentAsset() { return this._currentAsset; }
-
   set currentAsset(asset: AssetType) { this._currentAsset = asset; }
+
+  get currentAction() { return this._currentAction; }
+  set currentAction(action: string) { this._currentAction = action; }
+
+  get currentDirection() { return this._currentDirection; }
+  set currentDirection(direction: string) { this._currentDirection = direction; }
 
   /** Passes various HTML elements to this Service for control. */
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {

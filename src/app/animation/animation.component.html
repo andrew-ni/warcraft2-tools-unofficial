@@ -2,9 +2,6 @@
   Animation Canvas:
 </p>
 
-<!-- <div class="ui dropdown" *ngFor="let i of assets">
-  <div class="item">{{i}}</div>
-</div> -->
 <div>
   <label>Asset type:</label>
   <select class="ui dropdown"
@@ -15,15 +12,32 @@
 </select>
 </div>
 
-<!-- <div>
+<div>
     <label>Action type:</label>
     <select class="ui dropdown"
     [(ngModel)]="animationService._currentAction"
-    (ngModelChange)="onChangeAsset($event)">
+    (ngModelChange)="onChangeAction($event)">
     
-    <option *ngFor="let i of assets">{{i}}</option>
+    <option *ngFor="let i of animationService.animation.actionList">{{i.name}}</option>
   </select>
-  </div> -->
+</div>
+
+<div>
+  <label>Direction:</label>
+  <select class="ui dropdown"
+  [(ngModel)]="animationService._currentDirection"
+  (ngModelChange)="onChangeDirection($event)">
+  
+  <option *ngFor="let i of animationService.animation.directionList">{{i.name}}</option>
+</select>
+</div>
+
+<button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
+<button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
+<button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
+<button class="ui button" (click)="animationService.playAnimation()">Play</button>
+<button class="ui button" (click)="animationService.prevFrame()"><-</button>
+<button class="ui button" (click)="animationService.nextFrame()">-></button>
 
 
 <div>
