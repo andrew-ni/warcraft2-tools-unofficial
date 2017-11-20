@@ -78,9 +78,23 @@ export class SpriteService {
     return new Promise<void>(async resolve => {
       await myImgDat.readDat(AssetType[type]);
       const img = await this.loadImage(myImgDat.path);
+      console.log(this.sprites);
       resolve();
     });
   }
+
+  // ONCE SPRITESERVICE IS CHANGED
+  // public async updatePNG(type: AssetType) {
+  //   this.sprites.set(type, undefined);
+
+  //   return new Promise<void>(async resolve => {
+  //     const { defaultIndex, imagePath, animationSets } = await this.readDataFile(AssetType[type]);
+  //     const rawImage = await this.loadImage(imagePath);
+  //     const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
+  //     this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
+  //     resolve();
+  //   });
+  // }
 
   /**
    * Returns the sprite object for the given asset type.
