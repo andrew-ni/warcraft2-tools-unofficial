@@ -103,16 +103,17 @@ export class AnimationService {
   // INTERACTION FUNCTIONS
   /** Plays the animation depending on double speed state. */
   private playAnimation() {
-    let delay = AnimationService.ANIMATION_DELAY;
+    if (this.intervalFunction === undefined) {      // do not play if already playing
+      let delay = AnimationService.ANIMATION_DELAY;
+      if (this.isDoubleSpeed) {       // half delay time if double speed s et
+        delay /= 2;
+      }
+      this._currentDelay = delay;
 
-    if (this.isDoubleSpeed) {
-      delay /= 2;
+      this.intervalFunction = setInterval(() => {
+        this.nextFrame();
+      }, delay);
     }
-    this._currentDelay = delay;
-
-    this.intervalFunction = setInterval(() => {
-      this.nextFrame();
-    }, delay);
   }
 
   /** Pauses the animation. */
