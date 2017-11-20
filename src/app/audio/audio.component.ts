@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class AudioComponent implements OnInit {
 
   SongCategories = ["BGM", "Peasant", "Footman", "Archer", "Ranger"];
+  Sounds = ["Sound #1", "Sound #2", "Sound #3"];
   
   constructor() { }
 
