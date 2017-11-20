@@ -3,9 +3,9 @@ import { Subject } from 'rxjs/Rx';
 
 import { Coordinate, Region } from 'interfaces';
 import { MapService } from 'services/map.service';
+import { UserService } from 'services/user.service';
 import { charToTileType, Tile, TileType, TileTypeChar } from 'tile';
 import { Tileset } from 'tileset';
-import { UserService } from 'services/user.service';
 
 interface IMap {
   width: number;
@@ -120,7 +120,7 @@ export class TerrainService {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
     reg.width = reg.width + this.userService.selectedBrush;
     reg.height = reg.height + this.userService.selectedBrush;
-    
+
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
         this.map.terrainLayer[ypos][xpos] = tileType;

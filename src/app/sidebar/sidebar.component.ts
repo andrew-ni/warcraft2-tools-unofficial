@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { MapService } from 'services/map.service';
 import { AssetType } from 'asset';
+import { MapService } from 'services/map.service';
 
 interface CursorButton {
   name: string;
@@ -29,10 +29,10 @@ export class SidebarComponent implements OnInit {
     console.log('map name is:', this.mapService.name);
   }
 
-    /**
-   * Updates mapService based on user input
-   * @param newValue the new value that the user input into the gold amount text box
-   */
+  /**
+ * Updates mapService based on user input
+ * @param newValue the new value that the user input into the gold amount text box
+ */
   onChangeGold(newValue) {
     if (newValue === null) {  // have to use null here
       this.mapService.players[0].gold = 0;

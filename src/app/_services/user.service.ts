@@ -48,10 +48,12 @@ export class UserService {
   ) {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.selectedTerrain = TileType.Rock;
-    ipcRenderer.on('menu:file:animation', () => {this._activeView = 1;
+    ipcRenderer.on('menu:file:animation', () => {
+      this._activeView = 1;
       console.log('animation switch');
-      this.appref.tick(); });
-    ipcRenderer.on('menu:file:audio', () => {this._activeView = 0; this.appref.tick(); });
+      this.appref.tick();
+    });
+    ipcRenderer.on('menu:file:audio', () => { this._activeView = 0; this.appref.tick(); });
     ipcRenderer.on('menu:file:tileset', () => this._activeView = 3);
 
   }
@@ -96,10 +98,10 @@ export class UserService {
     console.log('player number = ', id);
   }
 
-    /**
-   * On brush selection, change _selectedBrush
-   * @param id id to change _selectedBrush to
-   */
+  /**
+ * On brush selection, change _selectedBrush
+ * @param id id to change _selectedBrush to
+ */
   set selectedBrush(id) {
     this._selectedBrush = id;
     console.log('brush size = ', id);
