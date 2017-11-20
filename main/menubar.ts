@@ -53,7 +53,6 @@ export function buildMenu(window: Electron.WebContents): void {
       ]
     }
   ];
-
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }

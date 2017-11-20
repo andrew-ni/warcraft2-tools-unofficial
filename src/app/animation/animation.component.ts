@@ -56,4 +56,7 @@ export class AnimationComponent implements OnInit {
     this.animationService.setCanvas(this.animationCanvas, this.animationContext);
   }
 
+  fun_close() {
+    document.getElementById('animationModal').setAttribute('style', 'display: none;');
+  }
 }

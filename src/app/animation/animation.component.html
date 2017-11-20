@@ -1,7 +1,7 @@
 <p>
   Animation Canvas:
 </p>
-
+<div class="ui container">
 <div>
   <label>Asset type:</label>
   <select class="ui dropdown"
@@ -35,6 +35,7 @@
   </select>
 </div>
 
+<div>
 <button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
 <button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
 <button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
@@ -42,7 +43,8 @@
 <button class="ui button" (click)="animationService.prevFrame()"><-</button>
 <button class="ui button" (click)="animationService.nextFrame()">-></button>
 <button class="ui button" (click)="animationService.debug()">Debug</button>
-
+</div>
+</div>
 <div>
   <canvas id='animationCanvas'></canvas>
 </div>
