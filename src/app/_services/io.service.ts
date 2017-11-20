@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Asset } from 'asset';
 import { ipcRenderer } from 'electron';
+import * as fs from 'fs';
 import { Dimension } from 'interfaces';
 import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
@@ -95,16 +96,16 @@ export class IOService {
 
     ipcRenderer.on('menu:file:loadtilesetimg', (event: Electron.IpcMessageEvent, filepath) => {
       const img = new Image();
-      const TERRAIN_PNG_HEIGHT = 10304;
+      const TERRAIN_PNG_HEIGHT = 32;
       const TERRAIN_PNG_WIDTH = 32;
 
       img.onload = function(){
         const height = img.height;
         const width = img.width;
 
-        if ((height === TERRAIN_PNG_HEIGHT) && (width === TERRAIN_PNG_WIDTH)) {
+        if ((height % TERRAIN_PNG_HEIGHT === 0) && (width % TERRAIN_PNG_WIDTH === 0)) {
           console.log('changing tileset image to', filepath);
-          // redraw the map using the changed tileset
+          fs.createReadStream(filepath).pipe(fs.createWriteStream('./src/assets/img/Terrain.png'));
         } else {
           console.log('DIMENSIONS INVALID');
         }
