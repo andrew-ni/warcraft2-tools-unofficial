@@ -5,7 +5,7 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
-import { ImgDat } from 'imgdat';
+import { Sprite } from 'sprite';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';

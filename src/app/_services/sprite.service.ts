@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { parse } from 'path';
+import { readFile } from 'fs';
+import { join as pathJoin, parse } from 'path';
+
 
 import { AssetType, neutralAssets } from 'asset';
-import { ImgDat } from 'imgdat';
 import { Coordinate } from 'interfaces';
+import { Animation, AnimationSet, Sprite } from 'sprite';
 
 /**
  * Handles all sprite loading and recoloring for assets
@@ -20,7 +22,7 @@ export class SpriteService {
   private colorMap: ImageData;
 
   /** Contains all the sprites assets loaded */
-  private sprites = new Map<AssetType, ImgDat>();
+  private sprites = new Map<AssetType, Sprite>();
 
   constructor() { }
 
@@ -53,19 +55,14 @@ export class SpriteService {
    * @param type The asset type of the sprite
    */
   private async prefetch(type: AssetType) {
-    if (this.sprites.get(type) === undefined) {
-      const myImgDat = new ImgDat();
-      this.sprites.set(type, myImgDat);
+    if (!this.sprites.has(type)) {
+      this.sprites.set(type, undefined);
 
       return new Promise<void>(async resolve => {
-        await myImgDat.readDat(AssetType[type]);
-        const img = await this.loadImage(myImgDat.path);
-
-        if (neutralAssets.has(type)) {
-          myImgDat.image = await this.HTMLImageToBitmap(img);
-        } else {
-          myImgDat.image = await this.recolorSprite(img);
-        }
+        const { defaultIndex, imagePath, animationSets } = await this.readDataFile(AssetType[type]);
+        const rawImage = await this.loadImage(imagePath);
+        const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
+        this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
         resolve();
       });
     }
@@ -213,7 +210,166 @@ export class SpriteService {
     recolor(image, htmlImage.width);
     return createImageBitmap(image);
   }
+
+
+
+  /**
+   * Reads the .dat files for the desired asset.
+   * Parses the image path, the default index, and all of the animation information.
+   * @param assetName AssetType to parse (e.g. 'Peasant')
+   * @returns The image path, animation data, and default index for the asset type.
+   */
+  private async readDataFile(assetName: string) {
+
+    /**
+     * Parses the relative image path and the frame names for the animations
+     * @param fileData The raw .dat file contents.
+     * @returns The relative path and an array of frame names.
+     */
+    const parseFileSections = (fileData: string) => {
+      const [, relativePath, , frameNames] = fileData.split(/#.*?\r?\n/);
+
+      return {
+        relativePath: relativePath.trim(),
+        frameNames: frameNames.trim().split(/\r?\n/),
+      };
+    };
+
+    /**
+     * Parses the frames and maps the animation name to the data about the frames in the animation.
+     * Map: animationName => {subType, subIndex, index}[]
+     *
+     * For example if a frameName is 'lumber-nw-3',
+     * this becomes:
+     * animationName: 'lumber',
+     * subType: 'nw',
+     * subIndex: 3
+     *
+     * Which is then mapped 'lumber' => {'nw', 3, index}
+     *
+     * @param frameNames Array of frame names from a .dat file
+     */
+    const parseFrames = (frameNames: string[]) => {
+      const rawAnimationSets = new Map<string, FrameData[]>();
+      let defaultIndex: number;
+
+      for (const [index, framName] of frameNames.entries()) {
+        // Ex. `lumber-nw-3`
+        // Group 1. `lumber`      animationName
+        // Group 3. `nw`          subType
+        // Group 5. `3`           subIndex
+        const [, animationName, , subType, , subIndexStr] = framName.match(/\b([a-z]+)(-([a-z]+))?(-(\d+))?\b/);
+        const subIndex = (subIndexStr === undefined) ? 0 : parseInt(subIndexStr, 10);
+
+        if (animationName === 'inactive') defaultIndex = index;
+        if (!rawAnimationSets.has(animationName)) rawAnimationSets.set(animationName, []);
+
+        rawAnimationSets.get(animationName).push({ subType, subIndex, index });
+      }
+
+      return { rawAnimationSets, defaultIndex };
+    };
+
+    /**
+     * Iterates through the `rawAnimationSets` and builds the individual `AnimationsSets`
+     *
+     * The animationSets are mapped by both a numeric index [0,numberAnimationSets)
+     * and by the animationName.
+     *
+     * Eg. animationSets[0] or animationSets['<animationName>']
+     *
+     * @param rawAnimationSets The lists of raw animationSets to build from.
+     * @returns An array of `AnimationSets` mapped by both index and `animationName`
+     */
+    const buildAnimationSets = (rawAnimationSets: Map<string, FrameData[]>) => {
+
+      /**
+       * Iterates through the `rawAnimations` and builds the individual `Animations`
+       *
+       * The animationSets are mapped by both a numeric index [0,numberAnimations)
+       * and by the subType.
+       *
+       * Eg. animations[0] or animations['<subType>']
+       *
+       * @param framaData The list of frameData to build from.
+       * @returns An array of `Animations` mapped by both index and `subType`
+       */
+      const buildAnimations = (framaData: FrameData[]) => {
+        const rawAnimations = new Map<string, number[]>();
+        const animations: Animation[] = [];
+
+        // Populate the rawAnimations.
+        for (const frame of framaData) {
+          if (!rawAnimations.has(frame.subType)) rawAnimations.set(frame.subType, []);
+
+          const indices = rawAnimations.get(frame.subType);
+          indices.length = Math.max(frame.subIndex + 1, indices.length);
+          indices[frame.subIndex] = frame.index;
+        }
+
+        // Construct the Animation objects from the raw data.
+        for (const [subType, indices] of rawAnimations) {
+          const anim = new Animation(subType, indices);
+          animations.push(anim);
+          animations[subType] = anim; // Also map by the subType.
+        }
+
+        return animations;
+      };
+
+      const animationSets: AnimationSet[] = [];
+
+      for (const [animationName, frameData] of rawAnimationSets) {
+        const anim = new AnimationSet(animationName, buildAnimations(frameData));
+        animationSets.push(anim);
+        animationSets[animationName] = anim; // Also map by the animationName.
+      }
+
+      return animationSets;
+    };
+
+    {
+      // Read the contents of the data file.
+      const fileData = await new Promise<string>((resolve, reject) => {
+        readFile('src/assets/img/' + assetName + '.dat', 'utf8', (err, data) => {
+          if (err) { console.error(err); reject(err); }
+          resolve(data);
+        });
+      });
+
+      const parsedData = { animationSets: [] } as ParsedData;
+
+      // Extract the image path and raw frame data.
+      const { relativePath, frameNames } = parseFileSections(fileData);
+      parsedData.imagePath = pathJoin('assets/img/', relativePath);
+
+      // Parse the frame data and build the animations.
+      const { rawAnimationSets, defaultIndex } = parseFrames(frameNames);
+      parsedData.defaultIndex = (defaultIndex === undefined) ? 0 : defaultIndex;
+      parsedData.animationSets = buildAnimationSets(rawAnimationSets);
+
+      return parsedData;
+    }
+  }
 }
 
+/**
+ * Represents all the information extracted from an image asset .dat file.
+ */
+interface ParsedData {
+  defaultIndex: number;
+  imagePath: string;
+  animationSets: AnimationSet[];
+}
 
-
+/**
+ * Represents a single raw frame of an AnimationSet. Eg. 'lumber-nw-3'
+ */
+interface FrameData {
+  /** Eg. 'lumber-nw-3' => 'nw' */
+  subType: string;
+  /** Eg. 'lumber-nw-3' => 3 */
+  subIndex: number;
+  /** The index within the spritesheet. Eg. 0 is first image and so on. */
+  index: number;
+}
