@@ -59,12 +59,11 @@ export function buildMenu(window: Electron.WebContents): void {
           label: 'Load Tileset Image',
           async click() {
             dialog.showOpenDialog(tilesetpng, (paths: string[]) => {
-                if (paths === undefined) return;
+              if (paths === undefined) return;
 
-                console.log(paths[0]);
-                window.send('menu:file:loadtilesetimg', paths[0]);
-              }
-            );
+              console.log(paths[0]);
+              window.send('menu:file:loadtilesetimg', paths[0]);
+            });
           }
         },
       ]
