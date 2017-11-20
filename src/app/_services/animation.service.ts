@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AssetType } from 'asset';
+import { AssetType, neutralAssets } from 'asset';
 import { ipcRenderer } from 'electron';
 import { CanvasService } from 'services/canvas.service';
 import { SpriteService } from 'services/sprite.service';
@@ -44,14 +44,14 @@ export class AnimationService {
   /** Initializes the canvas and dropdown buttons. */
   private init() {
     // set some dummy dimensions
-    this.canvas.width = 4 * 32;
-    this.canvas.height = 4 * 32;
+    this.canvas.width = 10 * 32;
+    this.canvas.height = 10 * 32;
 
     // set up sample AnimationContext
     this.animation = new AnimationContext(this.spriteService.get(AssetType.Peasant));
     this._currentAsset = AssetType.Peasant;
     this.animation.setAction('walk');
-    this.animation.setDirection('e');
+    this.animation.setDirection('n');
     this.draw();
 
     this.playAnimation();
@@ -90,7 +90,7 @@ export class AnimationService {
     CanvasService.drawImage(
       this.context,
       this.animation.sprite.image, 1,
-      this.animation.sprite.image.width / CanvasService.MAX_PLAYERS,
+      neutralAssets.has(this._currentAsset) ? this.animation.sprite.image.width : this.animation.sprite.image.width / CanvasService.MAX_PLAYERS,
       { x: 2, y: 2},
       this.animation.getCurFrame());
   }

@@ -28,7 +28,6 @@ export class AnimationComponent implements OnInit {
    * @param newValue new value selected from drop down menu
    */
   onChangeAsset(newValue) {
-    console.log('change asset to:', AssetType[newValue]);
     this.animationService.setSprite(Number(newValue));
     this.animationService.updateState();
   }
@@ -38,7 +37,6 @@ export class AnimationComponent implements OnInit {
    * @param newValue new value selected from drop down menu
    */
   onChangeAction(newValue) {
-    console.log('change action to:', newValue);
     this.animationService.animation.setAction(newValue);
     this.animationService.updateState();
   }
@@ -48,7 +46,6 @@ export class AnimationComponent implements OnInit {
    * @param newValue new value selected from drop down menu
    */
   onChangeDirection(newValue) {
-    console.log('change direction to:', newValue);
     this.animationService.animation.setDirection(newValue);
     this.animationService.updateState();
   }
