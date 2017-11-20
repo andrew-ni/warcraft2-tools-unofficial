@@ -279,15 +279,18 @@ export class SerializeService {
     }
   }
 
+  /**
+   * Reads the SoundClips dat file and populates the map's soundMap.
+   */
   private parseSndData() {
     const sndData = this.soundService.readSndDat().trim();
     const [,sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
     const lines = clips.split(/\r?\n/);
+
     for (var i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
       const filepath = 'src/assets/snd/' + type + '/' + file;
       const checkedPath = this.soundService.checkForCustomSound(filepath);
-      
       this.map.soundMap.set(lines[i], checkedPath);
     }
     console.log(this.map.soundMap);
