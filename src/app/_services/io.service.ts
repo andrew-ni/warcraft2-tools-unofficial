@@ -104,9 +104,9 @@ export class IOService {
       const TERRAIN_PNG_HEIGHT = 10304;
       const TERRAIN_PNG_WIDTH = 32;
 
-      const onLoaded = async function() {
-        await spriteService.updatePNG(AssetType.Terrain);
-        await mapService.mapLoaded.next;
+      const onLoaded = async () => {
+        await this.spriteService.updatePNG(AssetType.Terrain);
+        this.map.mapLoaded.next();
       };
 
       img.onload = function(){

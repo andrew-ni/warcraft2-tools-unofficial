@@ -77,6 +77,8 @@ export class SpriteService {
 
     return new Promise<void>(async resolve => {
       await myImgDat.readDat(AssetType[type]);
+      console.log(myImgDat);
+
       const img = await this.loadImage(myImgDat.path);
       console.log(this.sprites);
       resolve();
