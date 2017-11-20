@@ -8,6 +8,7 @@ interface CursorButton {
   imgSrc: string;
 }
 
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
