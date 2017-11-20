@@ -9,12 +9,36 @@ interface TerrainButton {
   tileType: TileType;
 }
 
+interface BrushSizeButton {
+  name: string;
+  imgSrc: string;
+  tileType: TileType;
+}
+
 @Component({
   selector: 'app-terrain',
   templateUrl: './terrain.component.html',
   styleUrls: ['./terrain.component.scss']
 })
 export class TerrainComponent implements OnInit {
+
+  brushSizeButtons: BrushSizeButton[] = [
+    {
+      name: '1x1',
+      imgSrc: './assets/frontend_icons/small_brush.png',
+      tileType: 1,
+    },
+    {
+      name: '3x3',
+      imgSrc: './assets/frontend_icons/medium_brush.png',
+      tileType: 3,
+    },
+    {
+      name: '5x5',
+      imgSrc: './assets/frontend_icons/large_brush.png',
+      tileType: 5,
+    },
+  ];
 
   terrainButtons: TerrainButton[] = [
     {
@@ -58,7 +82,6 @@ export class TerrainComponent implements OnInit {
       tileType: TileType.Rock,
     },
   ];
-
 
   constructor(
     private userService: UserService,

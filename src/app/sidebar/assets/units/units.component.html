@@ -2,6 +2,10 @@
   <h5>Units</h5>
   <div class="ui grid">
     <div class="three wide column"
+         *ngFor="let button of cursorButtons">
+        <img [src]="button.imgSrc">
+    </div>
+    <div class="three wide column"
          *ngFor="let button of unitButtons">
       <img [src]="button.imgSrc"
            (click)="userService.selectedAsset = button.unitType">

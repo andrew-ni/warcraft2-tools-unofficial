@@ -37,6 +37,9 @@ export class UserService {
   /** Used during new map creation */
   private newMapDimensions: Dimension;
 
+  /** The BrushSize of the terrain brush that is selected currently (1x1, 3x3, 9x9). Defaults to 1x1 */
+  private _selectedBrush = 1;
+
   constructor() {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.selectedTerrain = TileType.Rock;
@@ -50,6 +53,7 @@ export class UserService {
   get selectedTerrain() { return this._selectedTerrain; }
   get selectedAsset() { return this._selectedAsset; }
   get selectedPlayer() { return this._selectedPlayer; }
+  get selectedBrush() { return this._selectedBrush; }
 
   /**
    * On terrain select, change _selectedMapElement, _selectedTerrain, and _state
@@ -76,6 +80,15 @@ export class UserService {
   set selectedPlayer(id) {
     this._selectedPlayer = id;
     console.log('player number = ', id);
+  }
+
+    /**
+   * On brush selection, change _selectedBrush
+   * @param id id to change _selectedBrush to
+   */
+  set selectedBrush(id) {
+    this._selectedBrush = id;
+    console.log('brush size = ', id);
   }
 
   /**
