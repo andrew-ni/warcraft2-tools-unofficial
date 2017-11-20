@@ -1,59 +1,21 @@
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+div.audio {
+  text-align: center;
+  width:100%;
+  height:100%;
 }
 
-.newmap {
-  background-color: #ffffff;
-  margin-top: 5%;
-  margin-left: calc((100% - 600px)/2);
-  padding: 20px 50px;
-  width: 600px;
-  height:650px;
-  text-align: left;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-h3 {
-  display: inline;
-  align: left;
-}
-
-h4 {
-  line-height:16px;
-}
-
-button.accordion {
+div.sound {
   background-color: #eee;
   color: #444;
-  cursor: pointer;
   padding: 18px;
   width: 100%;
   border: none;
   text-align: left;
   outline: none;
   font-size: 15px;
-  transition: 0.4s;
 }
 
-button.accordion.active, button.accordion:hover {
-  background-color: #ccc; 
+div.allSounds {
+  width: 70%;
+  overflow: auto;
 }
