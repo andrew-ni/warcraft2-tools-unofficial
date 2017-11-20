@@ -13,7 +13,7 @@
       <option *ngFor="let i of Sounds"
               [value]="i">{{i}}</option>
     </select>
-    <button class="ui button">Replace</button>
+    <button class="ui button" (click) = 'loadNewAudio()'>Replace</button>
     <button class="ui button">Revert</button>
     </div>
     <div id='soundplayers'></div>

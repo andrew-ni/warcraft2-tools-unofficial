@@ -1,7 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { Menu } from 'electron';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
+const { dialog } = require('electron').remote;
+
+
+const options = {
+  filters: [
+    { name: 'Audio File (.wav)', extensions: ['wav'] }
+  ]
+};
 
 @Component({
   selector: 'app-audio',
@@ -32,11 +41,6 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
-    // const myDict: Map<number, String> = new Map<number, String>();
-    // myDict.set(100, '1');
-    // myDict.set(3, '2');
-    // console.log(Object.getOwnPropertyNames(myDict));
-    // console.log(Object.getOwnPropertySymbols(myDict));
     this.Sounds = [...this.mapService.soundMap.keys()];
     this.isLoaded = true;
 
@@ -47,6 +51,17 @@ export class AudioComponent implements OnInit {
     console.log(this.mapService.soundMap.get(item));
     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.mapService.soundMap.get(item) + '" type="audio/wav">';
 
+  }
+
+  loadNewAudio() {
+    console.log('loading new audio...');
+    dialog.showOpenDialog(options, (paths: string[]) => {
+      if (paths === undefined) return;
+
+      console.log(paths[0]);
+      this.soundService.copyFile(paths[0], './dist/assets/customSnd/archer/newthing.wav');
+     // IO.loadMap(window, paths[0]);
+    });
   }
 
   ngOnInit() {

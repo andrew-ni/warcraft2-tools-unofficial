@@ -21,7 +21,7 @@ export class SoundService {
     content = fs.readFileSync('src/assets/snd/SoundClips.dat', 'utf8');
 
     if (content === undefined) {
-      throw new Error("File not read");
+      throw new Error('File not read');
     }
 
     return content;
@@ -34,8 +34,23 @@ export class SoundService {
     try {
       fs.accessSync(customFilePath);
       return customFilePath;
-    } catch (e) {      
+    } catch (e) {
       return filepath;
     }
   }
+
+ // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
+  public copyFile(src, dest) {
+      const readStream = fs.createReadStream(src);
+
+      readStream.once('error', (err) => {
+        console.log(err);
+      });
+
+      readStream.once('end', () => {
+        console.log('done copying');
+      });
+
+      readStream.pipe(fs.createWriteStream(dest));
+    }
 }
