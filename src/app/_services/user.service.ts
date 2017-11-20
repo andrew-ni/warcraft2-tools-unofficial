@@ -38,7 +38,7 @@ export class UserService {
 
   /** Used during new map creation */
   private newMapDimensions: Dimension;
-  
+
   /** The array of currently selected assets by mouse tool */
   private _selectedAssets: Asset[];
 
@@ -121,10 +121,10 @@ export class UserService {
     this._selectedBrush = id;
     console.log('brush size = ', id);
   }
-   
-   /* * On assigning to selected assets, change selectedAssetes
-   * @param assets assets to assign to
-   */
+
+  /* * On assigning to selected assets, change selectedAssetes
+  * @param assets assets to assign to
+  */
   set selectedAssets(assets) {
     this._selectedAssets = assets;
     this._state = State.selectionTool;

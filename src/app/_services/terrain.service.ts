@@ -123,9 +123,9 @@ export class TerrainService {
 
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
-          if (ypos <= this.map.height) {
-            this.map.terrainLayer[ypos][xpos] = tileType;
-          }
+        if (ypos <= this.map.height) {
+          this.map.terrainLayer[ypos][xpos] = tileType;
+        }
       }
     }
 
