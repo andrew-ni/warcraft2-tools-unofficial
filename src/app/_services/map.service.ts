@@ -27,6 +27,9 @@ export class MapService {
   /** A raw matrix of terrain tile types. This is what is saved and loaded. */
   public terrainLayer: TileType[][];
 
+  /** Dictionary that maps a soundclip name to file path. */
+  public soundMap: Map<string, string>;
+
   /** A list of assets. */
   public assets: Asset[] = [];
 
