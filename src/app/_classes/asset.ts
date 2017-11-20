@@ -24,50 +24,6 @@ export enum AssetType {
   MAX
 }
 
-export const strToAsset: AssetType[] = [];
-
-strToAsset['Archer'] = AssetType.Archer;
-strToAsset['Footman'] = AssetType.Footman;
-strToAsset['Peasant'] = AssetType.Peasant;
-strToAsset['Ranger'] = AssetType.Ranger;
-strToAsset['Barracks'] = AssetType.Barracks;
-strToAsset['Blacksmith'] = AssetType.Blacksmith;
-strToAsset['Farm'] = AssetType.Farm;
-strToAsset['CannonTower'] = AssetType.CannonTower;
-strToAsset['Castle'] = AssetType.Castle;
-strToAsset['GoldMine'] = AssetType.GoldMine;
-strToAsset['GuardTower'] = AssetType.GuardTower;
-strToAsset['Keep'] = AssetType.Keep;
-strToAsset['LumberMill'] = AssetType.LumberMill;
-strToAsset['ScoutTower'] = AssetType.ScoutTower;
-strToAsset['TownHall'] = AssetType.TownHall;
-strToAsset['Wall'] = AssetType.Wall;
-strToAsset['Terrain'] = AssetType.Terrain;
-strToAsset['Colors'] = AssetType.Colors;
-strToAsset['MAX'] = AssetType.MAX;
-
-export const assetToString: string[] = [];
-
-assetToString[AssetType.Archer] = 'Archer';
-assetToString[AssetType.Footman] = 'Footman';
-assetToString[AssetType.Peasant] = 'Peasant';
-assetToString[AssetType.Ranger] = 'Ranger';
-assetToString[AssetType.Barracks] = 'Barracks';
-assetToString[AssetType.Blacksmith] = 'Blacksmith';
-assetToString[AssetType.Farm] = 'Farm';
-assetToString[AssetType.CannonTower] = 'CannonTower';
-assetToString[AssetType.Castle] = 'Castle';
-assetToString[AssetType.GoldMine] = 'GoldMine';
-assetToString[AssetType.GuardTower] = 'GuardTower';
-assetToString[AssetType.Keep] = 'Keep';
-assetToString[AssetType.LumberMill] = 'LumberMill';
-assetToString[AssetType.ScoutTower] = 'ScoutTower';
-assetToString[AssetType.TownHall] = 'TownHall';
-assetToString[AssetType.Wall] = 'Wall';
-assetToString[AssetType.Terrain] = 'Terrain';
-assetToString[AssetType.Colors] = 'Colors';
-assetToString[AssetType.MAX] = 'MAX';
-
 const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Archer, 1],
   [AssetType.Footman, 1],

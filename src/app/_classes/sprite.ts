@@ -19,8 +19,7 @@ export class Sprite {
 }
 
 /**
- * AnimationDirection is a set of indices (in the spritesheet) for a direction
- * e.g. n, ne
+ * AnimationDirection contains a direction and the array of frames for that direction.
  */
 export class AnimationDirection {
   constructor(
@@ -33,9 +32,7 @@ export class AnimationDirection {
 }
 
 /**
- * AnimationAction is sets of directional animations for an action
- * example of AnimationAction: walk, death
- *
+ * AnimationAction contains an action and the array of directions for that action.
  */
 export class AnimationAction {
   constructor(
@@ -48,15 +45,14 @@ export class AnimationAction {
 }
 
 /**
- * Represents the state of an animation and its associated Animation objects.
+ * Represents the state of an animation. Contains the current action and direction.
  */
 export class AnimationContext {
   /** The action of this current animation. */
-  private action: AnimationAction;
+  private _action: AnimationAction;
 
   /** The direction of this current animation. */
-  private direction: AnimationDirection;
-
+  private _direction: AnimationDirection;
 
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
@@ -67,49 +63,42 @@ export class AnimationContext {
     private _sprite: Sprite,
     private frameNum: number = 0,
   ) {
-    this.action = this._sprite.actions[0];   // default to first actionm
-    this.direction = this.action.directions[0]; // default to first direction
+    this._action = this._sprite.actions[0];   // default to first action
+    this._direction = this._action.directions[0]; // default to first direction
   }
 
-  public get sprite(): Sprite {
-    return this._sprite;
-  }
-
-  public get actionList() {
-    return this.sprite.actions;
-  }
-
-  public get directionList() {
-    return this.action.directions;
-  }
-
+  get sprite(): Sprite { return this._sprite; }
+  get action() { return this._action; }
+  get direction() { return this._direction; }
+  get actionList() { return this.sprite.actions; }
+  get directionList() { return this._action.directions; }
 
   /**
    * Set the action to the index specified.
    * @param a String or number, index of action within this Sprite to take on.
    */
   public setAction(a: string|number): void {
-    this.action = this._sprite.actions[a];
+    this._action = this._sprite.actions[a];
     this.setDirection(0);
   }
 
   /**
    * Set the driection to the index specified.
-   * @param a String or number, index of direction within this action to take on.
+   * @param d String or number, index of direction within this action to take on.
    */
   public setDirection(d: string|number): void {
-    this.direction = this.action.directions[d];
+    this._direction = this._action.directions[d];
   }
 
   /** Get the current frame number. Index in animation sprite sheet. */
   public getCurFrame(): number {
-    return this.direction.frames[this.frameNum];
+    return this._direction.frames[this.frameNum];
   }
 
   /** Advance to next frame and return updated frame number. */
   public nextFrame(): number {
     this.frameNum++;
-    if (this.frameNum >= this.direction.frames.length) {
+    if (this.frameNum >= this._direction.frames.length) {
       this.frameNum = 0;
     }
 
@@ -120,7 +109,7 @@ export class AnimationContext {
   public prevFrame(): number {
     this.frameNum--;
     if (this.frameNum < 0) {
-      this.frameNum = this.direction.frames.length - 1;
+      this.frameNum = this._direction.frames.length - 1;
     }
 
     return this.getCurFrame();

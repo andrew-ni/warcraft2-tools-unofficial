@@ -30,12 +30,11 @@ export class AnimationService {
   /** Keeps track of whether double speed animation time is set. */
   private isDoubleSpeed = false;
 
-  /** Currently selected asset */
+  /** Keeps track of current state of the animation canvas. Intialized with defaults. */
   private _currentAsset: AssetType = AssetType.Peasant;
-
   private _currentAction = 'walk';
-
   private _currentDirection = 'n';
+  private _currentDelay: number;
 
   /** Constructs this AnimationService with SpriteService injected. */
   constructor(
@@ -61,13 +60,19 @@ export class AnimationService {
   }
 
   get currentAsset() { return this._currentAsset; }
-  set currentAsset(asset: AssetType) { this._currentAsset = asset; }
-
   get currentAction() { return this._currentAction; }
-  set currentAction(action: string) { this._currentAction = action; }
-
   get currentDirection() { return this._currentDirection; }
-  set currentDirection(direction: string) { this._currentDirection = direction; }
+  get currentDelay() { return this._currentDelay; }
+
+  public debug() {
+    console.log(AssetType[this.currentAsset], this.currentAction, this.currentDirection, this.currentDelay);
+  }
+
+  /** Updates current state from AnimationContext. _currentAsset updates in setSprite().*/
+  public updateState() {
+    this._currentAction = this.animation.action.name;
+    this._currentDirection = this.animation.direction.name;
+  }
 
   /** Passes various HTML elements to this Service for control. */
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
@@ -97,12 +102,13 @@ export class AnimationService {
 
   // INTERACTION FUNCTIONS
   /** Plays the animation depending on double speed state. */
-  public playAnimation() {
+  private playAnimation() {
     let delay = AnimationService.ANIMATION_DELAY;
 
     if (this.isDoubleSpeed) {
       delay /= 2;
     }
+    this._currentDelay = delay;
 
     this.intervalFunction = setInterval(() => {
       this.nextFrame();
@@ -110,19 +116,19 @@ export class AnimationService {
   }
 
   /** Pauses the animation. */
-  public pauseAnimation() {
+  private pauseAnimation() {
     clearInterval(this.intervalFunction);
     this.intervalFunction = undefined;
   }
 
   /** Advances and draws the next frame. */
-  public nextFrame() {
+  private nextFrame() {
     this.animation.nextFrame();
     this.draw();
   }
 
   /** Backtracks and draws the previous frame. */
-  public prevFrame() {
+  private prevFrame() {
     this.animation.prevFrame();
     this.draw();
   }
@@ -132,7 +138,7 @@ export class AnimationService {
    * the animation interval and resume animating.
    * @param state True for double speed.
    */
-  public setDoubleSpeed(state: boolean) {
+  private setDoubleSpeed(state: boolean) {
     this.isDoubleSpeed = state;
 
     if (this.intervalFunction !== undefined) {    // if animation IS PLAYING
@@ -141,7 +147,12 @@ export class AnimationService {
     }
   }
 
+  /**
+   * Replaces current AnimationContext with a new one based on passed sprite/asset.
+   * @param asset Asset to change to.
+   */
   public setSprite(asset: AssetType) {
+    console.log('setSprite to:', asset);
     this.animation = new AnimationContext(this.spriteService.get(asset));
     this._currentAsset = asset;
     this.draw();
