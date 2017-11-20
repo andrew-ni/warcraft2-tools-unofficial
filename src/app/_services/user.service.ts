@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import { AssetType } from 'asset';
+import { ipcRenderer } from 'electron';
 import { Dimension } from 'interfaces';
 import { TileType } from 'tile';
 
@@ -37,9 +38,20 @@ export class UserService {
   /** Used during new map creation */
   private newMapDimensions: Dimension;
 
-  constructor() {
+  /** Used to keep track of current tab */
+  public _activeView = 0;
+
+  constructor(
+    private appref: ApplicationRef,
+  ) {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.selectedTerrain = TileType.Rock;
+    ipcRenderer.on('menu:file:animation', () => {this._activeView = 1;
+      console.log('animation switch');
+      this.appref.tick(); });
+    ipcRenderer.on('menu:file:audio', () => {this._activeView = 0; this.appref.tick(); });
+    ipcRenderer.on('menu:file:tileset', () => this._activeView = 3);
+
   }
 
   /**
@@ -50,6 +62,9 @@ export class UserService {
   get selectedTerrain() { return this._selectedTerrain; }
   get selectedAsset() { return this._selectedAsset; }
   get selectedPlayer() { return this._selectedPlayer; }
+  // get activeView() { return this._activeView; }
+
+
 
   /**
    * On terrain select, change _selectedMapElement, _selectedTerrain, and _state

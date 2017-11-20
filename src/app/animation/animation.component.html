@@ -1,0 +1,27 @@
+<div id="animationModal" class="modal">
+    
+      <!-- Modal content -->
+      <div class="newmap">
+        <span class="close" (click)="fun_close();">&times;</span>
+        <h2 align="center">Customize Animation</h2>
+        <div style = "width:100%; height:100%; float:left;">
+            <h3>Customize Sprites </h3> <br>
+            <select id="TileSet" name = "TileSet">
+              <option value="2">Peasant</option>
+              <option value="3">Archer</option>
+              <option value="4">Ranger</option>
+              <option value="5">Footman</option>
+          </select>
+          <div style = "width:100%; height:70%;float:left;background-color:gray;">
+          </div>
+          <select id="Speed" name = "Speed">
+              <option value="normal">Normal</option>
+              <option value="fast">2x Speed</option>
+          </select>
+          <button>Play/Pause</button>
+          <button>Step Forward</button>
+          <button>Step Back</button>
+        </div>
+      </div>
+    
+  </div>

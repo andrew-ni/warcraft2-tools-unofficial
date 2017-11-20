@@ -24,6 +24,9 @@ import { UnitsComponent } from './sidebar/assets/units/units.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { TilesetComponent } from './tileset/tileset.component';
+import { AnimationComponent } from './animation/animation.component';
+import { AudioComponent } from './audio/audio.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,9 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     AssetsComponent,
     NewmapComponent,
     UploadmapComponent,
+    TilesetComponent,
+    AnimationComponent,
+    AudioComponent,
   ],
   imports: [
     BrowserModule,

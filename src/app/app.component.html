@@ -1,7 +1,45 @@
-<div id="main">
-  <app-sidebar></app-sidebar>
-  <app-map></app-map>
+<div>
+    <button class="ui button" (click)="openTab('map')">Map Tool</button>
+    <button class="ui button" (click)="openTab('sprite')">Sprite Tool</button>
+    <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
+    <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>    
 </div>
-<app-footer></app-footer>
+<div id="map" class="tab" style="display:none">
+    <app-sidebar></app-sidebar>
+    <app-map></app-map>
+    <app-footer></app-footer>
+</div>
+<div id="sprite" class="tab" style="display:none">
+    <h2>Sprite Tab</h2>
+    <p>Insert sprite and animation tool here</p>
+</div>
+<div id="audio" class="tab" style="display:none">
+    <app-audio></app-audio>
+</div>
+<div id="tileset" class="tab" style="display:none">
+    <app-tileset></app-tileset>
+</div>
 <app-newmap></app-newmap>
+<!-- <app-animation></app-animation> -->
+<!-- <app-audio></app-audio> -->
 <!-- <app-uploadmap></app-uploadmap> -->
+
+<div id="main"
+  [ngSwitch]="userService._activeView">
+
+  <div id="main" *ngSwitchCase="0">
+  </div>
+
+  <app-animation *ngSwitchCase="1"
+              class="view"></app-animation>
+
+  <!-- <app-devices *ngSwitchCase="ActiveView.Devices"
+              class="view"></app-devices>
+
+  <app-variables *ngSwitchCase="ActiveView.Variables"
+                class="view"></app-variables>
+
+  <app-routines *ngSwitchCase="ActiveView.Routines"
+              class="view"></app-routines> -->
+
+</div>

@@ -1,0 +1,20 @@
+<div class="ui container"
+     id="audio">
+  <h5 align="center">Customize Audio</h5>
+    <div class = "audio">
+    <h3>Customize Sounds </h3> <br>
+    <select class="ui dropdown">
+      <option *ngFor="let i of SongCategories"
+              [value]="i">{{i}}</option>
+    </select>
+    <button (click) = "loadSounds()">Load</button>
+    <br/>
+    <select [(ngModel)]= 'soundnames' *ngIf = "isLoaded" class="ui dropdown" (ngModelChange)='showSound(soundnames)'>
+      <option *ngFor="let i of Sounds"
+              [value]="i">{{i}}</option>
+    </select>
+    <button class="ui button">Replace</button>
+    <button class="ui button">Revert</button>
+    </div>
+    <div id='soundplayers'></div>
+</div>
