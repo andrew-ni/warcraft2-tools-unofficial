@@ -13,7 +13,7 @@
     <div class="three wide column"
          *ngFor="let button of terrainButtons | slice:0:4">
       <img [src]="button.imgSrc"
-           (click)="userService.selectedTerrain = button.tileType">
+           (click)="userService.terrainToBeDrawn = button.tileType">
     </div>
   </div>
 
@@ -21,7 +21,7 @@
     <div class="three wide column"
          *ngFor="let button of terrainButtons | slice:4">
       <img [src]="button.imgSrc"
-           (click)="userService.selectedTerrain = button.tileType">
+           (click)="userService.terrainToBeDrawn = button.tileType">
     </div>
 
   </div>

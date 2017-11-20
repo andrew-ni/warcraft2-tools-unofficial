@@ -8,6 +8,11 @@ interface UnitButton {
   unitType: AssetType;
 }
 
+interface CursorButton {
+  name: string;
+  imgSrc: string;
+}
+
 @Component({
   selector: 'app-units',
   templateUrl: './units.component.html',
@@ -15,11 +20,10 @@ interface UnitButton {
 })
 export class UnitsComponent implements OnInit {
 
-  cursorButtons: UnitButton[] = [
+  cursorButtons: CursorButton[] = [
     {
       name: 'Cursor',
       imgSrc: './assets/frontend_icons/cursor_icon.png',
-      unitType: AssetType.Peasant,
     },
   ];
 

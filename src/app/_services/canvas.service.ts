@@ -55,6 +55,7 @@ export class CanvasService {
   /** Map to be read from */
   private map: IMap;
 
+
   /**
    * Registers tilesUpdated, assetsUpdated, and mapResized events, and loads dose dat files.
    * @param mapService Needs access to read from map for draw events
