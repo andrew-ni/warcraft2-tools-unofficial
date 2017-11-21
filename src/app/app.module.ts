@@ -14,7 +14,6 @@ import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
-import { FooterComponent } from './footer/footer.component';
 import { MapComponent } from './map/map.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { AssetsComponent } from './sidebar/assets/assets.component';
@@ -32,7 +31,6 @@ import { AudioComponent } from './audio/audio.component';
     AppComponent,
     MapComponent,
     SidebarComponent,
-    FooterComponent,
     TerrainComponent,
     UnitsComponent,
     StructuresComponent,
