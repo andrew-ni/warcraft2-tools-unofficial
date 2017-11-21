@@ -51,6 +51,7 @@ export class SoundService {
         console.log('done copying');
       });
 
+
       readStream.pipe(fs.createWriteStream(dest));
     }
 }
