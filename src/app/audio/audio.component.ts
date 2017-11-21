@@ -53,21 +53,15 @@ export class AudioComponent implements OnInit {
 
   }
 
-  changeAudio() {
+  loadNewAudio() {
     console.log('loading new audio...');
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
 
       console.log(paths[0]);
-      // nonononno the path is the destination, source has to come from the selection menu
-      const fileSplit = paths[0].split('/');
-      const fileName  = fileSplit[fileSplit.length - 1];
-      this.soundService.copyFile(paths[0], './dist/assets/customSnd/archer/' + fileName);
+      this.soundService.copyFile(paths[0], './dist/assets/customSnd/archer/newthing.wav');
+     // IO.loadMap(window, paths[0]);
     });
-  }
-
-  revertAudio() {
-
   }
 
   ngOnInit() {
