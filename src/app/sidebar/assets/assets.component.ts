@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Player } from 'player';
+import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
-import { UserService } from 'services/user.service';
+import { State, UserService } from 'services/user.service';
 
 @Component({
   selector: 'app-assets',
@@ -17,6 +17,7 @@ export class AssetsComponent implements OnInit {
   constructor(
     private mapService: MapService,
     private userService: UserService,
+    private assetsService: AssetsService,
   ) { }
 
   /**
@@ -40,6 +41,7 @@ export class AssetsComponent implements OnInit {
    */
   onChangeSelectPlayer(newValue) {
     this.userService.selectedPlayer = newValue;
+    this.assetsService.switchPlayer(this.userService.selectedAssets, this.userService.selectedRegions, newValue);
     console.log('selected player is:', this.userService.selectedPlayer);
   }
 
