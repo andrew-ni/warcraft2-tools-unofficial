@@ -9,12 +9,7 @@ export class TilesetComponent implements OnInit {
 
   constructor() { }
 
-  fun_close() {
-    document.getElementById('tilesetModal').setAttribute('style', 'display: none;');
-  }
-
   ngOnInit() {
   }
-
 }
 
