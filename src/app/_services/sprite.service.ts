@@ -54,36 +54,13 @@ export class SpriteService {
    * If the sprite has not been loaded before it will be loaded from the filesystem.
    * @param type The asset type of the sprite
    */
-  private async prefetch(type: AssetType) {
-    if (!this.sprites.has(type)) {
-      this.sprites.set(type, undefined);
-
-      return new Promise<void>(async resolve => {
-        const { defaultIndex, imagePath, animationSets } = await this.readDataFile(AssetType[type]);
-        const rawImage = await this.loadImage(imagePath);
-        const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
-
-        if (type === AssetType.Terrain) {
-          console.log('image', image);
-        }
-
-        this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
-        resolve();
-      });
-    }
-  }
-
-  /**
-   * TODO
-   */
-  public async updatePNG(type: AssetType) {
+  public async prefetch(type: AssetType, imagePath?: string) {
     return new Promise<void>(async resolve => {
-      const { defaultIndex, imagePath, animationSets } = await this.readDataFile(AssetType[type]);
+      const { defaultIndex, defaultImagePath, animationSets } = await this.readDataFile(AssetType[type]);
+      imagePath = (imagePath === undefined) ? defaultImagePath : imagePath;
       const rawImage = await this.loadImage(imagePath);
       const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
-      console.log('image', image);
       this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
-      console.log(this.sprites);
       resolve();
     });
   }
@@ -334,7 +311,7 @@ export class SpriteService {
 
       // Extract the image path and raw frame data.
       const { relativePath, frameNames } = parseFileSections(fileData);
-      parsedData.imagePath = pathJoin('assets/img/', relativePath);
+      parsedData.defaultImagePath = pathJoin('assets/img/', relativePath);
 
       // Parse the frame data and build the animations.
       const { rawAnimationSets, defaultIndex } = parseFrames(frameNames);
@@ -351,7 +328,7 @@ export class SpriteService {
  */
 interface ParsedData {
   defaultIndex: number;
-  imagePath: string;
+  defaultImagePath: string;
   animationSets: AnimationSet[];
 }
 
