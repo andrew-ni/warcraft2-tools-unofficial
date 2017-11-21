@@ -22,7 +22,7 @@ interface IMap {
   width: number;
   height: number;
   terrainLayer: TileType[][];
-  soundMap: Map<string, string>;
+  soundMap: Map<string, Array<[string, string]>>;
   assetLayer: Asset[][];
   drawLayer: Tile[][];
   partialBits: Uint8Array[];
@@ -146,7 +146,7 @@ export class SerializeService {
     this.map.players = [];
     this.map.assets = [];
     this.map.tileSet = undefined;
-    this.map.soundMap = new Map;
+    this.map.soundMap = new Map<string, Array<[string, string]>>();
     this.parseMapData(mapData);
     this.parseSndData();
     console.log('init Map');
@@ -289,10 +289,16 @@ export class SerializeService {
 
     for (var i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
-      // const filepath = 'src/assets/snd/' + type + '/' + file;
+      //const filepath = 'src/assets/snd/' + type + '/' + file;
       const filepath = 'assets/snd/' + type + '/' + file;
       const checkedPath = this.soundService.checkForCustomSound(filepath);
-      this.map.soundMap.set(lines[i], checkedPath);
+      if (this.map.soundMap.has(type)) {
+        this.map.soundMap.get(type).push([lines[i], checkedPath]);
+      } else {
+        var fileToPath: [string, string][] = [];
+        fileToPath.push([lines[i], checkedPath]);
+        this.map.soundMap.set(type, fileToPath);
+      }
     }
     console.log(this.map.soundMap);
   }
