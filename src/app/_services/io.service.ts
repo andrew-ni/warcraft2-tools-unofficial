@@ -101,32 +101,8 @@ export class IOService {
     });
 
     ipcRenderer.on('menu:file:loadtilesetimg', async (event: Electron.IpcMessageEvent, filepath) => {
-      const img = new Image();
-      const TERRAIN_PNG_HEIGHT = 10304;
-      const TERRAIN_PNG_WIDTH = 32;
-
-      const onLoaded = async () => {
-        await this.spriteService.updatePNG(AssetType.Terrain);
-        // this.map.mapLoaded.next();
-        this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
-      };
-
-      img.onload = function() {
-        const resolve = require('path').resolve;
-
-        if ((img.height % 32 === 0) && (img.width % 32 === 0)) {
-          console.log('Copying:', filepath, 'to:', resolve('src/assets/img/Terrain.png'));
-          const writestream = fs.createWriteStream('src/assets/img/Terrain.png');
-          const readstream = fs.createReadStream(filepath);
-          readstream.pipe(writestream);
-          writestream.on('close', onLoaded);
-        } else {
-          console.log('DIMENSIONS INVALID');
-        }
-      };
-
-      img.src = filepath;
-      // onLoaded();
+      await this.spriteService.prefetch(AssetType.Terrain, filepath);
+      this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
     });
   }
 
