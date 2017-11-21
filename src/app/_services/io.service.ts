@@ -114,16 +114,19 @@ export class IOService {
       img.onload = function() {
         const resolve = require('path').resolve;
 
-        if ((img.height === TERRAIN_PNG_HEIGHT && img.width === TERRAIN_PNG_WIDTH)) {
+        if ((img.height % 32 === 0) && (img.width % 32 === 0)) {
           console.log('Copying:', filepath, 'to:', resolve('src/assets/img/Terrain.png'));
-          const stream = fs.createReadStream(filepath).pipe(fs.createWriteStream('src/assets/img/Terrain.png'));
-          stream.on('close', onLoaded);
+          const writestream = fs.createWriteStream('src/assets/img/Terrain.png');
+          const readstream = fs.createReadStream(filepath);
+          readstream.pipe(writestream);
+          writestream.on('close', onLoaded);
         } else {
           console.log('DIMENSIONS INVALID');
         }
       };
 
       img.src = filepath;
+      // onLoaded();
     });
   }
 
