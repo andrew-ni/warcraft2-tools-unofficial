@@ -1,13 +1,6 @@
-<<<<<<< HEAD
 import { Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
-=======
-import { ApplicationRef, Injectable } from '@angular/core';
-import { AssetType } from 'asset';
-import { ipcRenderer } from 'electron';
-import { Dimension } from 'interfaces';
->>>>>>> 6f04692708292b0b8e3f8780ed07be063d22185c
 import { TileType } from 'tile';
 
 export enum State {
