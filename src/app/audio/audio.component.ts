@@ -19,10 +19,15 @@ const options = {
 })
 export class AudioComponent implements OnInit {
 
-  SongCategories = ['BGM', 'Peasant', 'Footman', 'Archer', 'Ranger'];
+  SongCategories = [];
   // Sounds = ["Sound #1", "Sound #2", "Sound #3"];
-  Sounds: String[] =  [];
-  isLoaded: Boolean = false;
+  Sounds: string[] =  [];
+  isCatLoaded: Boolean = false;
+  isSoundLoaded: Boolean = false;
+  selectedPath: string;
+  selectedCategory: string;
+  selectedSound: string;
+
 
   constructor(
     private mapService: MapService,
@@ -41,27 +46,51 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
-    this.Sounds = [...this.mapService.soundMap.keys()];
-    this.isLoaded = true;
-
+    this.SongCategories = [...this.mapService.soundMap.keys()];
+    this.isCatLoaded = true;
+    this.selectedCategory = this.SongCategories[0];
+    // this.isSoundLoaded = true;
 
   }
 
   showSound(item) {
-    console.log(this.mapService.soundMap.get(item));
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.mapService.soundMap.get(item) + '" type="audio/wav">';
+    this.isSoundLoaded = true;
+    this.Sounds = [];
+    const fileToPaths = this.mapService.soundMap.get(item);
+    for (const key of fileToPaths.keys()) {
+      this.Sounds.push(key);
+    }
+    this.selectedCategory = item;
+    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.mapService.soundMap.get(item) + '" type="audio/wav">';
 
   }
 
-  loadNewAudio() {
+  playSound(item) {
+    this.selectedPath = this.mapService.soundMap.get(this.selectedCategory).get(item);
+    this.selectedSound = item;
+    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.selectedPath + '" type="audio/wav">';
+
+  }
+
+  changeAudio() {
     console.log('loading new audio...');
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
 
       console.log(paths[0]);
-      this.soundService.copyFile(paths[0], './dist/assets/customSnd/archer/newthing.wav');
+      const pathSplit = this.selectedPath.split('snd');
+      const dest = 'src/asset/customSnd' + pathSplit[1];
+      console.log(dest);
+      this.soundService.copyFile(paths[0], dest);
+      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
      // IO.loadMap(window, paths[0]);
     });
+  }
+
+  revertAudio() {
+    const tbd = 'src/asset/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
+    console.log(tbd);
+    this.soundService.deleteSound(tbd);
   }
 
   ngOnInit() {

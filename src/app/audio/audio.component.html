@@ -3,18 +3,18 @@
   <h5 align="center">Customize Audio</h5>
     <div class = "audio">
     <h3>Customize Sounds </h3> <br>
-    <select class="ui dropdown">
+    <button (click) = "loadSounds()">Load</button>
+    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'categories' *ngIf = "isCatLoaded" (ngModelChange)='showSound(categories)'>
       <option *ngFor="let i of SongCategories"
               [value]="i">{{i}}</option>
     </select>
-    <button (click) = "loadSounds()">Load</button>
     <br/>
-    <select [(ngModel)]= 'soundnames' *ngIf = "isLoaded" class="ui dropdown" (ngModelChange)='showSound(soundnames)'>
+    <select [(ngModel)]= 'soundnames' *ngIf = "isSoundLoaded" class="ui dropdown" (ngModelChange)='playSound(soundnames)'>
       <option *ngFor="let i of Sounds"
               [value]="i">{{i}}</option>
     </select>
-    <button class="ui button" (click) = 'loadNewAudio()'>Replace</button>
-    <button class="ui button">Revert</button>
+    <button class="ui button" (click) = 'changeAudio()'>Change</button>
+    <button class="ui button" (click) = 'revertAudio()'>Revert</button>
     </div>
     <div id='soundplayers'></div>
 </div>
