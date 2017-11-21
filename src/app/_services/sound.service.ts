@@ -4,7 +4,7 @@ import { MapService } from 'services/map.service';
 import * as fs from 'fs';
 
 interface IMap {
-  soundMap: Map<string, Array<[string, string]>>;
+  soundMap: Map<string, Map<string, string>>;
 }
 
 @Injectable()
