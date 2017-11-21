@@ -18,6 +18,3 @@ export class TilesetComponent implements OnInit {
 
 }
 
-require('electron').ipcRenderer.on('menu:file:tileset', () => {
-  document.getElementById('tilesetModal').setAttribute('style', 'display: inline;');
-});

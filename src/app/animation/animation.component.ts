@@ -21,3 +21,4 @@ export class AnimationComponent implements OnInit {
 require('electron').ipcRenderer.on('menu:file:animation', () => {
   document.getElementById('animationModal').setAttribute('style', 'display: inline;');
 });
+

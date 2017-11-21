@@ -16,7 +16,7 @@ import { State, UserService } from 'services/user.service';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements OnInit {
 
   private eventHandler: HTMLDivElement;
 
@@ -65,9 +65,6 @@ export class MapComponent implements OnInit, OnDestroy {
     this.setKeyBoardListeners();
   }
 
-  ngOnDestroy() {
-    this.mapLoadedSubscription.unsubscribe();
-  }
 
   /**
    * Handles keyboard events like pressing delete to delete a group of assets

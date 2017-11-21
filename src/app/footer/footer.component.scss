@@ -1,6 +1,6 @@
 :host {
     $height: 30px;
-    width: 100%;
+    width: 300px;
     height: $height;
     line-height: $height;
     background: rgb(255, 127, 127);
@@ -8,4 +8,6 @@
     text-align: right;
     padding: 0 5px;
     box-sizing: border-box;
+    position: fixed;
+    top: 914px;
 }
