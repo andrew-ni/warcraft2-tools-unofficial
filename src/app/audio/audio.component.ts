@@ -21,7 +21,7 @@ export class AudioComponent implements OnInit {
 
   SongCategories = ['BGM', 'Peasant', 'Footman', 'Archer', 'Ranger'];
   // Sounds = ["Sound #1", "Sound #2", "Sound #3"];
-  Sounds: String[] =  [];
+  Sounds: String[] = [];
   isLoaded: Boolean = false;
 
   constructor(
@@ -30,7 +30,7 @@ export class AudioComponent implements OnInit {
   ) {
     // console.log('thasdf' + this.serializeService.soundMap);
     // this.Sounds = Object.keys(this.mapService.soundMap);
-   }
+  }
 
   fun_close() {
     document.getElementById('audioModal').setAttribute('style', 'display: none;');
@@ -60,7 +60,7 @@ export class AudioComponent implements OnInit {
 
       console.log(paths[0]);
       this.soundService.copyFile(paths[0], './dist/assets/customSnd/archer/newthing.wav');
-     // IO.loadMap(window, paths[0]);
+      // IO.loadMap(window, paths[0]);
     });
   }
 

@@ -284,17 +284,17 @@ export class SerializeService {
    */
   private parseSndData() {
     const sndData = this.soundService.readSndDat().trim();
-    const [,sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
+    const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
     const lines = clips.split(/\r?\n/);
 
-    for (var i = 0; i < lines.length; i += 2) {
+    for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
       const filepath = 'src/assets/snd/' + type + '/' + file;
       const checkedPath = this.soundService.checkForCustomSound(filepath);
       if (this.map.soundMap.has(type)) {
         this.map.soundMap.get(type).set(lines[i], checkedPath);
       } else {
-        var fileToPath: Map<string, string> = new Map;
+        const fileToPath: Map<string, string> = new Map;
         fileToPath.set(lines[i], checkedPath);
         this.map.soundMap.set(type, fileToPath);
       }

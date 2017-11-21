@@ -11,7 +11,7 @@ interface IMap {
 export class SoundService {
   private map: IMap;
 
-  constructor (mapService: MapService) {
+  constructor(mapService: MapService) {
     this.map = mapService;
   }
 
@@ -39,26 +39,26 @@ export class SoundService {
     }
   }
 
- // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
+  // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
   public copyFile(src, dest) {
-      const readStream = fs.createReadStream(src);
+    const readStream = fs.createReadStream(src);
 
-      readStream.once('error', (err) => {
-        console.log(err);
-      });
+    readStream.once('error', (err) => {
+      console.log(err);
+    });
 
-      readStream.once('end', () => {
-        console.log('done copying');
-      });
+    readStream.once('end', () => {
+      console.log('done copying');
+    });
 
-      readStream.pipe(fs.createWriteStream(dest));
-    }
+    readStream.pipe(fs.createWriteStream(dest));
+  }
 
-    public editSoundMap(category: string, sound: string, dest: string) {
-      this.map.soundMap.get(category).set(sound, dest);
-    }
+  public editSoundMap(category: string, sound: string, dest: string) {
+    this.map.soundMap.get(category).set(sound, dest);
+  }
 
-    public deleteSound(tbd: string) {
-      fs.unlink(tbd, function(){console.log('deleted');});
-    }
+  public deleteSound(tbd: string) {
+    fs.unlink(tbd, function() { console.log('deleted'); });
+  }
 }
