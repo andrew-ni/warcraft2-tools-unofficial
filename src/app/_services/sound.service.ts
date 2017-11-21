@@ -53,4 +53,12 @@ export class SoundService {
 
       readStream.pipe(fs.createWriteStream(dest));
     }
+
+    public editSoundMap(category: string, sound: string, dest: string) {
+      this.map.soundMap.get(category).set(sound, dest);
+    }
+
+    public deleteSound(tbd: string) {
+      fs.unlink(tbd, function(){console.log('deleted');});
+    }
 }
