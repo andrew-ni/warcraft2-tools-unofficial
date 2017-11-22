@@ -5,7 +5,7 @@ import { Asset, AssetType, Structure, structureTypes, Unit, unitTypes } from 'as
 import { Coordinate, Region } from 'interfaces';
 import { Player } from 'player';
 import { MapService } from 'services/map.service';
-import { State, UserService } from 'services/user.service';
+import { UserService } from 'services/user.service';
 import { Tile, TileType } from 'tile';
 
 /**
