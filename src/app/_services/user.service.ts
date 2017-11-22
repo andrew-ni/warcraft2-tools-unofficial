@@ -1,6 +1,5 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
-import { ipcRenderer } from 'electron';
 import { Dimension, Region } from 'interfaces';
 import { TileType } from 'tile';
 
@@ -45,27 +44,16 @@ export class UserService {
   /** THe array of regions selected by the mouse tool */
   private _selectedRegions: Region[];
 
-  /** Used to keep track of current tab */
-  public _activeView = 0;
   /** The BrushSize of the terrain brush that is selected currently (1x1, 3x3, 9x9). Defaults to 1x1 */
   private _selectedBrush = 1;
 
   constructor(
     private appref: ApplicationRef,
-    /** On initialization, set default brush to Terrain and use TileType.Rock */
   ) {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];
     this._selectedRegions = [];
-    ipcRenderer.on('menu:file:animation', () => {
-      this._activeView = 1;
-      console.log('animation switch');
-      this.appref.tick();
-    });
-    ipcRenderer.on('menu:file:audio', () => { this._activeView = 0; this.appref.tick(); });
-    ipcRenderer.on('menu:file:tileset', () => this._activeView = 3);
-
   }
 
   /**
@@ -76,9 +64,6 @@ export class UserService {
   get terrainToBeDrawn() { return this._terrainToBeDrawn; }
   get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
-  // get activeView() { return this._activeView; }
-
-
   get selectedBrush() { return this._selectedBrush; }
   get state() { return this._state; }
   get selectedAssets() { return this._selectedAssets; }
@@ -122,9 +107,10 @@ export class UserService {
     console.log('brush size = ', id);
   }
 
-  /* * On assigning to selected assets, change selectedAssetes
-  * @param assets assets to assign to
-  */
+  /*
+   * On assigning to selected assets, change selectedAssetes
+   * @param assets assets to assign to
+   */
   set selectedAssets(assets) {
     this._selectedAssets = assets;
     this._state = State.selectionTool;

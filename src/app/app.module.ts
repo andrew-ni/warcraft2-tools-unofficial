@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 
 // Services
+import { AnimationService } from 'services/animation.service';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { IOService } from 'services/io.service';
@@ -16,7 +17,6 @@ import { UserService } from 'services/user.service';
 
 import { AnimationComponent } from './animation/animation.component';
 import { AudioComponent } from './audio/audio.component';
-import { FooterComponent } from './footer/footer.component';
 import { MapComponent } from './map/map.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { AssetsComponent } from './sidebar/assets/assets.component';
@@ -32,7 +32,6 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     AppComponent,
     MapComponent,
     SidebarComponent,
-    FooterComponent,
     TerrainComponent,
     UnitsComponent,
     StructuresComponent,
@@ -48,6 +47,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     FormsModule,
   ],
   providers: [
+    AnimationService,
     AssetsService,
     CanvasService,
     IOService,

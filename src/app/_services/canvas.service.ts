@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
-import { readdir } from 'fs';
-import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
-import { ImgDat } from 'imgdat';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -67,6 +64,36 @@ export class CanvasService {
     private userService: UserService,
   ) {
     this.map = mapService;
+  }
+
+  /**
+   * Used to draw terrain, units, and assets onto the canvas.
+   * @param layer The canvas context to draw on.
+   * @param image Bitmap image to draw. Access with spriteService.get(assetType).image
+   * @param player Player 1 - 8. Used to calculate x offset in source image.
+   * @param width Width of a single sprite on the image.
+   * @param pos X, Y coordinate to draw on canvas.
+   * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
+   * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+   */
+  public static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
+    let offset = 0;
+    if (width % CanvasService.TERRAIN_SIZE !== 0) {
+      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
+    }
+    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
+    if (player === 0) { player = 1; }
+    layer.drawImage(
+      image,
+      (player - 1) * width,
+      index * width,
+      width,
+      width,
+      pos.x * CanvasService.TERRAIN_SIZE - offset,
+      pos.y * CanvasService.TERRAIN_SIZE - offset,
+      width,
+      width
+    );
   }
 
   /**
@@ -297,8 +324,9 @@ export class CanvasService {
     this.terrainContext = terrainCtx;
     this.assetCanvas = assetCanvas;
     this.assetContext = assetCtx;
-    this.init();
+    this.spriteService.initializing.then(() => this.init());
   }
+
 
   /**
    * Draws map
@@ -312,7 +340,7 @@ export class CanvasService {
     const terrain = this.spriteService.get(AssetType.Terrain).image;
     for (let y = reg.y; y < reg.y + reg.height; y++) {
       for (let x = reg.x; x < reg.x + reg.width; x++) {
-        this.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
+        CanvasService.drawImage(this.terrainContext, terrain, 0, terrain.width, { x, y }, this.map.drawLayer[y][x].index);
       }
     }
   }
@@ -339,39 +367,9 @@ export class CanvasService {
           let single = img.image.width;
 
           if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }
-          this.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
+          CanvasService.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
         }
       }
     }
-  }
-
-  /**
-   * Used to draw terrain, units, and assets onto the canvas.
-   * @param layer The canvas context to draw on.
-   * @param image Image stored in assetMap. Access with assetMap.get(imgName)
-   * @param player Player 1 - 8. Used to calculate x offset in source image.
-   * @param width Width of a single sprite on the image.
-   * @param pos X, Y coordinate to draw on canvas.
-   * @param index Position in the spritesheet. Used to calculate y offset in source image. Starts at 0.
-   * void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-   */
-  private drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
-    let offset = 0;
-    if (width % CanvasService.TERRAIN_SIZE !== 0) {
-      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
-    }
-    // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
-    if (player === 0) { player = 1; }
-    layer.drawImage(
-      image,
-      (player - 1) * width,
-      index * width,
-      width,
-      width,
-      pos.x * CanvasService.TERRAIN_SIZE - offset,
-      pos.y * CanvasService.TERRAIN_SIZE - offset,
-      width,
-      width
-    );
   }
 }

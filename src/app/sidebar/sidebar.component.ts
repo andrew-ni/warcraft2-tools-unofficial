@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AssetType } from 'asset';
 import { MapService } from 'services/map.service';
-import { State, UserService } from 'services/user.service';
+import { State } from 'services/user.service';
 
 
 interface CursorButton {
   name: string;
   imgSrc: string;
 }
-
 
 @Component({
   selector: 'app-sidebar',
@@ -19,7 +18,6 @@ export class SidebarComponent implements OnInit {
 
   constructor(
     private mapService: MapService,
-    private userService: UserService
   ) { }
 
   /**

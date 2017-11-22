@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from 'player';
 import { IOService } from 'services/io.service';
-import { MapService } from 'services/map.service';
 import { TileType } from 'tile';
 
 @Component({
