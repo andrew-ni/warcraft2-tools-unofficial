@@ -4,6 +4,7 @@ import { join as pathJoin } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
+import { FileService } from 'services/file.service';
 import { AnimationAction, AnimationDirection, Sprite } from 'sprite';
 
 /**
@@ -25,7 +26,9 @@ export class SpriteService {
 
   public initializing: Promise<void[]>;
 
-  constructor() {
+  constructor(
+    private fileService: FileService,
+  ) {
     this.initializing = this.init();
   }
 
