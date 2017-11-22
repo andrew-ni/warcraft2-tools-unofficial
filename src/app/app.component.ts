@@ -12,9 +12,23 @@ import { MapService } from 'services/map.service';
 export class AppComponent {
   title = 'ECS160 Tools';
 
-  constructor(
-    ioService: IOService,
-    mapService: MapService,
-    assetsService: AssetsService,
-  ) { }
+  constructor() { }
+
+  /**
+   * Handles changing tabs using the labelled buttons
+   * TODO: Don't use strings, use ngClass
+   * @param tabName a string corresponding to the tab to open.
+   */
+  openTab(tabName) {
+    let i;
+    const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = 'none';
+    }
+    if (tabName === 'main') {
+      document.getElementById(tabName).style.display = 'flex';
+    } else {
+      document.getElementById(tabName).style.display = 'inline-block';
+    }
+  }
 }

@@ -1,7 +1,26 @@
-<div id="main">
-  <app-sidebar></app-sidebar>
-  <app-map></app-map>
+<div>
+    <button class="ui button" (click)="openTab('main')">Map Tool</button>
+    <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
+    <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
+    <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
+    <button class="ui button" (click)="openTab('ai')">AI Tool</button>
+
 </div>
-<app-footer></app-footer>
+<div id="main" class="tab" style="display:flex">
+    <app-sidebar></app-sidebar>
+    <app-map></app-map>
+</div>
+<div id="animation" class="tab" style="display:none">
+    <app-animation></app-animation>
+</div>
+<div id="audio" class="tab" style="display:none">
+    <app-audio></app-audio>
+</div>
+<div id="tileset" class="tab" style="display:none">
+    <app-tileset></app-tileset>
+</div>
+<div id="ai" class="tab" style="display:none">
+    <h2>AI Tab</h2>
+    <p>Insert AI tool here</p>
+</div>
 <app-newmap></app-newmap>
-<!-- <app-uploadmap></app-uploadmap> -->
