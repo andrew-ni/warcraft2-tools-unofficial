@@ -44,6 +44,9 @@ export class UserService {
   /** THe array of regions selected by the mouse tool */
   private _selectedRegions: Region[];
 
+  /** The BrushSize of the terrain brush that is selected currently (1x1, 3x3, 9x9). Defaults to 1x1 */
+  private _selectedBrush = 1;
+
   constructor(
     private appref: ApplicationRef,
   ) {
@@ -61,6 +64,7 @@ export class UserService {
   get terrainToBeDrawn() { return this._terrainToBeDrawn; }
   get assetToBeDrawn() { return this._assetToBeDrawn; }
   get selectedPlayer() { return this._selectedPlayer; }
+  get selectedBrush() { return this._selectedBrush; }
   get state() { return this._state; }
   get selectedAssets() { return this._selectedAssets; }
   get selectedRegions() { return this._selectedRegions; }
@@ -95,6 +99,15 @@ export class UserService {
   }
 
   /**
+   * On brush selection, change _selectedBrush
+   * @param id id to change _selectedBrush to
+   */
+  set selectedBrush(id) {
+    this._selectedBrush = id;
+    console.log('brush size = ', id);
+  }
+
+  /*
    * On assigning to selected assets, change selectedAssetes
    * @param assets assets to assign to
    */
