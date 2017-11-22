@@ -14,6 +14,11 @@ export class AppComponent {
 
   constructor() { }
 
+  /**
+   * Handles changing tabs using the labelled buttons
+   * TODO: Don't use strings, use ngClass
+   * @param tabName a string corresponding to the tab to open.
+   */
   openTab(tabName) {
     let i;
     const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
