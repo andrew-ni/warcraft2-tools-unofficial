@@ -18,12 +18,12 @@ export class AppComponent {
     let i;
     const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
     for (i = 0; i < x.length; i++) {
-        x[i].style.display = 'none';
+      x[i].style.display = 'none';
     }
     if (tabName === 'main') {
       document.getElementById(tabName).style.display = 'flex';
     } else {
       document.getElementById(tabName).style.display = 'inline-block';
     }
-}
+  }
 }

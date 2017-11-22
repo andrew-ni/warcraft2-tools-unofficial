@@ -14,6 +14,8 @@ import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
+import { AnimationComponent } from './animation/animation.component';
+import { AudioComponent } from './audio/audio.component';
 import { MapComponent } from './map/map.component';
 import { NewmapComponent } from './newmap/newmap.component';
 import { AssetsComponent } from './sidebar/assets/assets.component';
@@ -21,10 +23,8 @@ import { StructuresComponent } from './sidebar/assets/structures/structures.comp
 import { UnitsComponent } from './sidebar/assets/units/units.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerrainComponent } from './sidebar/terrain/terrain.component';
-import { UploadmapComponent } from './uploadmap/uploadmap.component';
 import { TilesetComponent } from './tileset/tileset.component';
-import { AnimationComponent } from './animation/animation.component';
-import { AudioComponent } from './audio/audio.component';
+import { UploadmapComponent } from './uploadmap/uploadmap.component';
 
 @NgModule({
   declarations: [
