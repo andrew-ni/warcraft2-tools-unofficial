@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AssetType, neutralAssets } from 'asset';
+import { Edit } from 'interfaces';
 import { CanvasService } from 'services/canvas.service';
 import { SpriteService } from 'services/sprite.service';
 import { AnimationContext } from 'sprite';
@@ -158,4 +159,33 @@ export class AnimationService {
     this._currentAsset = asset;
     this.draw();
   }
+
+  /**
+   * Called every time the user modifies a frame of an animation.
+   * Creates a canvas, draws the before image, edits, and saves the result to the sprite map in sprite service.
+   * @param image
+   */
+  private editSprite(change: Edit) {
+    // grab index
+    const index = this.animation.getCurFrame();
+    const image = this.animation.sprite.image;
+    const width = neutralAssets.has(this._currentAsset) ? image.width : image.width / CanvasService.MAX_PLAYERS;
+
+    const editCanvas = document.createElement('canvas');
+    const editContext = editCanvas.getContext('2d');
+
+    editCanvas.width = image.width;
+    editCanvas.height = image.height;
+    editContext.drawImage(image, 0, 0);
+
+    // clear entire row of image (to clear all recolors)
+    editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
+    // Todo: make last two arguments width-change.dx, width - change.dy
+    editContext.drawImage(image, 0, index * width, width, width,
+    change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
+
+    // call function in sprite service here, with the following line as an arg:
+    createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
+  }
+
 }
