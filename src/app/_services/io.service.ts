@@ -69,7 +69,7 @@ export class IOService {
         if (path.parse(filePath).ext === '.zip') {  // check if package
           const zip: JSZip = new JSZip();
           console.log(data);
-          const zipContents = await zip.loadAsync(data.buffer);
+          const zipContents = await zip.loadAsync(data);
 
           mapData = await zipContents.file('map.map').async('text');
         } else {
