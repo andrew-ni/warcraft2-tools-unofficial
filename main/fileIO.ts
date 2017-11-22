@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as JSZip from 'jszip';
 import * as path from 'path';
 
 /**
@@ -12,7 +13,11 @@ export module IO {
    * @param filename string of which .map file we want to open
    */
   export async function loadMap(window: Electron.WebContents, filename: string) {
-    console.log('loadMap');
+    console.log('loadMap ' + filename);
+
+    if (path.parse(filename).ext === '.zip') {
+      const zip: JSZip = new JSZip();
+    }
 
     fs.readFile(filename, 'utf8', (err: Error, data: string) => {
       if (err) {

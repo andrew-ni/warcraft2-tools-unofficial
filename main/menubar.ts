@@ -4,7 +4,7 @@ import { IO } from './fileIO';
 
 const options = {
   filters: [
-    { name: 'Map File (.map)', extensions: ['map'] }
+    { name: 'Map File/Package', extensions: ['map', 'zip'] },
   ]
 };
 
