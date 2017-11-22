@@ -4,6 +4,8 @@ import { join as pathJoin } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
+import { MapService } from 'services/map.service';
+import { SerializeService } from 'services/serialize.service';
 import { AnimationAction, AnimationDirection, Sprite } from 'sprite';
 
 /**
@@ -25,7 +27,10 @@ export class SpriteService {
 
   public initializing: Promise<void[]>;
 
-  constructor() {
+  constructor(
+    private serializeService: SerializeService,
+    private mapService: MapService,
+  ) {
     this.initializing = this.init();
   }
 
@@ -196,7 +201,6 @@ export class SpriteService {
    * @returns The image path, animation data, and default index for the asset type.
    */
   private async readDataFile(assetName: string) {
-
     /**
      * Parses the relative image path and the frame names for the animations
      * @param fileData The raw .dat file contents.
@@ -204,6 +208,13 @@ export class SpriteService {
      */
     const parseFileSections = (fileData: string) => {
       const [, relativePath, , frameNames] = fileData.split(/#.*?\r?\n/);
+
+      // TODO: investigate this
+      if (assetName === 'Terrain') {
+        this.serializeService.parseTileSet(fileData);
+        this.mapService.mapLoaded.next();
+        console.log('terrain next called');
+      }
 
       return {
         relativePath: relativePath.trim(),

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/Rx';
+import { ReplaySubject, Subject } from 'rxjs/Rx';
 
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';
@@ -67,7 +67,7 @@ export class MapService {
   public mapResized = new ReplaySubject<Dimension>(1);
 
   /** @event mapLoaded When the assets and terrain have fully been parsed and initialized. */
-  public mapLoaded = new ReplaySubject<void>(1);
+  public mapLoaded = new Subject<void>();
 
   /** @event tilesUpdated When any tile types/indices have changed. */
   public tilesUpdated = new ReplaySubject<Region>(1);
