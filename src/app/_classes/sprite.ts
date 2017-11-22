@@ -77,7 +77,7 @@ export class AnimationContext {
    * Set the action to the index specified.
    * @param a String or number, index of action within this Sprite to take on.
    */
-  public setAction(a: string|number): void {
+  public setAction(a: string | number): void {
     this._action = this._sprite.actions[a];
     this.setDirection(0);
   }
@@ -86,7 +86,7 @@ export class AnimationContext {
    * Set the driection to the index specified.
    * @param d String or number, index of direction within this action to take on.
    */
-  public setDirection(d: string|number): void {
+  public setDirection(d: string | number): void {
     this._direction = this._action.directions[d];
   }
 

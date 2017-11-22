@@ -9,7 +9,7 @@ import { AssetsService } from 'services/assets.service';
   styleUrls: ['./animation.component.scss']
 })
 export class AnimationComponent implements OnInit {
- @ViewChild('container') containerRef: ElementRef;
+  @ViewChild('container') containerRef: ElementRef;
   private animationCanvas: HTMLCanvasElement;
   private animationContext: CanvasRenderingContext2D;
 
@@ -29,10 +29,10 @@ export class AnimationComponent implements OnInit {
    */
   onKeyPress(event) {
     switch (event.key) {
-      case 'ArrowRight' :
+      case 'ArrowRight':
         this.animationService.nextFrame();
         break;
-      case 'ArrowLeft' :
+      case 'ArrowLeft':
         this.animationService.prevFrame();
         break;
     }

@@ -92,7 +92,7 @@ export class AnimationService {
       this.context,
       this.animation.sprite.image, 1,
       neutralAssets.has(this._currentAsset) ? this.animation.sprite.image.width : this.animation.sprite.image.width / CanvasService.MAX_PLAYERS,
-      { x: 2, y: 2},
+      { x: 2, y: 2 },
       this.animation.getCurFrame());
   }
 
