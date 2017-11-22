@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { AssetsService } from 'services/assets.service';
 import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
-import { UserService } from 'services/user.service';
 
 
 @Component({
@@ -13,9 +12,7 @@ import { UserService } from 'services/user.service';
 export class AppComponent {
   title = 'ECS160 Tools';
 
-  constructor(
-    private userService: UserService,
-  ) { }
+  constructor() { }
 
   openTab(tabName) {
     let i;
