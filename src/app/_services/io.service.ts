@@ -9,6 +9,11 @@ import { SerializeService } from 'services/serialize.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
+
+import * as fs from 'fs';
+import * as JSZip from 'jszip';
+import * as path from 'path';
+
 const { dialog } = require('electron').remote;
 
 interface IMap {
@@ -48,9 +53,31 @@ export class IOService {
      * Event listener for when a map has been loaded from a file
      * `mapData` is the raw file contents as a string
      */
-    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, mapData: string, filePath: string) => {
+    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, filePath: string) => {
       this._mapFilePath = filePath;
-      this.serializeService.initMapFromFile(mapData, filePath);
+
+      // add logic to differentiate package, read mapData
+
+
+      fs.readFile(filePath, async (err: Error, data: Buffer) => {
+        if (err) {
+          console.log(err);
+        }
+
+        let mapData: string;
+
+        if (path.parse(filePath).ext === '.zip') {  // check if package
+          const zip: JSZip = new JSZip();
+          console.log(data);
+          const zipContents = await zip.loadAsync(data.buffer);
+
+          mapData = await zipContents.file('map.map').async('text');
+        } else {
+          mapData = data.toString('utf8');
+        }
+
+        this.serializeService.initMapFromFile(mapData, filePath);
+      });
     });
 
     /**

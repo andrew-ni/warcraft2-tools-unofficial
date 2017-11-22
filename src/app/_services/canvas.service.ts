@@ -136,7 +136,7 @@ export class CanvasService {
 
 
     // TEMP for convenience
-    ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
+    // ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
   }
 
   /**
