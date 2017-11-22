@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
-import { AssetsService } from 'services/assets.service';
-import { IOService } from 'services/io.service';
-import { MapService } from 'services/map.service';
+import { Component, ViewChild } from '@angular/core';
+import { AnimationComponent } from './animation/animation.component';
 
 
 @Component({
@@ -10,6 +8,7 @@ import { MapService } from 'services/map.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  @ViewChild(AnimationComponent) animation: AnimationComponent;
   title = 'ECS160 Tools';
 
   constructor() { }
@@ -28,6 +27,9 @@ export class AppComponent {
     if (tabName === 'main') {
       document.getElementById(tabName).style.display = 'flex';
     } else {
+      if (tabName === 'animation') {
+        this.animation.focus();
+      }
       document.getElementById(tabName).style.display = 'inline-block';
     }
   }

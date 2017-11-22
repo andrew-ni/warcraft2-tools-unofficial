@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { State, UserService } from 'services/user.service';
+import { UserService } from 'services/user.service';
 import { TileType } from 'tile';
 
 

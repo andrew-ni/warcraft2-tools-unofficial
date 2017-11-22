@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 
 // Services
+import { AnimationService } from 'services/animation.service';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { IOService } from 'services/io.service';
@@ -46,6 +47,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     FormsModule,
   ],
   providers: [
+    AnimationService,
     AssetsService,
     CanvasService,
     IOService,

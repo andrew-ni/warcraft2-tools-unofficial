@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import { TileType } from 'tile';
@@ -44,8 +44,9 @@ export class UserService {
   /** THe array of regions selected by the mouse tool */
   private _selectedRegions: Region[];
 
-
-  constructor() {
+  constructor(
+    private appref: ApplicationRef,
+  ) {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];

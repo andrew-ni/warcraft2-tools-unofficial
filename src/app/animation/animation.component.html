@@ -1,1 +1,50 @@
-Animation Works!
+<p>
+  Animation Canvas:
+</p>
+<div class="ui container" (keydown)="onKeyPress($event)">
+<div>
+  <label>Asset type:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"  
+    [ngModel]="animationService._currentAsset"
+    (ngModelChange)="onChangeAsset($event)">
+  
+  <option *ngFor="let i of assetsList" [value]="i">{{myAssetType[i]}}</option>
+  </select>
+</div>
+
+<div>
+  <label>Action type:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"
+    [(ngModel)]="animationService._currentAction"
+    (ngModelChange)="onChangeAction($event)">
+    
+  <option *ngFor="let i of animationService.animation.actionList">{{i.name}}</option>
+  </select>
+</div>
+
+<div>
+  <label>Direction:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"
+    [(ngModel)]="animationService._currentDirection"
+    (ngModelChange)="onChangeDirection($event)">
+  
+  <option *ngFor="let i of animationService.animation.directionList">{{i.name}}</option>
+  </select>
+</div>
+
+<div>
+<button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
+<button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
+<button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
+<button class="ui button" (click)="animationService.playAnimation()">Play</button>
+<button class="ui button" (click)="animationService.prevFrame()"><-</button>
+<button #container class="ui button" (click)="animationService.nextFrame()">-></button>
+<button class="ui button" (click)="animationService.debug()">Debug</button>
+</div>
+</div>
+<div>
+  <canvas id='animationCanvas'></canvas>
+</div>

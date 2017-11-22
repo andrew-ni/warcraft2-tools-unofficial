@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject, Subject } from 'rxjs/Rx';
+import { ReplaySubject } from 'rxjs/Rx';
 
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';

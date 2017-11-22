@@ -1,0 +1,13 @@
+:host {
+  flex: 1;
+  background: rgb(127, 255, 255);
+  font-size: 18px;
+  overflow: auto;
+  image-rendering: pixelated;
+  position: relative;
+}
+
+#animationCanvas{
+  top: 0;
+  left: 0;
+}
