@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AssetType, neutralAssets } from 'asset';
-import { ipcRenderer } from 'electron';
 import { CanvasService } from 'services/canvas.service';
 import { SpriteService } from 'services/sprite.service';
-import { AnimationContext, Sprite } from 'sprite';
+import { AnimationContext } from 'sprite';
 
 /**
  * AnimationService drives the AnimationView component, providing access to

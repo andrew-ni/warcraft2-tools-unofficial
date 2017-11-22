@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AssetType } from 'asset';
 import { MapService } from 'services/map.service';
-import { State, UserService } from 'services/user.service';
+import { UserService } from 'services/user.service';
 
 
 interface CursorButton {

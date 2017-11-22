@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { readFile } from 'fs';
-import { join as pathJoin, parse } from 'path';
-import { Subject } from 'rxjs/Rx';
+import { join as pathJoin } from 'path';
 
 import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';

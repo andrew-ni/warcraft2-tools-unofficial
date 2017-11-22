@@ -1,5 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { AssetsService } from 'services/assets.service';
+import { Component, ViewChild } from '@angular/core';
 import { AnimationComponent } from './animation/animation.component';
 
 

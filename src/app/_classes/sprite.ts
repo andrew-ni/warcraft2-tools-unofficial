@@ -1,4 +1,3 @@
-import { unitTypes } from 'asset';
 
 /**
  * Sprite contains all information about an Asset parsed from their `.dat`

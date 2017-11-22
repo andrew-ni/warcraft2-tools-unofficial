@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
-import { State, UserService } from 'services/user.service';
+import { UserService } from 'services/user.service';
 
 @Component({
   selector: 'app-assets',

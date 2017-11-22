@@ -1,6 +1,5 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
-import { ipcRenderer } from 'electron';
 import { Dimension, Region } from 'interfaces';
 import { TileType } from 'tile';
 

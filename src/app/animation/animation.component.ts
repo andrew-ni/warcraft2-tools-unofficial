@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AssetType, structureTypes, unitTypes } from 'asset';
 import { AnimationService } from 'services/animation.service';
-import { AssetsService } from 'services/assets.service';
 
 @Component({
   selector: 'app-animation',
