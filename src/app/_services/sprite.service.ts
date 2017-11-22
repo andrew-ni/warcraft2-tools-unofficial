@@ -4,7 +4,6 @@ import { join as pathJoin, parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { AssetType, neutralAssets } from 'asset';
-import { Deferred } from 'deferred';
 import { Coordinate } from 'interfaces';
 import { AnimationAction, AnimationDirection, Sprite } from 'sprite';
 

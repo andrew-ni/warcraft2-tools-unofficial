@@ -5,7 +5,6 @@ import { parse } from 'path';
 import { Subject } from 'rxjs/Rx';
 
 import { Asset, AssetType, neutralAssets } from 'asset';
-import { Deferred } from 'deferred';
 import { Coordinate, Dimension, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
@@ -55,8 +54,6 @@ export class CanvasService {
 
   /** Map to be read from */
   private map: IMap;
-
-  private canvasSetting = new Deferred<void>();
 
   /**
    * Registers tilesUpdated, assetsUpdated, and mapResized events, and loads dose dat files.

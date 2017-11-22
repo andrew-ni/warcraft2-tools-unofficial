@@ -39,9 +39,6 @@ export class UserService {
   /** Used during new map creation */
   private newMapDimensions: Dimension;
 
-  /** Used to keep track of current tab */
-  public _activeView = 0;
-
   /** The array of currently selected assets by mouse tool */
   private _selectedAssets: Asset[];
 
@@ -52,18 +49,9 @@ export class UserService {
     private appref: ApplicationRef,
   ) {
     /** On initialization, set default brush to Terrain and use TileType.Rock */
-    // this.selectedTerrain = TileType.Rock;
-    ipcRenderer.on('menu:file:animation', () => {this._activeView = 1;
-      console.log('animation switch');
-      this.appref.tick(); });
-    ipcRenderer.on('menu:file:audio', () => {this._activeView = 0; this.appref.tick(); });
-    ipcRenderer.on('menu:file:tileset', () => this._activeView = 3);
-
-    /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];
     this._selectedRegions = [];
-
   }
 
   /**
