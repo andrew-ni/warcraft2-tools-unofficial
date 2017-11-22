@@ -64,19 +64,18 @@ export class IOService {
           console.log(err);
         }
 
-        let mapData: string;
-
         if (path.parse(filePath).ext === '.zip') {  // check if package
           const zip: JSZip = new JSZip();
           console.log(data);
           const zipContents = await zip.loadAsync(data);
 
-          mapData = await zipContents.file('map.map').async('text');
+          const mapData: string = await zipContents.file('map.map').async('text');
+
+          this.serializeService.initMapFromFile(mapData, filePath, zipContents);
         } else {
-          mapData = data.toString('utf8');
+          this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
         }
 
-        this.serializeService.initMapFromFile(mapData, filePath);
       });
     });
 

@@ -11,6 +11,8 @@ import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
+import * as JSZip from 'jszip';
+
 /**
  * Narrow IMap interface to discourage access of unrelated attributes
  */
@@ -134,7 +136,7 @@ export class SerializeService {
    * @param mapData Entire file contents in string form
    * @param filePath Map file path (for locality)
    */
-  public initMapFromFile(mapData: string, filePath = ''): void {
+  public initMapFromFile(mapData: string, filePath = '', pkg?: JSZip): void {
     this.map.canSave = false;
     this.map.terrainLayer = undefined;
     this.map.assetLayer = undefined;
