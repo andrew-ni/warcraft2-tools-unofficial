@@ -15,15 +15,18 @@ export class AppComponent {
   @ViewChild(AnimationComponent) animation: AnimationComponent;
   title = 'ECS160 Tools';
 
-  constructor(
-    private userService: UserService,
-  ) { }
+  constructor() { }
 
+  /**
+   * Handles changing tabs using the labelled buttons
+   * TODO: Don't use strings, use ngClass
+   * @param tabName a string corresponding to the tab to open.
+   */
   openTab(tabName) {
     let i;
     const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
     for (i = 0; i < x.length; i++) {
-        x[i].style.display = 'none';
+      x[i].style.display = 'none';
     }
     if (tabName === 'main') {
       document.getElementById(tabName).style.display = 'flex';

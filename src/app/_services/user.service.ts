@@ -58,6 +58,7 @@ export class UserService {
       this.appref.tick(); });
     ipcRenderer.on('menu:file:audio', () => {this._activeView = 0; this.appref.tick(); });
     ipcRenderer.on('menu:file:tileset', () => this._activeView = 3);
+
     /** On initialization, set default brush to Terrain and use TileType.Rock */
     this.terrainToBeDrawn = TileType.Rock;
     this._selectedAssets = [];
