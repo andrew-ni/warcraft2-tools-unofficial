@@ -45,7 +45,7 @@ export class SpriteService {
       }
 
       /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
+      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('data/img/Colors.png'));
 
       return Promise.all(prefetches);
     }
@@ -307,7 +307,7 @@ export class SpriteService {
     {
       // Read the contents of the data file.
       const fileData = await new Promise<string>((resolve, reject) => {
-        readFile('src/assets/img/' + assetName + '.dat', 'utf8', (err, data) => {
+        readFile('data/img/' + assetName + '.dat', 'utf8', (err, data) => {
           if (err) { console.error(err); reject(err); }
           resolve(data);
         });
@@ -317,7 +317,7 @@ export class SpriteService {
 
       // Extract the image path and raw frame data.
       const { relativePath, frameNames } = parseFileSections(fileData);
-      parsedData.imagePath = pathJoin('assets/img/', relativePath);
+      parsedData.imagePath = pathJoin('data/img/', relativePath);
 
       // Parse the frame data and build the animations.
       const { rawAnimationSets, defaultIndex } = parseFrames(frameNames);
