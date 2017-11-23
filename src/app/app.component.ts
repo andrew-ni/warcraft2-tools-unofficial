@@ -1,8 +1,5 @@
-import { Component } from '@angular/core';
-import { AssetsService } from 'services/assets.service';
-import { IOService } from 'services/io.service';
-import { MapService } from 'services/map.service';
-import { UserService } from 'services/user.service';
+import { Component, ViewChild } from '@angular/core';
+import { AnimationComponent } from './animation/animation.component';
 
 
 @Component({
@@ -11,19 +8,29 @@ import { UserService } from 'services/user.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  @ViewChild(AnimationComponent) animation: AnimationComponent;
   title = 'ECS160 Tools';
 
-  constructor(
-    private userService: UserService,
-  ) { }
+  constructor() { }
 
+  /**
+   * Handles changing tabs using the labelled buttons
+   * TODO: Don't use strings, use ngClass
+   * @param tabName a string corresponding to the tab to open.
+   */
   openTab(tabName) {
-    console.log('User clicked on button');
     let i;
     const x = document.getElementsByClassName('tab') as HTMLCollectionOf<HTMLElement>;
     for (i = 0; i < x.length; i++) {
-        x[i].style.display = 'none';
+      x[i].style.display = 'none';
     }
-    document.getElementById(tabName).style.display = 'block';
-}
+    if (tabName === 'main') {
+      document.getElementById(tabName).style.display = 'flex';
+    } else {
+      if (tabName === 'animation') {
+        this.animation.focus();
+      }
+      document.getElementById(tabName).style.display = 'inline-block';
+    }
+  }
 }

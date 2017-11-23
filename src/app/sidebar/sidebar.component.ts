@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-
 import { MapService } from 'services/map.service';
-import { AssetType } from 'asset';
+
 
 interface CursorButton {
   name: string;
   imgSrc: string;
 }
-
 
 @Component({
   selector: 'app-sidebar',
@@ -15,17 +13,6 @@ interface CursorButton {
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-
-  cursorButtons: CursorButton[] = [
-    {
-      name: 'Select',
-      imgSrc: './assets/frontend_icons/select_tool.png',
-    },
-    {
-      name: 'Paint',
-      imgSrc: './assets/frontend_icons/paint_tool.png',
-    },
-  ];
 
   constructor(
     private mapService: MapService,
@@ -38,6 +25,32 @@ export class SidebarComponent implements OnInit {
   onChangeName(newValue) {
     this.mapService.name = newValue;
     console.log('map name is:', this.mapService.name);
+  }
+
+  /**
+ * Updates mapService based on user input
+ * @param newValue the new value that the user input into the gold amount text box
+ */
+  onChangeGold(newValue) {
+    if (newValue === null) {  // have to use null here
+      this.mapService.players[0].gold = 0;
+    } else {
+      this.mapService.players[0].gold = Math.abs(Math.round(newValue)); // hopefully someone can find a better way to do this. Would love to be able to restrict keypresses to 0-9 and backspace only, but the methods i've tried don't work
+    }
+    console.log('gold value of selected player: 0 is:', this.mapService.players[0].gold);
+  }
+
+  /**
+  * Updates mapService based on user input
+  * @param newValue the new value that the user input into the lumber amount text box
+  */
+  onChangeLumber(newValue) {
+    if (newValue === null) {
+      this.mapService.players[0].lumber = 0;
+    } else {
+      this.mapService.players[0].lumber = Math.abs(Math.round(newValue));
+    }
+    console.log('lumber value of selected player: 0 is:', this.mapService.players[0].lumber);
   }
 
   ngOnInit() {

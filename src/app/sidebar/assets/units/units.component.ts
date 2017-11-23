@@ -8,12 +8,24 @@ interface UnitButton {
   unitType: AssetType;
 }
 
+interface CursorButton {
+  name: string;
+  imgSrc: string;
+}
+
 @Component({
   selector: 'app-units',
   templateUrl: './units.component.html',
   styleUrls: ['./units.component.scss']
 })
 export class UnitsComponent implements OnInit {
+
+  cursorButtons: CursorButton[] = [
+    {
+      name: 'Cursor',
+      imgSrc: './assets/frontend_icons/cursor_icon.png',
+    },
+  ];
 
   unitButtons: UnitButton[] = [
     {
@@ -25,6 +37,16 @@ export class UnitsComponent implements OnInit {
       name: 'Footman',
       imgSrc: './assets/frontend_icons/footman_icon.png',
       unitType: AssetType.Footman,
+    },
+    {
+      name: 'Archer',
+      imgSrc: './assets/frontend_icons/archer_icon.png',
+      unitType: AssetType.Archer,
+    },
+    {
+      name: 'Ranger',
+      imgSrc: './assets/frontend_icons/ranger_icon.png',
+      unitType: AssetType.Ranger,
     },
   ];
 

@@ -1,27 +1,50 @@
-<div id="animationModal" class="modal">
+<p>
+  Animation Canvas:
+</p>
+<div class="ui container" (keydown)="onKeyPress($event)">
+<div>
+  <label>Asset type:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"  
+    [ngModel]="animationService._currentAsset"
+    (ngModelChange)="onChangeAsset($event)">
+  
+  <option *ngFor="let i of assetsList" [value]="i">{{myAssetType[i]}}</option>
+  </select>
+</div>
+
+<div>
+  <label>Action type:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"
+    [(ngModel)]="animationService._currentAction"
+    (ngModelChange)="onChangeAction($event)">
     
-      <!-- Modal content -->
-      <div class="newmap">
-        <span class="close" (click)="fun_close();">&times;</span>
-        <h2 align="center">Customize Animation</h2>
-        <div style = "width:100%; height:100%; float:left;">
-            <h3>Customize Sprites </h3> <br>
-            <select id="TileSet" name = "TileSet">
-              <option value="2">Peasant</option>
-              <option value="3">Archer</option>
-              <option value="4">Ranger</option>
-              <option value="5">Footman</option>
-          </select>
-          <div style = "width:100%; height:70%;float:left;background-color:gray;">
-          </div>
-          <select id="Speed" name = "Speed">
-              <option value="normal">Normal</option>
-              <option value="fast">2x Speed</option>
-          </select>
-          <button>Play/Pause</button>
-          <button>Step Forward</button>
-          <button>Step Back</button>
-        </div>
-      </div>
-    
-  </div>
+  <option *ngFor="let i of animationService.animation.actionList">{{i.name}}</option>
+  </select>
+</div>
+
+<div>
+  <label>Direction:</label>
+  <select class="ui dropdown"
+    *ngIf="animationService.animation"
+    [(ngModel)]="animationService._currentDirection"
+    (ngModelChange)="onChangeDirection($event)">
+  
+  <option *ngFor="let i of animationService.animation.directionList">{{i.name}}</option>
+  </select>
+</div>
+
+<div>
+<button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
+<button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
+<button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
+<button class="ui button" (click)="animationService.playAnimation()">Play</button>
+<button class="ui button" (click)="animationService.prevFrame()"><-</button>
+<button #container class="ui button" (click)="animationService.nextFrame()">-></button>
+<button class="ui button" (click)="animationService.debug()">Debug</button>
+</div>
+</div>
+<div>
+  <canvas id='animationCanvas'></canvas>
+</div>
