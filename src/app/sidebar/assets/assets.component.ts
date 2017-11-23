@@ -33,6 +33,9 @@ export class AssetsComponent implements OnInit {
     }
     console.log('number of human players is now:', this.mapService.players.length - 1);
     this.userService.selectedPlayer = Math.min(this.userService.selectedPlayer, this.mapService.players.length - 1);
+    this.userService.selectedAssets = [];
+    this.userService.selectedRegions = [];
+    this.assetsService.removePlayerInvalidAsset();
   }
 
   /**
@@ -40,7 +43,7 @@ export class AssetsComponent implements OnInit {
    * @param newValue the new value that the user selected from the select player drop down menu
    */
   onChangeSelectPlayer(newValue) {
-    this.userService.selectedPlayer = newValue;
+    this.userService.selectedPlayer = parseInt(newValue, 10);
     this.assetsService.switchPlayer(this.userService.selectedAssets, this.userService.selectedRegions, newValue);
     console.log('selected player is:', this.userService.selectedPlayer);
   }
