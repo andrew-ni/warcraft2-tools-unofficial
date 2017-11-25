@@ -160,8 +160,13 @@ export class AnimationService {
     this.draw();
   }
 
-  private editButton(a: number) {
-    console.log(a);
+  private editButton(a: Edit) {
+    console.log(a.dx, a.dy);
+  }
+
+  private debugDraw() {
+    this.clearCanvas();
+    this.context.drawImage(this.animation.sprite.image, 0, 0);
   }
 
   /**
@@ -186,7 +191,7 @@ export class AnimationService {
     editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
     // Todo: make last two arguments width-change.dx, width - change.dy
     editContext.drawImage(image, 0, index * width, width, width,
-      change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
+      change.dx, index * width + change.dy, width, width);
 
     // call function in sprite service here, with the following line as an arg:
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
