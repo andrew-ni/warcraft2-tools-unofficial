@@ -8,6 +8,7 @@ export class Sprite {
     private _image: ImageBitmap,
     private _path: string,
     private _defaultIndex = 0,
+    private _custom: boolean,
     private _actions: AnimationAction[] = [],
   ) { }
 

@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
-
 import { ipcRenderer } from 'electron';
-
-
-import { AssetType } from 'asset';
 import * as fs from 'fs';
 import * as JSZip from 'jszip';
+import { Subject } from 'rxjs/Rx';
+
+import { AssetType } from 'asset';
 import { join as pathJoin, parse as pathParse } from 'path';
+import { MapService } from 'services/map.service';
+
+interface IMap {
+  mapProjectOpened: Subject<JSZip>;
+  mapProjectLoaded: Subject<void>;
+}
 
 @Injectable()
 export class FileService {
@@ -17,35 +22,48 @@ export class FileService {
 
   private readonly defaultPath = 'data/';
 
-  constructor() {
-    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, filePath: string) => {
+  public initializing: Promise<void>;
 
-      if (pathParse(filePath).ext === '.zip') {  // check if package
-        fs.readFile(filePath, async (err: Error, data: Buffer) => {
-          if (err) { console.log(err); }
+  private map: IMap;
 
-          this.root = await this.root.loadAsync(data);
-          this.img = this.root.folder('img/');
-          this.snd = this.root.folder('snd');
-          this.getImg(AssetType.Terrain); // TEMP
-        });
-      }
+  constructor(
+    mapService: MapService,
+  ) {
+    this.map = mapService;
+
+    let resolve: () => void;
+    this.initializing = new Promise<void>(res => resolve = res);
+
+    this.map.mapProjectOpened.subscribe(zip => {
+      this.root = zip;
+      this.img = (zip === undefined) ? undefined : zip.folder('img');
+      this.snd = (zip === undefined) ? undefined : zip.folder('snd');
+      resolve();
+      this.map.mapProjectLoaded.next();
     });
-
   }
 
   public async getImg(type: AssetType) {
 
     const parseRelativePath = (fileData: string) => {
-      const [, relativePath, , ] = fileData.split(/#.*?\r?\n/);
+      const [, relativePath] = fileData.split(/#.*?\r?\n/);
       return relativePath.trim();
     };
 
     const readDataFile = (fileName: string) => {
       return new Promise<string>((resolve, reject) => {
-        fs.readFile(this.defaultPath + 'img/' + fileName + '.dat', 'utf8', (err, data) => {
+        fs.readFile(pathJoin(this.defaultPath, 'img/', fileName + '.dat'), 'utf8', (err, data) => {
           if (err) { console.error(err); reject(err); }
           resolve(data);
+        });
+      });
+    };
+
+    const readImageFile = (relativePath: string) => {
+      return new Promise<Blob>((resolve, reject) => {
+        fs.readFile(pathJoin(this.defaultPath, 'img/', relativePath), (err, data) => {
+          if (err) { console.error(err); reject(err); }
+          resolve(new Blob([data]));
         });
       });
     };
@@ -53,29 +71,14 @@ export class FileService {
     {
       const assetName = AssetType[type];
 
-      const data = await readDataFile(assetName);
-      const relativePath = parseRelativePath(data);
+      const fileData = await readDataFile(assetName);
+      const relativePath = parseRelativePath(fileData);
 
-      const file = this.img.file(pathJoin(relativePath));
-      const image = await createImageBitmap(await file.async('blob'));
+      const customAssetFile = (this.img === undefined) ? null : this.img.file(pathJoin(relativePath));
 
-
-      // TEMP
-      const canvas = document.createElement('canvas');
-      document.getElementById('main').appendChild(canvas);
-      const context = canvas.getContext('2d');
-
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      context.drawImage(image, 0, 0);
-
+      return (customAssetFile === null)
+        ? { custom: false, fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
+        : { custom: true, fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
     }
   }
-
-  private async getAsset(src: JSZip) {
-
-  }
-
-
 }

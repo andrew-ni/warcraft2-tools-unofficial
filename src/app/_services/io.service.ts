@@ -30,6 +30,7 @@ interface IMap {
   assetLayer: Asset[][];
   terrainPath: string;
   tileSet: Tileset;
+  mapProjectOpened: Subject<JSZip>;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
   mapVersion: string;
@@ -69,11 +70,13 @@ export class IOService {
           console.log(data);
           const zipContents = await zip.loadAsync(data);
 
-          const mapData: string = await zipContents.file('map.map').async('text');
+          const mapData: string = await zipContents.file(/\w+\.map/)[0].async('text');
 
-          this.serializeService.initMapFromFile(mapData, filePath, zipContents);
+          this.serializeService.initMapFromFile(mapData, filePath);
+          this.map.mapProjectOpened.next(zipContents);
         } else {
           this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
+          this.map.mapProjectOpened.next(undefined);
         }
 
       });
@@ -159,9 +162,8 @@ export class IOService {
     this.map.players = players;
     this.map.assets = [];
     this.map.tileSet = undefined;
-    this.map.terrainPath = '../img/Terrain.dat';
-    ipcRenderer.send('terrain:load', this.map.terrainPath, '');
     this.map.canSave = true;
+    this.map.mapProjectOpened.next(undefined);
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
 

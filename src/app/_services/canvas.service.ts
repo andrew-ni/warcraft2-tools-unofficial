@@ -21,6 +21,8 @@ interface IMap {
   drawLayer: Tile[][];
   assetLayer: Asset[][];
   tileSet: Tileset;
+  mapLoaded: Subject<void>;
+  mapProjectLoaded: Subject<void>;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
   assetsUpdated: Subject<Region>;
@@ -102,7 +104,11 @@ export class CanvasService {
    * Initialized before subscribing to the events.
    */
   private async init() {
-    await this.spriteService.init();
+    this.map.mapProjectLoaded.do(() => console.log('mapLoaded:Canvas')).subscribe({
+      next: () => this.spriteService.init(),
+      error: err => console.error(err),
+      complete: null
+    });
 
     this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
