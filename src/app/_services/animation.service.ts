@@ -160,6 +160,10 @@ export class AnimationService {
     this.draw();
   }
 
+  private editButton(a: number) {
+    console.log(a);
+  }
+
   /**
    * Called every time the user modifies a frame of an animation.
    * Creates a canvas, draws the before image, edits, and saves the result to the sprite map in sprite service.

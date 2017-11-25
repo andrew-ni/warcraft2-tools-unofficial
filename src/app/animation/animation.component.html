@@ -45,6 +45,10 @@
 <button class="ui button" (click)="animationService.debug()">Debug</button>
 </div>
 </div>
+<button class="ui button" (click)="animationService.editButton(-1)">Up</button>
 <div>
+    <button class="ui button" (click)="animationService.editButton(-2)">Left</button>
   <canvas id='animationCanvas'></canvas>
+  <button class="ui button" (click)="animationService.editButton(2)">Right</button>
 </div>
+<button class="ui button" (click)="animationService.editButton(1)">Down</button>
