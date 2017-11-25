@@ -195,7 +195,7 @@ export class AnimationService {
 
     // call function in sprite service here, with the following line as an arg:
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
-    this.animation.sprite.image = result;
+    this.animation.sprite.setCustomImage(result);
 
     // call draw after to reflect contents on screen
     this.draw();

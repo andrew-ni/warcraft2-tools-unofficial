@@ -30,6 +30,24 @@ export class SpriteService {
   }
 
   /**
+   * Returns an array of all sprites that are not default. Intended
+   * to be used for packaging purposes.
+   */
+  public getCustomSprites(): Sprite[] {
+    const i: IterableIterator<Sprite> = this.sprites.values();
+    const ret: Sprite[] = [];
+    let current: Sprite;
+
+    while ((current = i.next().value) !== undefined) {
+      if (current.isCustom) {
+        ret.push(current);
+      }
+    }
+
+    return ret;
+  }
+
+  /**
    * Initializes the service.
    * Since the initialization needs to be asynchronous, it must be in
    * its own function so it can be awaited.
