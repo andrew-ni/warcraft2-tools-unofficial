@@ -165,7 +165,7 @@ export class AnimationService {
    * Creates a canvas, draws the before image, edits, and saves the result to the sprite map in sprite service.
    * @param image
    */
-  private editSprite(change: Edit) {
+  private async editSprite(change: Edit) {
     // grab index
     const index = this.animation.getCurFrame();
     const image = this.animation.sprite.image;
@@ -182,10 +182,14 @@ export class AnimationService {
     editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
     // Todo: make last two arguments width-change.dx, width - change.dy
     editContext.drawImage(image, 0, index * width, width, width,
-    change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
+      change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
 
     // call function in sprite service here, with the following line as an arg:
-    createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
+    const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
+    this.animation.sprite.image = result;
+
+    // call draw after to reflect contents on screen
+    this.draw();
   }
 
 }
