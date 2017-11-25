@@ -190,8 +190,8 @@ export class AnimationService {
     // clear entire row of image (to clear all recolors)
     editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
     // Todo: make last two arguments width-change.dx, width - change.dy
-    editContext.drawImage(image, 0, index * width, width, width,
-      change.dx, index * width + change.dy, width, width);
+    editContext.drawImage(image, 0, index * width, width * CanvasService.MAX_PLAYERS, width,
+      change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
 
     // call function in sprite service here, with the following line as an arg:
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
