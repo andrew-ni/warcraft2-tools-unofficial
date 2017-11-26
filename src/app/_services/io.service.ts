@@ -42,6 +42,7 @@ export class IOService {
 
   private _mapFilePath: string;
   private map: IMap;
+  private zip: JSZip;
 
   constructor(
     mapService: MapService,
@@ -57,28 +58,23 @@ export class IOService {
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, filePath: string) => {
       this._mapFilePath = filePath;
 
-      // add logic to differentiate package, read mapData
+      fs.readFile(filePath, async (err, data) => {
+        if (err) { console.error(err); return; }
 
-
-      fs.readFile(filePath, async (err: Error, data: Buffer) => {
-        if (err) {
-          console.log(err);
-        }
-
+        this.zip = new JSZip();
         if (path.parse(filePath).ext === '.zip') {  // check if package
-          const zip: JSZip = new JSZip();
-          console.log(data);
-          const zipContents = await zip.loadAsync(data);
-
-          const mapData: string = await zipContents.file(/\w+\.map/)[0].async('text');
+          await this.zip.loadAsync(data);
+          const mapData: string = await this.zip.file(/.+\.map/)[0].async('text');
 
           this.serializeService.initMapFromFile(mapData, filePath);
-          this.map.mapProjectOpened.next(zipContents);
         } else {
           this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
-          this.map.mapProjectOpened.next(undefined);
         }
 
+        this.zip.folder('img');
+        this.zip.folder('snd');
+        this.zip.folder('scripts');
+        this.map.mapProjectOpened.next(this.zip);
       });
     });
 
