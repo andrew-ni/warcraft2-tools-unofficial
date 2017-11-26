@@ -32,7 +32,7 @@ export class MapService {
   public terrainLayer: TileType[][];
 
   /** Dictionary that maps a sound category to a collection of sound names and file paths. */
-  public soundMap: Map<string, Map<string, string>>;
+  public soundMap: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
 
   /** A list of assets. */
   public assets: Asset[] = [];

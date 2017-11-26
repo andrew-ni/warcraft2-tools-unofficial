@@ -46,9 +46,9 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
-    this.SongCategories = [...this.mapService.soundMap.keys()];
-    this.isCatLoaded = true;
-    this.selectedCategory = this.SongCategories[0];
+    // this.SongCategories = [...this.mapService.soundMap.keys()];
+    // this.isCatLoaded = true;
+    // this.selectedCategory = this.SongCategories[0];
     // this.isSoundLoaded = true;
 
   }
@@ -82,7 +82,7 @@ export class AudioComponent implements OnInit {
       const dest = 'src/asset/customSnd' + pathSplit[1];
       console.log(dest);
       this.soundService.copyFile(paths[0], dest);
-      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
+      // this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
      // IO.loadMap(window, paths[0]);
     });
   }
@@ -90,9 +90,18 @@ export class AudioComponent implements OnInit {
   revertAudio() {
     const tbd = 'src/asset/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
     console.log(tbd);
-    this.soundService.deleteSound(tbd);
+    // this.soundService.deleteSound(tbd);
   }
 
   ngOnInit() {
+    this.SongCategories = [...this.mapService.soundMap.keys()];
+    this.isCatLoaded = true;
+    this.selectedCategory = this.SongCategories[0];
+
+  }
+
+  private debug() {
+    console.log([...this.mapService.soundMap.keys()]);
+    console.log(this.SongCategories);
   }
 }
