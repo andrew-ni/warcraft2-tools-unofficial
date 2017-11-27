@@ -2,19 +2,8 @@
   position: relative;
 }
 
-#tilesetevents canvas,
-#selectionBox {
-  position: absolute
-}
-
 #tilesetCanvas {
   position: absolute;
   top: 0;
   left: 0;
-}
-
-#selectionBox {
-  position: absolute;
-  pointer-events: none;
-  border: white dotted 2px;
 }

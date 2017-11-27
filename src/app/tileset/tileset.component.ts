@@ -41,7 +41,7 @@ export class TilesetComponent implements OnInit {
     let clickPos: Coordinate;
     this.tilesetCanvas.addEventListener('click', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
-      // console.log(Math.floor(clickPos.y / (this.TILE_SIZE * this.tilesetService.MULTIPLIER)));
+      this.selectTile(clickPos);
 
       // TODO:
       // scale png to 32x32
@@ -63,5 +63,15 @@ export class TilesetComponent implements OnInit {
   private saveTileset() {
 
   }
-}
 
+  private selectTile(clickPos: Coordinate) {
+    const tileIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
+    const nd = document.getElementById('tilesBox');
+    nd.style.pointerEvents = 'none';
+    nd.style.position = 'absolute';
+    nd.style.border = 'white solid 1px';
+    nd.style.top = (tileIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+  }
+}

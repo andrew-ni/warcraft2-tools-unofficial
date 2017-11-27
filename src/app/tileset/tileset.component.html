@@ -4,11 +4,5 @@
 
 <div id="tilesetevents">
   <canvas id='tilesetCanvas'tabindex="1"></canvas>
+  <div id="tilesBox"></div>  
 </div>
-<div *ngIf="isSelection"
-     #box
-     id="selectionBox"
-     [style.left.px]="selectionCoordinate.x"
-     [style.top.px]="selectionCoordinate.y"
-     [style.width.px]="selectionRegion.width"
-     [style.height.px]="selectionRegion.height"></div>
