@@ -46,10 +46,29 @@
 <button class="ui button" (click)="animationService.resetSprite()">Reset</button>
 </div>
 </div>
-<button class="ui button" (click)="animationService.editSprite({dx:0,dy:-1})">Up</button>
-<div>
+
+<div class="ui centered three column grid">
+  <div class="row">
+    <div class="middle aligned column">
+    <button class="ui button" (click)="animationService.editSprite({dx:0,dy:-1})">Up</button>
+    </div>
+  </div>
+
+  <div class="middle aligned row">
+    <div class="right aligned column">
     <button class="ui button" (click)="animationService.editSprite({dx:-1,dy:0})">Left</button>
-  <canvas id='animationCanvas'></canvas>
-  <button class="ui button" (click)="animationService.editSprite({dx:1,dy:0})">Right</button>
+    </div>
+    <div class="column">
+    <canvas id='animationCanvas'></canvas>
+    </div>
+    <div class="left aligned column">
+    <button class="ui button" (click)="animationService.editSprite({dx:1,dy:0})">Right</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="middle aligned column">
+    <button class="ui button" (click)="animationService.editSprite({dx:0,dy:1})">Down</button>
+  </div>
+  </div>
 </div>
-<button class="ui button" (click)="animationService.editSprite({dx:0,dy:1})">Down</button>
