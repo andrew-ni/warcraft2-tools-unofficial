@@ -27,7 +27,9 @@ export class AudioComponent implements OnInit {
   selectedPath: string;
   selectedCategory: string;
   selectedSound: string;
+  destPath: string;
 
+  test: string;
 
   constructor(
     private mapService: MapService,
@@ -35,6 +37,13 @@ export class AudioComponent implements OnInit {
   ) {
     // console.log('thasdf' + this.serializeService.soundMap);
     // this.Sounds = Object.keys(this.mapService.soundMap);
+    // this.soundService.soundUpdated.do(x => console.log('soundUpdated: ', JSON.stringify(x))).subscribe({
+    //   next: () => {
+    //     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
+    //     console.log('next'); },
+    //   error: err => console.error(err),
+    //   complete: null
+    // });
   }
 
   fun_close() {
@@ -46,6 +55,7 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
+    console.log("loadSounds");
     this.SongCategories = [...this.mapService.soundMap.keys()];
     this.isCatLoaded = true;
     this.selectedCategory = this.SongCategories[0];
@@ -54,6 +64,7 @@ export class AudioComponent implements OnInit {
   }
 
   showSound(item) {
+    console.log("showSound");
     this.isSoundLoaded = true;
     this.Sounds = [];
     const fileToPaths = this.mapService.soundMap.get(item);
@@ -65,11 +76,23 @@ export class AudioComponent implements OnInit {
 
   }
 
+  // updatePlayer() {
+  //   this.soundService.soundUpdated.do(x => console.log('soundUpdated: ', JSON.stringify(x))).subscribe({
+  //     next: () => {
+  //       document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
+  //       console.log('next'); },
+  //     error: err => console.error(err),
+  //     complete: null
+  //   });
+  // }
+
   playSound(item) {
     this.selectedPath = this.mapService.soundMap.get(this.selectedCategory).get(item);
     this.selectedSound = item;
+    const file = this.selectedPath.split('/')[4];
+    this.destPath = 'src/assets/customSnd/' + this.selectedCategory + '/' + file;
+    console.log('playsound');
     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.selectedPath + '" type="audio/wav">';
-
   }
 
   changeAudio() {
@@ -78,17 +101,20 @@ export class AudioComponent implements OnInit {
       if (paths === undefined) return;
 
       console.log(paths[0]);
-      const pathSplit = this.selectedPath.split('snd');
-      const dest = 'src/asset/customSnd' + pathSplit[1];
-      console.log(dest);
-      this.soundService.copyFile(paths[0], dest);
-      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
-     // IO.loadMap(window, paths[0]);
+      console.log(this.destPath);
+      this.test = this.destPath;
+      this.soundService.copyFile(paths[0], this.destPath);
+      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, this.destPath);
+      this.selectedPath = this.destPath;
+      // document.getElementById('soundplayers').innerHTML = '';
+      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
+      console.log("after edit");
     });
+    console.log(this.mapService.soundMap);
   }
 
   revertAudio() {
-    const tbd = 'src/asset/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
+    const tbd = 'src/assets/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
     console.log(tbd);
     this.soundService.deleteSound(tbd);
   }
