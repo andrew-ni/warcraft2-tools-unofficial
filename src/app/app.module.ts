@@ -13,6 +13,7 @@ import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
+import { TilesetService } from 'services/tileset.service';
 import { UserService } from 'services/user.service';
 
 import { AnimationComponent } from './animation/animation.component';
@@ -55,6 +56,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     SerializeService,
     SpriteService,
     TerrainService,
+    TilesetService,
     UserService,
   ],
   bootstrap: [AppComponent]
