@@ -1,6 +1,14 @@
 <p>
   Tileset Canvas:
 </p>
-<div>
-  <canvas id="tilesetCanvas"></canvas>
+
+<div id="tilesetevents">
+  <canvas id='tilesetCanvas'tabindex="1"></canvas>
 </div>
+<div *ngIf="isSelection"
+     #box
+     id="selectionBox"
+     [style.left.px]="selectionCoordinate.x"
+     [style.top.px]="selectionCoordinate.y"
+     [style.width.px]="selectionRegion.width"
+     [style.height.px]="selectionRegion.height"></div>
