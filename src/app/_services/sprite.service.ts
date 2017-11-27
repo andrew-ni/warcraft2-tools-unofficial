@@ -91,14 +91,11 @@ export class SpriteService {
    * @param type The asset type of the sprite
    */
   private async prefetch(type: AssetType) {
-    return new Promise<void>(async resolve => {
-      const { fileData, image, isCustom } = await this.fileService.getImg(type);
-      const { defaultIndex, imagePath, animationSets } = this.parseDataFile(fileData);
-      const bitmap = neutralAssets.has(type) ? image : await this.recolorBitmap(image);
-      this.sprites.set(type, new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
-      if (type === AssetType.Terrain) { this.map.tileSet = new Tileset(fileData); this.map.mapLoaded.next(); }
-      resolve();
-    });
+    const { fileData, image, isCustom } = await this.fileService.getImg(type);
+    const { defaultIndex, imagePath, animationSets } = this.parseDataFile(fileData);
+    const bitmap = neutralAssets.has(type) ? image : await this.recolorBitmap(image);
+    this.sprites.set(type, new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
+    if (type === AssetType.Terrain) { this.map.tileSet = new Tileset(fileData); this.map.mapLoaded.next(); }
   }
 
   /**
