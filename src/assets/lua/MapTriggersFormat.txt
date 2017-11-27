@@ -1,0 +1,58 @@
+// general form
+// [trigger type] [whether the event is triggered by human players, ai players, or both] [does the triggered event repeat] [trigger type specific parameters] [lua event function] [lua event function parameters]
+//
+//
+// TRIGGERS
+//
+// trigger types:
+//     0 = resource - checks the amount of a players resource
+//     1 = assetCount - checks the count of an asset type the player owns
+//     2 = assetLocation - checks if an asset of a type is in a location
+//
+// event triggerable by:
+//     0 = both
+//     1 = player
+//     2 = ai
+//
+// repeatable:
+//     0 = no
+//     1 = yes
+//
+// resource trigger = [resourceType] [comparison] [amount] ----Checks the amount of a type of resource
+//     resourceType: Gold, Lumber, Stone
+//     comparison: > (resource is more than), < (resource is less than)
+//     amount: # (amount to compare to)
+//
+// assetCount trigger = [assetType] [comparison] [amount] ----Checks the number of an asset type
+//     assetType: the enumerated name of the asset or Units (all movable units: Peasants, Footmen, Archers)
+//     comparison: > (count is more than), < (count is less than), = (count is equal to)
+//     amount: # (amount to compare to)
+//
+// assetLocation trigger = [assetType] [xmin] [xmax] [ymin] [ymax] ----Checks if an asset is within a bounding rect (inclusive upper bounds)
+//     assetType: the enumerated name of the asset or Units (all movable units: Peasants, Footmen, Archers)
+//     xmin: minimum tile x of the bounds
+//     xmax: maximum tile x of the bounds
+//     ymin: minimum tile y of the bounds
+//     ymax: maximum tile y of the bounds
+//
+//
+// EVENTS
+//
+// EndGame [playerWin] ----Ends the game
+//     playerWin: the player that wins
+//
+// ResourceChange [resourceType] [delta] ----Changes a certain resource by an amount
+//     resourceType: Gold, Lumber, Stone
+//     delta: # (amount to change)
+//
+// RandAssetKill [assetType] [amount] ----Destroys an amount of random assets of a certain type
+//     assetType: the enumerated name of the asset or Units (all movable units: Peasants, Footmen, Archers)
+//     amount: the amount to destroy
+//
+// SpawnAsset [player] [assetType] [xmin] [xmax] [ymin] [ymax] ----Spawns an asset type on all tiles in the bounding rect (inclusive upper bounds)
+//     player: the player number to give it to
+//     assetType: the enumerated name of the asset
+//     xmin: minimum tile x of the bounds
+//     xmax: maximum tile x of the bounds
+//     ymin: minimum tile y of the bounds
+//     ymax: maximum tile y of the bounds
