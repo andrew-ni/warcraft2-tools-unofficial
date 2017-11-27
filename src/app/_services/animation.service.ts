@@ -41,13 +41,11 @@ export class AnimationService {
     private spriteService: SpriteService,
   ) { }
 
-  /** Initializes the canvas and dropdown buttons. */
+  /** Initializes the canvas with default values. */
   private init() {
-    // set some dummy dimensions
     this.canvas.width = 10 * 32;
     this.canvas.height = 10 * 32;
 
-    // set up sample AnimationContext
     this.animation = new AnimationContext(this.spriteService.get(AssetType.Peasant));
     this._currentAsset = AssetType.Peasant;
     this.animation.setAction('walk');
@@ -56,17 +54,12 @@ export class AnimationService {
 
     this.playAnimation();
     this.setDoubleSpeed(false);
-    // this.pauseAnimation();
   }
 
   get currentAsset() { return this._currentAsset; }
   get currentAction() { return this._currentAction; }
   get currentDirection() { return this._currentDirection; }
   get currentDelay() { return this._currentDelay; }
-
-  public debug() {
-    console.log(AssetType[this.currentAsset], this.currentAction, this.currentDirection, this.currentDelay);
-  }
 
   /** Updates current state from AnimationContext. _currentAsset updates in setSprite().*/
   public updateState() {
@@ -160,18 +153,12 @@ export class AnimationService {
     this.draw();
   }
 
-  private debugDraw() {
-    this.clearCanvas();
-    this.context.drawImage(this.animation.sprite.image, 0, 0);
-  }
-
   /**
    * Called every time the user modifies a frame of an animation.
    * Creates a canvas, draws the before image, edits, and saves the result to the sprite map in sprite service.
-   * @param image
+   * @param change Edit distance of the sprite. Values are coded in 1 pixel increments from the html buttons.
    */
   private async editSprite(change: Edit) {
-    // grab index
     const index = this.animation.getCurFrame();
     const image = this.animation.sprite.image;
     const width = neutralAssets.has(this._currentAsset) ? image.width : image.width / CanvasService.MAX_PLAYERS;
@@ -183,27 +170,20 @@ export class AnimationService {
     editCanvas.height = image.height;
     editContext.drawImage(image, 0, 0);
 
-    // clear entire row of image (to clear all recolors)
     editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
-    // Todo: make last two arguments width-change.dx, width - change.dy
     editContext.drawImage(image, 0, index * width, width * CanvasService.MAX_PLAYERS, width,
       change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
 
-    // call function in sprite service here, with the following line as an arg:
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
     this.animation.sprite.setCustomImage(result);
 
-    // call draw after to reflect contents on screen
     this.draw();
   }
 
-  /**
-   * Resets the sprite in memory by refreshing its ImageBitmap, and resets isCustom to false.
-   */
+  /** Resets the sprite in memory by refreshing its ImageBitmap, and resets isCustom to false. */
   private async resetSprite() {
     await this.spriteService.reset(this._currentAsset);
     this.animation.sprite.isCustom = false;
     this.draw();
   }
-
 }

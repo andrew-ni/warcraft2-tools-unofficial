@@ -1,50 +1,53 @@
-<p>
-  Animation Canvas:
-</p>
 <div class="ui container" (keydown)="onKeyPress($event)">
-<div>
-  <label>Asset type:</label>
-  <select class="ui dropdown"
-    *ngIf="animationService.animation"  
-    [ngModel]="animationService._currentAsset"
-    (ngModelChange)="onChangeAsset($event)">
-  
-  <option *ngFor="let i of assetsList" [value]="i">{{myAssetType[i]}}</option>
-  </select>
-</div>
+  <h5>
+    Animation Canvas
+  </h5>
 
-<div>
-  <label>Action type:</label>
-  <select class="ui dropdown"
-    *ngIf="animationService.animation"
-    [(ngModel)]="animationService._currentAction"
-    (ngModelChange)="onChangeAction($event)">
-    
-  <option *ngFor="let i of animationService.animation.actionList">{{i.name}}</option>
-  </select>
-</div>
+<div class="ui two column grid">
+  <div class="middle aligned row">
+    <div class="right aligned column">
+      <label>Asset type:</label>
+    </div>
+    <div class="column">
+      <select class="ui dropdown"
+        *ngIf="animationService.animation"  
+        [ngModel]="animationService._currentAsset"
+        (ngModelChange)="onChangeAsset($event)">
+      
+      <option *ngFor="let i of assetsList" [value]="i">{{myAssetType[i]}}</option>
+      </select>
+    </div>
+  </div>
 
-<div>
-  <label>Direction:</label>
-  <select class="ui dropdown"
-    *ngIf="animationService.animation"
-    [(ngModel)]="animationService._currentDirection"
-    (ngModelChange)="onChangeDirection($event)">
-  
-  <option *ngFor="let i of animationService.animation.directionList">{{i.name}}</option>
-  </select>
-</div>
+  <div class="middle aligned row">
+    <div class="right aligned column">
+      <label>Action type:</label>
+    </div>
+    <div class="column">
+      <select class="ui dropdown"
+        *ngIf="animationService.animation"
+        [(ngModel)]="animationService._currentAction"
+        (ngModelChange)="onChangeAction($event)">
+        
+      <option *ngFor="let i of animationService.animation.actionList">{{i.name}}</option>
+      </select>
+    </div>
+  </div>
 
-<div>
-<button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
-<button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
-<button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
-<button class="ui button" (click)="animationService.playAnimation()">Play</button>
-<button class="ui button" (click)="animationService.prevFrame()"><-</button>
-<button #container class="ui button" (click)="animationService.nextFrame()">-></button>
-<button class="ui button" (click)="animationService.debugDraw()">Debug</button>
-<button class="ui button" (click)="animationService.resetSprite()">Reset</button>
-</div>
+  <div class="middle aligned row">
+    <div class="right aligned column">
+      <label>Direction:</label>
+    </div>
+    <div class="column">
+      <select class="ui dropdown"
+        *ngIf="animationService.animation"
+        [(ngModel)]="animationService._currentDirection"
+        (ngModelChange)="onChangeDirection($event)">
+      
+      <option *ngFor="let i of animationService.animation.directionList">{{i.name}}</option>
+      </select>
+    </div>
+  </div>
 </div>
 
 <div class="ui centered three column grid">
@@ -70,5 +73,20 @@
     <div class="middle aligned column">
     <button class="ui button" (click)="animationService.editSprite({dx:0,dy:1})">Down</button>
   </div>
+  </div>
+</div>
+
+<div class="ui divider"></div>
+
+<div class="ui centered padded grid">
+    <div class="middle aligned column">
+      <button class="ui button" (click)="animationService.setDoubleSpeed(false)">1x</button>
+      <button class="ui button" (click)="animationService.setDoubleSpeed(true)">2x</button>
+      <button class="ui button" (click)="animationService.pauseAnimation()">Pause</button>
+      <button class="ui button" (click)="animationService.playAnimation()">Play</button>
+      <button class="ui button" (click)="animationService.prevFrame()"><-</button>
+      <button #container class="ui button" (click)="animationService.nextFrame()">-></button>
+      <button class="ui button" (click)="animationService.resetSprite()">Reset</button>
+    </div>
   </div>
 </div>

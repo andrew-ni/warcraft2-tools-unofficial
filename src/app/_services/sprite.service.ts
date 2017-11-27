@@ -92,7 +92,6 @@ export class SpriteService {
   /**
    * Recreates the ImageBitmap for a given Sprite. AssetType is needed to determine if recoloring is needed.
    * @param type The asset type of the sprite
-   * @param sprite The sprite
    */
   public async reset(type: AssetType) {
     const sprite = this.sprites.get(type);
