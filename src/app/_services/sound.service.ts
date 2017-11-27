@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AssetType } from 'asset';
 import { ReplaySubject } from 'rxjs';
 import { MapService } from 'services/map.service';
 import { AssetTypeToClips } from 'sound';
@@ -12,11 +13,13 @@ interface IMap {
 @Injectable()
 export class SoundService {
   private map: IMap;
+  private nameToAudio: Map<string, HTMLAudioElement>;
 
   public soundUpdated = new ReplaySubject<void>(1);
 
   constructor(mapService: MapService) {
     this.map = mapService;
+    this.nameToAudio = new Map();
   }
 
   public readSndDat(): string {
@@ -46,8 +49,8 @@ export class SoundService {
   // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
   public copyFile(src, dest) {
     const readStream = fs.createReadStream(src);
-    console.log("src: " + src);
-    console.log("dest: " + dest);
+    console.log('src: ' + src);
+    console.log('dest: ' + dest);
 
     readStream.once('error', (err) => {
       console.log(err);
@@ -65,17 +68,30 @@ export class SoundService {
       document.getElementById('soundplayers').innerHTML = '';
       console.log('set to empty');
       document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
-      console.log('done copying')
+      console.log('done copying');
     });
   }
 
   public editSoundMap(category: string, sound: string, dest: string) {
-    console.log("editSound");
+    console.log('editSound');
     this.map.soundMap.get(category).set(sound, dest);
     // this.soundUpdated.next(undefined);
   }
 
   public deleteSound(tbd: string) {
     fs.unlink(tbd, function() { console.log('deleted'); });
+  }
+
+
+  public getAudioForAssetType(asset: AssetType){
+    const clipNames = AssetTypeToClips.get(asset);
+    const clipNameToAudio = new Map<string, HTMLAudioElement>();
+
+    for (const clipName of clipNames) {
+      const audio = this.nameToAudio.get(clipName);
+      clipNameToAudio.set(clipName, audio);
+    }
+
+    return clipNameToAudio;
   }
 }
