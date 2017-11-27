@@ -18,6 +18,7 @@ export class Sprite {
   get index() { return this._defaultIndex; }
   get actions() { return this._actions; }
   get isCustom() { return this._isCustom; }
+  set isCustom(b: boolean) { this._isCustom = b; }
 
   /**
    * Sets a new image bitmap and also sets the isCustom flag to indicate that

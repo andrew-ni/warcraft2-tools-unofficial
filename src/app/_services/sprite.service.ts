@@ -94,11 +94,10 @@ export class SpriteService {
    * @param type The asset type of the sprite
    * @param sprite The sprite
    */
-  public async reset(type: AssetType, sprite: Sprite) {
-      sprite.image = await new Promise<ImageBitmap>(async resolve => {
-        const rawImage = await this.loadImage(sprite.path);
-        const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
-      });
+  public async reset(type: AssetType) {
+    const sprite = this.sprites.get(type);
+    const rawImage = await this.loadImage(sprite.path);
+    sprite.image = await (neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage));
   }
 
   /**

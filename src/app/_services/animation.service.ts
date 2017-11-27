@@ -200,9 +200,10 @@ export class AnimationService {
   /**
    * Resets the sprite in memory by refreshing its ImageBitmap, and resets isCustom to false.
    */
-  private resetSprite() {
-    console.log('reset sprite');
-    this.spriteService.reset(this._currentAsset, this.animation.sprite);
+  private async resetSprite() {
+    await this.spriteService.reset(this._currentAsset);
+    this.animation.sprite.isCustom = false;
+    this.draw();
   }
 
 }
