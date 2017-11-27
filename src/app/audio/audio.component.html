@@ -3,8 +3,8 @@
   <h5 align="center">Customize Audio</h5>
     <div class = "audio">
     <h3>Customize Sounds </h3> <br>
-    <button (click) = "loadSounds()">Load</button>
-    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'categories' *ngIf = "isCatLoaded" (ngModelChange)='showSound(categories)'>
+    <button (click) = "debug()">Load</button>
+    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'categories' *ngIf = "mapService.soundMap" (ngModelChange)='showSound(categories)'>
       <option *ngFor="let i of SongCategories"
               [value]="i">{{i}}</option>
     </select>

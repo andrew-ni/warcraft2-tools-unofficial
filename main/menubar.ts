@@ -51,25 +51,9 @@ export function buildMenu(window: Electron.WebContents): void {
           }
         }
       ]
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        {
-          label: 'Edit Tileset',
-          click() { window.send('menu:file:tileset'); }
-        },
-        {
-          label: 'Edit Sprites/Animation',
-          click() { window.send('menu:file:animation'); }
-        },
-        {
-          label: 'Edit Audio',
-          click() { window.send('menu:file:audio'); }
-        }
-      ]
     }
   ];
+
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }

@@ -55,10 +55,16 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
+<<<<<<< HEAD
     console.log("loadSounds");
     this.SongCategories = [...this.mapService.soundMap.keys()];
     this.isCatLoaded = true;
     this.selectedCategory = this.SongCategories[0];
+=======
+    // this.SongCategories = [...this.mapService.soundMap.keys()];
+    // this.isCatLoaded = true;
+    // this.selectedCategory = this.SongCategories[0];
+>>>>>>> f52ead0c8ecf1c0582ba266de2e3140334d71dcb
     // this.isSoundLoaded = true;
 
   }
@@ -101,14 +107,12 @@ export class AudioComponent implements OnInit {
       if (paths === undefined) return;
 
       console.log(paths[0]);
-      console.log(this.destPath);
-      this.test = this.destPath;
-      this.soundService.copyFile(paths[0], this.destPath);
-      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, this.destPath);
-      this.selectedPath = this.destPath;
-      // document.getElementById('soundplayers').innerHTML = '';
-      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
-      console.log("after edit");
+      const pathSplit = this.selectedPath.split('snd');
+      const dest = 'src/asset/customSnd' + pathSplit[1];
+      console.log(dest);
+      this.soundService.copyFile(paths[0], dest);
+      // this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
+     // IO.loadMap(window, paths[0]);
     });
     console.log(this.mapService.soundMap);
   }
@@ -116,11 +120,18 @@ export class AudioComponent implements OnInit {
   revertAudio() {
     const tbd = 'src/assets/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
     console.log(tbd);
-    this.soundService.deleteSound(tbd);
+    // this.soundService.deleteSound(tbd);
   }
 
   ngOnInit() {
+    this.SongCategories = [...this.mapService.soundMap.keys()];
+    this.isCatLoaded = true;
+    this.selectedCategory = this.SongCategories[0];
+
   }
 
+  private debug() {
+    console.log([...this.mapService.soundMap.keys()]);
+    console.log(this.SongCategories);
+  }
 }
-

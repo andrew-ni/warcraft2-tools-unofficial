@@ -1,6 +1,7 @@
 import { Coordinate } from 'interfaces';
 import { TileType } from 'tile';
 
+
 export enum AssetType {
   Archer,
   Footman,

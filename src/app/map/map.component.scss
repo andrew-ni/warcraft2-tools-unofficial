@@ -1,14 +1,29 @@
 :host {
     flex: 1;
-    background: rgb(127, 255, 255);
+    background: #cccccc;
     font-size: 18px;
     overflow: auto;
     image-rendering: pixelated;
     position: relative;
 }
 
-#assetCanvas{
+#events {
+    position: relative;
+}
+
+#events canvas,
+#selectionBox {
+    position: absolute
+}
+
+#assetCanvas {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+#selectionBox {
+    position: absolute;
+    pointer-events: none;
+    border: white dotted 2px;
 }

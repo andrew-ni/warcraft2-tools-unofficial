@@ -146,7 +146,7 @@ export class SerializeService {
     this.map.players = [];
     this.map.assets = [];
     this.map.tileSet = undefined;
-    this.map.soundMap = new Map<string, Map<string, string>>();
+    // this.map.soundMap = new Map<string, Map<string, string>>();
     this.parseMapData(mapData);
     this.parseSndData();
     console.log('init Map');

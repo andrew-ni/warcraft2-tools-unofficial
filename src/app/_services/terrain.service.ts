@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/Rx';
 
 import { Coordinate, Region } from 'interfaces';
 import { MapService } from 'services/map.service';
+import { UserService } from 'services/user.service';
 import { charToTileType, Tile, TileType, TileTypeChar } from 'tile';
 import { Tileset } from 'tileset';
 
@@ -22,7 +23,8 @@ export class TerrainService {
   private map: IMap;
 
   constructor(
-    mapService: MapService
+    private mapService: MapService,
+    private userService: UserService,
   ) {
     this.map = mapService;
 
@@ -116,12 +118,14 @@ export class TerrainService {
    */
   public updateTiles(tileType: TileType, reg: Region) {
     // Changing a single tile in the editor actual results in a 2x2 change in the data
-    reg.width++;
-    reg.height++;
+    reg.width = reg.width + this.userService.selectedBrush;
+    reg.height = reg.height + this.userService.selectedBrush;
 
     for (let ypos = reg.y; ypos < reg.y + reg.height; ypos++) {
       for (let xpos = reg.x; xpos < reg.x + reg.width; xpos++) {
-        this.map.terrainLayer[ypos][xpos] = tileType;
+        if (ypos <= this.map.height) {
+          this.map.terrainLayer[ypos][xpos] = tileType;
+        }
       }
     }
 

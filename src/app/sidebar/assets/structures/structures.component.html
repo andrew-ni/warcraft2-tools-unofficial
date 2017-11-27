@@ -5,7 +5,7 @@
     <div class="three wide column"
          *ngFor="let button of structureButtons">
       <img [src]="button.imgSrc"
-           (click)="userService.selectedAsset = button.structureType">
+           (click)="userService.assetToBeDrawn = button.structureType">
     </div>
   </div>
 </div>
