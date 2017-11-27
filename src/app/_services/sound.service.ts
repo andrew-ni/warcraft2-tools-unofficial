@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { MapService } from 'services/map.service';
+import { AssetType } from 'asset';
 import { ReplaySubject } from 'rxjs';
+import { MapService } from 'services/map.service';
 
 import * as fs from 'fs';
 
@@ -45,8 +46,8 @@ export class SoundService {
   // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
   public copyFile(src, dest) {
     const readStream = fs.createReadStream(src);
-    console.log("src: " + src);
-    console.log("dest: " + dest);
+    console.log('src: ' + src);
+    console.log('dest: ' + dest);
 
     readStream.once('error', (err) => {
       console.log(err);
@@ -64,17 +65,31 @@ export class SoundService {
       document.getElementById('soundplayers').innerHTML = '';
       console.log('set to empty');
       document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
-      console.log('done copying')
+      console.log('done copying');
     });
   }
 
   public editSoundMap(category: string, sound: string, dest: string) {
-    console.log("editSound");
+    console.log('editSound');
     this.map.soundMap.get(category).set(sound, dest);
     // this.soundUpdated.next(undefined);
   }
 
   public deleteSound(tbd: string) {
     fs.unlink(tbd, function() { console.log('deleted'); });
+  }
+
+
+  public getAssetSound(Asset: AssetType){
+    const result = new Map<string, HTMLAudioElement>();
+
+    const clipNames: string[] = this.map.assetTypeToClips.get(Asset);
+    for (const clip in clipNames) {
+      result.set(clip, this.nameToAudio.get(clip));
+      result.set(clip, new Audio(this.nameToAudio.get(clip)));
+    }
+
+    return result;
+
   }
 }

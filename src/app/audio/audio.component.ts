@@ -102,7 +102,8 @@ export class AudioComponent implements OnInit {
 
       console.log(paths[0]);
       const pathSplit = this.selectedPath.split('snd');
-      const dest = 'src/asset/customSnd' + pathSplit[1];
+      // const dest = 'src/asset/customSnd' + pathSplit[1];
+      const dest = pathSplit[0] + 'customSnd' + pathSplit[1];
       console.log(dest);
       this.soundService.copyFile(paths[0], dest);
       // this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, dest);
@@ -114,7 +115,7 @@ export class AudioComponent implements OnInit {
   revertAudio() {
     const tbd = 'src/assets/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
     console.log(tbd);
-    // this.soundService.deleteSound(tbd);
+    this.soundService.deleteSound(tbd);
   }
 
   ngOnInit() {
