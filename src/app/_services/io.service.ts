@@ -122,8 +122,11 @@ export class IOService {
       console.log('saving...');
       // ipcRenderer.send('map:save', response, this._mapFilePath);
 
+      const  file = await this.zip.generateAsync({ type: 'nodebuffer' });
+      fs.writeFile(this._packageFilePath, file, err => console.error(err));
+
       // TODO: figure out right encoding for file output
-      ipcRenderer.send('map:save', await this.zip.generateAsync({ type: 'base64' }), this._packageFilePath);
+     // ipcRenderer.send('map:save', await this.zip.generateAsync({ type: 'base64' }), this._packageFilePath);
     });
 
     /**
