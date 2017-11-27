@@ -58,13 +58,16 @@ export class TilesetComponent implements OnInit {
   }
 
   private saveTileset() {
-    this.saveCanvas = document.createElement('canvas');
-    this.saveContext = this.saveCanvas.getContext('2d');
-    this.saveCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
-    this.saveCanvas.height = this.tilesetCanvas.height / this.tilesetService.MULTIPLIER;
-    this.saveContext.drawImage(this.tilesetCanvas, 0, 0);
 
-    this.saveCanvas.toBlob(async (blob) => {
+    const newCanvas = document.createElement('canvas');
+    const context = newCanvas.getContext('2d');
+    newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
+    newCanvas.height = this.tilesetCanvas.height / this.tilesetService.MULTIPLIER;
+    context.scale(1 / this.tilesetService.MULTIPLIER, 1 / this.tilesetService.MULTIPLIER);
+
+    context.drawImage(this.tilesetCanvas, 0, 0);
+
+    newCanvas.toBlob(async (blob) => {
       saveAs(blob, 'Terrain.png');
       await this.spriteService.prefetch(AssetType.Terrain);
       this.mapService.tilesUpdated.next({y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
