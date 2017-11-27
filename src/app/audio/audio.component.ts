@@ -55,22 +55,16 @@ export class AudioComponent implements OnInit {
   }
 
   loadSounds() {
-<<<<<<< HEAD
-    console.log("loadSounds");
+    console.log('loadSounds');
     this.SongCategories = [...this.mapService.soundMap.keys()];
     this.isCatLoaded = true;
     this.selectedCategory = this.SongCategories[0];
-=======
-    // this.SongCategories = [...this.mapService.soundMap.keys()];
-    // this.isCatLoaded = true;
-    // this.selectedCategory = this.SongCategories[0];
->>>>>>> f52ead0c8ecf1c0582ba266de2e3140334d71dcb
     // this.isSoundLoaded = true;
 
   }
 
   showSound(item) {
-    console.log("showSound");
+    console.log('showSound');
     this.isSoundLoaded = true;
     this.Sounds = [];
     const fileToPaths = this.mapService.soundMap.get(item);

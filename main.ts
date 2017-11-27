@@ -12,10 +12,10 @@ function start() {
   // Keep a global reference of the window object, if you don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
   const args = process.argv.slice(1);
-  // const serve = args.some(val => val === '--serve');
+  const serve = args.some(val => val === '--serve');
   devTools = args.some(val => val === '--dev');
 
-  // if (serve) require('electron-reload')(__dirname, {});
+  if (serve) require('electron-reload')(__dirname, {});
 }
 
 async function createWindow(openDevTools: boolean) {
