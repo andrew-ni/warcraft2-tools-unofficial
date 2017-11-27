@@ -69,19 +69,8 @@ export class TilesetComponent implements OnInit {
 
     newCanvas.toBlob(async (blob) => {
       saveAs(blob, 'Terrain.png');
-      await this.spriteService.prefetch(AssetType.Terrain);
-      this.mapService.tilesUpdated.next({y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
     });
   }
-
-  // private cloneCanvas(oldCanvas: HTMLCanvasElement) {
-  //   const clone = document.createElement('canvas');
-  //   const ctx = clone.getContext('2d');
-  //   clone.width = oldCanvas.width / this.tilesetService.MULTIPLIER;
-  //   clone.height = oldCanvas.height / this.tilesetService.MULTIPLIER;
-  //   ctx.drawImage(oldCanvas, 0, 0);
-  //   return clone;
-  // }
 
   private selectTile(clickPos: Coordinate) {
     const tileIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
