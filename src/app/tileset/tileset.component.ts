@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Menu } from 'electron';
+import { saveAs } from 'file-saver';
 
 import { AssetType } from 'asset';
 import { Coordinate } from 'interfaces';
@@ -61,7 +62,9 @@ export class TilesetComponent implements OnInit {
   }
 
   private saveTileset() {
-
+    this.tilesetCanvas.toBlob((blob) => {
+      saveAs(blob, 'Terrain.png');
+    });
   }
 
   private selectTile(clickPos: Coordinate) {
