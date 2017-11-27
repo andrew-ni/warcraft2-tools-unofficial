@@ -16,6 +16,7 @@ export class Sprite {
   get path() { return this._path; }
   get index() { return this._defaultIndex; }
   get actions() { return this._actions; }
+  get isCustom() { return this._isCustom; }
 }
 
 /**

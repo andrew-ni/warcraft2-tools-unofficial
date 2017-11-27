@@ -40,9 +40,10 @@ interface IMap {
 @Injectable()
 export class IOService {
 
-  private _mapFilePath: string;
+  private _packageFilePath: string;
   private map: IMap;
   private zip: JSZip;
+  private mapFileName: string;
 
   constructor(
     mapService: MapService,
@@ -56,7 +57,7 @@ export class IOService {
      * `mapData` is the raw file contents as a string
      */
     ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, filePath: string) => {
-      this._mapFilePath = filePath;
+      this._packageFilePath = filePath;
 
       fs.readFile(filePath, async (err, data) => {
         if (err) { console.error(err); return; }
@@ -64,7 +65,9 @@ export class IOService {
         this.zip = new JSZip();
         if (path.parse(filePath).ext === '.zip') {  // check if package
           await this.zip.loadAsync(data);
-          const mapData: string = await this.zip.file(/.+\.map/)[0].async('text');
+          const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
+          const mapData: string = await mapFile.async('text');
+          this.mapFileName = await mapFile.name;    // save filename for later saving
 
           this.serializeService.initMapFromFile(mapData, filePath);
         } else {
@@ -81,9 +84,9 @@ export class IOService {
     /**
      * Event listener for when we want to save the map
      */
-    ipcRenderer.on('menu:file:save', (event: Electron.IpcMessageEvent, filePath?: string) => {
+    ipcRenderer.on('menu:file:save', async (event: Electron.IpcMessageEvent, filePath?: string) => {
       if (filePath) {
-        this._mapFilePath = filePath;    // update our save location
+        this._packageFilePath = filePath;    // update our save location
       }
 
       const response: string = this.serializeService.serializeMap();
@@ -94,21 +97,33 @@ export class IOService {
 
         return; // don't make ipc call
       }
+
+      // implement package generation here
+      // save map into zip
+      this.zip.file(this.mapFileName, response);    // overwrite file with new response
+      // save custom images
+      // save custom sounds
+      // include scripts
+
+
       /**
        * Use save as if the map is created by the editor
        */
-      if (this._mapFilePath === undefined) {
-        this._mapFilePath = dialog.showSaveDialog({
+      if (this._packageFilePath === undefined) {
+        this._packageFilePath = dialog.showSaveDialog({
           filters: [
-            { name: 'Map File (.map)', extensions: ['map'] }
+            { name: 'Map Package (.zip)', extensions: ['zip'] }
           ]
         });
       }
-      if (this._mapFilePath === undefined) {
+      if (this._packageFilePath === undefined) {
         return;
       }
       console.log('saving...');
-      ipcRenderer.send('map:save', response, this._mapFilePath);
+      // ipcRenderer.send('map:save', response, this._mapFilePath);
+
+      // TODO: figure out right encoding for file output
+      ipcRenderer.send('map:save', await this.zip.generateAsync({ type: 'base64' }), this._packageFilePath);
     });
 
     /**
@@ -130,7 +145,7 @@ export class IOService {
    * @param players player number and starting resource
    */
   public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
-    this._mapFilePath = undefined;
+    this._packageFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
     this.map.description = description;

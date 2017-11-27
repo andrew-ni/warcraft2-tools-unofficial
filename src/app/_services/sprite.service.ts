@@ -67,6 +67,24 @@ export class SpriteService {
   }
 
   /**
+ * Returns an array of all sprites that are not default. Intended
+ * to be used for packaging purposes.
+ */
+  public getCustomSprites(): Sprite[] {
+    const i: IterableIterator<Sprite> = this.sprites.values();
+    const ret: Sprite[] = [];
+    let current: Sprite;
+
+    while ((current = i.next().value) !== undefined) {
+      if (current.isCustom) {
+        ret.push(current);
+      }
+    }
+
+    return ret;
+  }
+
+  /**
    * Fetches the sprite for the given asset type.
    * If `isColored` is true for the given type, the sprite will be recolored for each team.
    * If the sprite has not been loaded before it will be loaded from the filesystem.
