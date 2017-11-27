@@ -160,10 +160,6 @@ export class AnimationService {
     this.draw();
   }
 
-  private editButton(a: Edit) {
-    console.log(a.dx, a.dy);
-  }
-
   private debugDraw() {
     this.clearCanvas();
     this.context.drawImage(this.animation.sprite.image, 0, 0);
@@ -199,6 +195,14 @@ export class AnimationService {
 
     // call draw after to reflect contents on screen
     this.draw();
+  }
+
+  /**
+   * Resets the sprite in memory by refreshing its ImageBitmap, and resets isCustom to false.
+   */
+  private resetSprite() {
+    console.log('reset sprite');
+    this.spriteService.reset(this._currentAsset, this.animation.sprite);
   }
 
 }

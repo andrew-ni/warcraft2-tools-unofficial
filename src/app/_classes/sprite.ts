@@ -13,6 +13,7 @@ export class Sprite {
   ) { }
 
   get image() { return this._image; }
+  set image(i: ImageBitmap) { this._image = i; }
   get path() { return this._path; }
   get index() { return this._defaultIndex; }
   get actions() { return this._actions; }
