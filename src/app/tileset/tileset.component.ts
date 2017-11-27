@@ -24,6 +24,8 @@ export class TilesetComponent implements OnInit {
 
   private tilesetCanvas: HTMLCanvasElement;
   private tilesetContext: CanvasRenderingContext2D;
+  private saveCanvas; HTMLCanvasElement;
+  private saveContext: CanvasRenderingContext2D;
 
   constructor(
     private tilesetService: TilesetService,
@@ -44,9 +46,6 @@ export class TilesetComponent implements OnInit {
       clickPos = { x: event.offsetX, y: event.offsetY };
       this.selectTile(clickPos);
 
-      // TODO:
-      // scale png to 32x32
-      // save to Terrain.png
       dialog.showOpenDialog(options, async (paths: string[]) => {
         if (paths === undefined) return;
 
@@ -54,18 +53,32 @@ export class TilesetComponent implements OnInit {
         const rawImg = await this.spriteService.loadImage(imgPath);
         const img = await this.spriteService.HTMLImageToBitmap(rawImg);
         this.tilesetService.replaceSingleTile(img, clickPos);
-        this.saveTileset();
-        await this.spriteService.prefetch(AssetType.Terrain);
-        this.mapService.tilesUpdated.next({y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
       });
     });
   }
 
   private saveTileset() {
-    this.tilesetCanvas.toBlob((blob) => {
+    this.saveCanvas = document.createElement('canvas');
+    this.saveContext = this.saveCanvas.getContext('2d');
+    this.saveCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
+    this.saveCanvas.height = this.tilesetCanvas.height / this.tilesetService.MULTIPLIER;
+    this.saveContext.drawImage(this.tilesetCanvas, 0, 0);
+
+    this.saveCanvas.toBlob(async (blob) => {
       saveAs(blob, 'Terrain.png');
+      await this.spriteService.prefetch(AssetType.Terrain);
+      this.mapService.tilesUpdated.next({y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
     });
   }
+
+  // private cloneCanvas(oldCanvas: HTMLCanvasElement) {
+  //   const clone = document.createElement('canvas');
+  //   const ctx = clone.getContext('2d');
+  //   clone.width = oldCanvas.width / this.tilesetService.MULTIPLIER;
+  //   clone.height = oldCanvas.height / this.tilesetService.MULTIPLIER;
+  //   ctx.drawImage(oldCanvas, 0, 0);
+  //   return clone;
+  // }
 
   private selectTile(clickPos: Coordinate) {
     const tileIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
