@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { MapService } from 'services/map.service';
 import { ReplaySubject } from 'rxjs';
+import { MapService } from 'services/map.service';
+import { AssetTypeToClips } from 'sound';
 
 import * as fs from 'fs';
 
