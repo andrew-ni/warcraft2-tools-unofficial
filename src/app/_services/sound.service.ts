@@ -13,7 +13,7 @@ interface IMap {
 @Injectable()
 export class SoundService {
   private map: IMap;
-  private nameToAudio: Map<string, HTMLAudioElement>;
+  public nameToAudio: Map<string, HTMLAudioElement>;
 
   public soundUpdated = new ReplaySubject<void>(1);
 
@@ -65,9 +65,10 @@ export class SoundService {
       console.log('write end');
     });
     readStream.pipe(writeStream).on('finish', () => {
-      document.getElementById('soundplayers').innerHTML = '';
-      console.log('set to empty');
+      // document.getElementById('soundplayers').innerHTML = '';
+      // console.log('set to empty');
       document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
+
       console.log('done copying');
     });
   }

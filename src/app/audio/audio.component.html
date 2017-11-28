@@ -4,12 +4,12 @@
     <div class = "audio">
     <h3>Customize Sounds </h3> <br>
     <button (click) = "loadSounds()">Load</button>
-    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'categories' *ngIf = "mapService.soundMap" (ngModelChange)='showSound(categories)'>
+    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'categories' *ngIf = "mapService.soundMap" (ngModelChange)='showSound($event)'>
       <option *ngFor="let i of SongCategories"
               [value]="i">{{i}}</option>
     </select>
     <br/>
-    <select [(ngModel)]= 'soundnames' *ngIf = "isSoundLoaded" class="ui dropdown" (ngModelChange)='playSound(soundnames)'>
+    <select [(ngModel)]= 'soundnames' *ngIf = "isSoundLoaded" class="ui dropdown" (ngModelChange)='playSound($event)'>
       <option *ngFor="let i of Sounds"
               [value]="i">{{i}}</option>
     </select>
@@ -17,4 +17,5 @@
     <button class="ui button" (click) = 'revertAudio()'>Revert</button>
     </div>
     <div id='soundplayers'></div>
+    <div id='soundplayers2'></div>
 </div>

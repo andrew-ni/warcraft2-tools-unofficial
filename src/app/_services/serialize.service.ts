@@ -289,7 +289,7 @@ export class SerializeService {
 
     for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
-      const filepath = 'src/assets/snd/' + type + '/' + file;
+      const filepath = '../dist/assets/snd/' + type + '/' + file;
       const checkedPath = this.soundService.checkForCustomSound(filepath);
       if (this.map.soundMap.has(type)) {
         this.map.soundMap.get(type).set(lines[i], checkedPath);
@@ -298,6 +298,7 @@ export class SerializeService {
         fileToPath.set(lines[i], checkedPath);
         this.map.soundMap.set(type, fileToPath);
       }
+      this.soundService.nameToAudio.set(lines[i], new Audio(checkedPath));
     }
     console.log(this.map.soundMap);
   }
