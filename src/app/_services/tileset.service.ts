@@ -12,7 +12,7 @@ export class TilesetService {
   private context: CanvasRenderingContext2D;
   private terrainSprite: Sprite;
   public readonly TILE_SIZE = 32;
-  public readonly MULTIPLIER = 3;
+  public MULTIPLIER = 3;
 
   constructor(
     private spriteService: SpriteService,

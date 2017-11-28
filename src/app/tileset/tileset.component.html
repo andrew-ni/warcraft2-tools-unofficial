@@ -6,7 +6,12 @@
 </p>
 <div>
   <label>Magnification Factor: </label>
-  <select class="ui dropdown"></select>
+  <select class="ui dropdown"
+  [ngModel]="tilesetService.MULTIPLIER"
+  (ngModelChange)="updateMultiplier($event)">
+  <option *ngFor="let i of multiplierOptions"
+        [value]="i">{{i}}</option>
+  </select>
 </div>
 <button class="ui button" (click)="saveTileset()">SAVE</button>
 

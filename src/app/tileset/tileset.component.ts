@@ -26,6 +26,7 @@ export class TilesetComponent implements OnInit {
   private tilesetContext: CanvasRenderingContext2D;
   private saveCanvas; HTMLCanvasElement;
   private saveContext: CanvasRenderingContext2D;
+  private multiplierOptions = [1, 2, 3];
 
   constructor(
     private tilesetService: TilesetService,
@@ -58,7 +59,6 @@ export class TilesetComponent implements OnInit {
   }
 
   private saveTileset() {
-
     const newCanvas = document.createElement('canvas');
     const context = newCanvas.getContext('2d');
     newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
@@ -81,5 +81,11 @@ export class TilesetComponent implements OnInit {
     nd.style.top = (tileIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
     nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
     nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+  }
+
+  private updateMultiplier(newValue) {
+    this.tilesetService.MULTIPLIER = newValue;
+    this.tilesetService.tilesetUpdate();
+    console.log(this.tilesetService.MULTIPLIER);
   }
 }
