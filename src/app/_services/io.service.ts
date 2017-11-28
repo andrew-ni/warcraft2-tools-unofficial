@@ -9,6 +9,7 @@ import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
+import { TilesetService } from 'services/tileset.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 const { dialog } = require('electron').remote;
@@ -47,6 +48,7 @@ export class IOService {
     private terrainService: TerrainService,
     private serializeService: SerializeService,
     private spriteService: SpriteService,
+    private tilesetService: TilesetService,
   ) {
     this.map = mapService;
 
@@ -103,6 +105,7 @@ export class IOService {
     ipcRenderer.on('menu:file:loadtilesetimg', async (event: Electron.IpcMessageEvent, filepath) => {
       await this.spriteService.prefetch(AssetType.Terrain, filepath);
       this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
+      this.tilesetService.tilesetUpdate();
     });
   }
 

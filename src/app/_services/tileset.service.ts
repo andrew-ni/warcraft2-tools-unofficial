@@ -24,6 +24,10 @@ export class TilesetService {
     this.spriteService.initializing.then(() => this.init());
   }
 
+  public tilesetUpdate() {
+    this.init();
+  }
+
   private init() {
     this.terrainSprite = this.spriteService.get(AssetType.Terrain);
     this.canvas.width = this.terrainSprite.image.width * this.MULTIPLIER;
