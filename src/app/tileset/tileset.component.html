@@ -1,14 +1,18 @@
-<h2>
-  Tileset Canvas:
-</h2>
-<p>
-  Click on indiviual tiles to replace them
-</p>
-<div>
+<div class="title">
+  <h2>
+    Tileset Canvas:
+  </h2>
+  <p>
+    Click on indiviual tiles to replace them
+  </p>
+</div>
+
+<div class="options">
   <label>Magnification Factor: </label>
   <select class="ui dropdown"></select>
+  <br>
+  <button class="ui button" (click)="saveTileset()">SAVE</button>
 </div>
-<button class="ui button" (click)="saveTileset()">SAVE</button>
 
 <div id="tilesetevents">
   <canvas id='tilesetCanvas'tabindex="1"></canvas>
