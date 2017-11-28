@@ -4,30 +4,29 @@
  * files.
  */
 export class Sprite {
+  private _isModified = false;
+
   constructor(
     private _image: ImageBitmap,
     private _path: string,
     private _defaultIndex = 0,
     private _actions: AnimationAction[] = [],
-    private _isCustom: boolean,
   ) { }
 
   get image() { return this._image; }
-  set image(i: ImageBitmap) { this._image = i; }
   get path() { return this._path; }
   get index() { return this._defaultIndex; }
   get actions() { return this._actions; }
-  get isCustom() { return this._isCustom; }
-  set isCustom(b: boolean) { this._isCustom = b; }
+  get isModified() { return this._isModified; }
 
   /**
    * Sets a new image bitmap and also sets the isCustom flag to indicate that
    * this sprite needs to be saved as a custom asset on packaging.
    * @param image ImageBitmap to replace current image
    */
-  public setCustomImage(image: ImageBitmap) {
+  public setImage(image: ImageBitmap, modified = true) {
     this._image = image;
-    this._isCustom = true;
+    this._isModified = modified;
   }
 }
 
