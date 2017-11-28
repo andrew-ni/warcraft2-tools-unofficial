@@ -13,9 +13,14 @@ interface IMap {
   mapProjectLoaded: Subject<void>;
 }
 
+/**
+ * FileService manages access to custom and default assets. It does this by
+ * providing functions that abstract the access to an asset file. Depending on
+ * the contents of the loaded package, FileService will provide the correct
+ * file.
+ */
 @Injectable()
 export class FileService {
-
   private root = new JSZip();
   private img: JSZip;
   private snd: JSZip;
@@ -24,6 +29,7 @@ export class FileService {
 
   public initializing: Promise<void>;
 
+  /** Access to map */
   private map: IMap;
 
   constructor(
@@ -43,6 +49,10 @@ export class FileService {
     });
   }
 
+  /**
+   * Gets the ImageBitmap associated with the AssetType provided.
+   * @param type AssetType to retrieve.
+   */
   public async getImg(type: AssetType) {
 
     const parseRelativePath = (fileData: string) => {

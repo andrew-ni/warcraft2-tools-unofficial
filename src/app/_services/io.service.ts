@@ -38,12 +38,22 @@ interface IMap {
 }
 
 
+/**
+ * IOService manages IO, receiving events from menubar, and firing save / load
+ * events. It is currently in charge of the packaging process.
+ */
 @Injectable()
 export class IOService {
-
+  /** Package file path, for save map default save location. */
   private _packageFilePath: string;
+
+  /** IMap interface for access to map information. */
   private map: IMap;
+
+  /** JSZip object representing current state of package. */
   private zip: JSZip;
+
+  /** String representing the first found .map file in the package. */
   private mapFileName: string;
 
   constructor(
@@ -145,6 +155,7 @@ export class IOService {
     });
 
   }
+
   /**
    * Initialize the map when new menu is used
    * @param name map name created.
@@ -187,5 +198,4 @@ export class IOService {
     this.map.mapProjectOpened.next(undefined);
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
   }
-
 }
