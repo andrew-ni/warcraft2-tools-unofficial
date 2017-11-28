@@ -99,6 +99,16 @@ export class SpriteService {
   }
 
   /**
+   * Recreates the ImageBitmap for a given Sprite. AssetType is needed to determine if recoloring is needed.
+   * @param type The asset type of the sprite
+   */
+  public async reset(type: AssetType) {
+    const sprite = this.sprites.get(type);
+    const { image } = await this.fileService.getImg(type);
+    sprite.image = await (neutralAssets.has(type) ? image : this.recolorBitmap(image));
+  }
+
+  /**
    * Returns the sprite object for the given asset type.
    * @param type The asset type of the sprite.
    * @throws If the asset sprite is not loaded.
