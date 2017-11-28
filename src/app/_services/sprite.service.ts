@@ -72,12 +72,13 @@ export class SpriteService {
  */
   public getModifiedImages() {
 
-    const getBlob = (image: ImageBitmap) => {
+    const getBlob = (image: ImageBitmap, type: AssetType) => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
+
       // TODO crop here
-      canvas.width = image.width;
+      canvas.width = neutralAssets.has(type) ? image.width : image.width / MapService.MAX_PLAYERS;
       canvas.height = image.height;
 
       context.drawImage(image, 0, 0);
@@ -90,7 +91,7 @@ export class SpriteService {
     const ret = new Array<{ type: AssetType, blob: Promise<Blob> }>();
 
     this.sprites.forEach((sprite, key) => {
-      if (sprite.isModified) ret.push({ type: key, blob: getBlob(sprite.image) });
+      if (sprite.isModified) ret.push({ type: key, blob: getBlob(sprite.image, key) });
     });
 
     return ret;
