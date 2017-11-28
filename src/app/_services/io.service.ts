@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Asset } from 'asset';
+import { Asset, AssetType } from 'asset';
 import { ipcRenderer } from 'electron';
 import { Dimension } from 'interfaces';
 import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -49,6 +50,7 @@ export class IOService {
     mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
+    private spriteService: SpriteService,
   ) {
     this.map = mapService;
 
@@ -120,13 +122,18 @@ export class IOService {
         return;
       }
       console.log('saving...');
-      // ipcRenderer.send('map:save', response, this._mapFilePath);
 
-      const  file = await this.zip.generateAsync({ type: 'nodebuffer' });
-      fs.writeFile(this._packageFilePath, file, err => console.error(err));
 
-      // TODO: figure out right encoding for file output
-     // ipcRenderer.send('map:save', await this.zip.generateAsync({ type: 'base64' }), this._packageFilePath);
+      // Save the modified images back out.
+      const images = this.spriteService.getModifiedImages();
+      for (const { blob, type } of images) {
+        this.zip.folder('img').file(AssetType[type] + '.png', blob);
+      }
+
+      const file = await this.zip.generateAsync({ type: 'nodebuffer' });
+      fs.writeFile(this._packageFilePath, file, err => {
+        if (err) console.error(err);
+      });
     });
 
     /**

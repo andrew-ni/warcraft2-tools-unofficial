@@ -70,11 +70,27 @@ export class SpriteService {
  * Returns an array of all sprites that are not default. Intended
  * to be used for packaging purposes.
  */
-  public getCustomSprites() {
-    const ret = new Array<{ type: AssetType, imageBlob: Blob }>();
+  public getModifiedImages() {
+
+    const getBlob = (image: ImageBitmap) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      //TODO crop here
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      context.drawImage(image, 0, 0);
+
+      return new Promise<Blob>(resolve => {
+        canvas.toBlob(blob => resolve(blob));
+      });
+    };
+
+    const ret = new Array<{ type: AssetType, blob: Promise<Blob> }>();
 
     this.sprites.forEach((sprite, key) => {
-      ret.push({ type: key, imageBlob: new Blob([sprite.image]) });
+      if (sprite.isCustom) ret.push({ type: key, blob: getBlob(sprite.image) });
     });
 
     return ret;
