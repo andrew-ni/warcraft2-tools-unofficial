@@ -70,16 +70,12 @@ export class SpriteService {
  * Returns an array of all sprites that are not default. Intended
  * to be used for packaging purposes.
  */
-  public getCustomSprites(): Sprite[] {
-    const i: IterableIterator<Sprite> = this.sprites.values();
-    const ret: Sprite[] = [];
-    let current: Sprite;
+  public getCustomSprites() {
+    const ret = new Array<{ type: AssetType, imageBlob: Blob }>();
 
-    while ((current = i.next().value) !== undefined) {
-      if (current.isCustom) {
-        ret.push(current);
-      }
-    }
+    this.sprites.forEach((sprite, key) => {
+      ret.push({ type: key, imageBlob: new Blob([sprite.image]) });
+    });
 
     return ret;
   }
