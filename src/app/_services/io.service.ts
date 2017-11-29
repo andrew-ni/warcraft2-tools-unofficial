@@ -165,7 +165,6 @@ export class IOService {
     /*
      * Insert the map configuration.
      */
-    console.log(this.mapFileName);
     this.zip.file(this.mapFileName, response);    // overwrite file with new response
 
     /*
