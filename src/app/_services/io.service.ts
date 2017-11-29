@@ -162,7 +162,7 @@ export class IOService {
     /*
      * Add snds to package.
      */
-    const sounds = [ './peasant/acknowledge1.wav' ];
+    const sounds = ['./peasant/acknowledge1.wav'];
     for (const sndPath of sounds) {
       this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
     }
