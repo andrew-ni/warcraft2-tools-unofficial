@@ -105,7 +105,7 @@ export class IOService {
     ipcRenderer.on('menu:file:loadtilesetimg', async (event: Electron.IpcMessageEvent, filepath) => {
       await this.spriteService.prefetch(AssetType.Terrain, filepath);
       this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
-      this.tilesetService.tilesetUpdate();
+      this.tilesetService.tilesetLoad();
     });
   }
 

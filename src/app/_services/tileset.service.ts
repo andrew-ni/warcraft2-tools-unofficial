@@ -24,7 +24,19 @@ export class TilesetService {
     this.spriteService.initializing.then(() => this.init());
   }
 
-  public tilesetUpdate() {
+  // public redrawCanvas() { // this causes image quality loss
+  //   const newCanvas = document.createElement('canvas');
+  //   const ctx = newCanvas.getContext('2d');
+  //   newCanvas.width = this.canvas.width;
+  //   newCanvas.height = this.canvas.height;
+  //   ctx.drawImage(this.canvas, 0, 0);
+
+  //   this.canvas.width = this.terrainSprite.image.width * this.MULTIPLIER;
+  //   this.canvas.height = this.terrainSprite.image.height * this.MULTIPLIER;
+  //   this.context.drawImage(newCanvas, 0, 0, this.canvas.width, this.canvas.height);
+  // }
+
+  public tilesetLoad() {
     this.init();
   }
 

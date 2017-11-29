@@ -64,7 +64,6 @@ export class TilesetComponent implements OnInit {
     newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
     newCanvas.height = this.tilesetCanvas.height / this.tilesetService.MULTIPLIER;
     context.scale(1 / this.tilesetService.MULTIPLIER, 1 / this.tilesetService.MULTIPLIER);
-
     context.drawImage(this.tilesetCanvas, 0, 0);
 
     newCanvas.toBlob(async (blob) => {
@@ -85,7 +84,7 @@ export class TilesetComponent implements OnInit {
 
   private updateMultiplier(newValue) {
     this.tilesetService.MULTIPLIER = newValue;
-    this.tilesetService.tilesetUpdate();
+    this.tilesetService.tilesetLoad();
     console.log(this.tilesetService.MULTIPLIER);
   }
 }

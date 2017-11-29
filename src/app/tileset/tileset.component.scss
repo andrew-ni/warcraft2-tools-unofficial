@@ -1,20 +1,19 @@
 #tilesetevents {
   position: relative;
-  left: 50%;
+  border: 5px pink;
+  left: 5%;
+  top: 2em;
 }
 
 #tilesetCanvas {
   position: absolute;
+  border: 5px red;
   top: 0;
   left: 0;
 }
 
-.options{
+.sidebox {
   position: fixed;
-  right: 50px;
-}
-
-.title {
-  position: fixed;
-  left: 50px;
+  left: 20%;
+  padding: 2em;
 }
