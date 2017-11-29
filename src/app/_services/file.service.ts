@@ -88,13 +88,15 @@ export class FileService {
   public async getSnd(relativePath: string) {
     this.snd.folder('peasant').forEach(name => console.log(name));
     const customAssetFile = (this.snd === undefined) ? null : this.snd.folder('peasant').file('ready.wav');
-    const sound = await customAssetFile.async('binarystring');
+    const sound = await customAssetFile.async('nodebuffer');
 
-    fs.writeFileSync('data/customsoundtest.wav', new Uint8Array(sound));
+    fs.writeFile('data/customsoundtest.wav', sound, err => {
+      if (err) console.error(err);
+    });
 
- //   return (customAssetFile === null)
- //   ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
- //   : await customAssetFile.async('blob');  // load custom asset.
+    //   return (customAssetFile === null)
+    //   ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
+    //   : await customAssetFile.async('blob');  // load custom asset.
 
 
   }
@@ -105,7 +107,7 @@ export class FileService {
 
   }
 
-  private async readDataFile(directory: string, fileName: string){
+  private async readDataFile(directory: string, fileName: string) {
     return new Promise<string>((resolve, reject) => {
       fs.readFile(pathJoin(this.defaultPath, directory, fileName + '.dat'), 'utf8', (err, data) => {
         if (err) { console.error(err); reject(err); }

@@ -33,6 +33,7 @@
     "@angular/router": "4.4.4",
     "@types/jszip": "^3.1.2",
     "core-js": "^2.4.1",
+    "fs-extra": "^4.0.2",
     "jszip": "^3.1.5",
     "rxjs": "^5.4.2",
     "semantic-ui-css": "^2.2.12",

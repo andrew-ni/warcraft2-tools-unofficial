@@ -12,6 +12,7 @@ import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
 import * as fs from 'fs';
+import * as fsx from 'fs-extra';
 import * as JSZip from 'jszip';
 import * as path from 'path';
 
@@ -44,6 +45,8 @@ interface IMap {
  */
 @Injectable()
 export class IOService {
+  public static readonly CUSTOMSND_DIR = 'data/customSnd';
+
   /** Package file path, for save map default save location. */
   private _packageFilePath: string;
 
@@ -75,11 +78,14 @@ export class IOService {
         if (err) { console.error(err); return; }
 
         this.zip = new JSZip();
+
         if (path.parse(filePath).ext === '.zip') {  // check if package
           await this.zip.loadAsync(data);
           const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
           const mapData: string = await mapFile.async('text');
           this.mapFileName = await mapFile.name;    // save filename for later saving
+
+          this.extractCustomSnds();
 
           this.serializeService.initMapFromFile(mapData, filePath);
         } else {
@@ -154,6 +160,26 @@ export class IOService {
       this.map.mapLoaded.next();
     });
 
+  }
+
+  private async extractCustomSnds() {
+    // empty customSnd folder on disk
+    await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
+
+    // foreach folder (populate list of folders)
+    const snd = this.zip.folder('snd');
+    snd.forEach((dirName, dirFile) => {
+      if (dirFile.dir) {   // TODO  see if we can get this from file var
+        fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
+
+        snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
+          // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
+          fs.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
+            if (err) console.error(err);
+          });
+        });
+      }
+    });
   }
 
   /**
