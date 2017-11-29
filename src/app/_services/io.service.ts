@@ -57,7 +57,9 @@ export class IOService {
   /** JSZip object representing current state of package. */
   private zip: JSZip;
 
-  /** String representing the first found .map file in the package. */
+  /** String representing the first found .map file in the package. Defaults
+   * to map.map
+  */
   private mapFileName: string;
 
   constructor(
@@ -92,6 +94,12 @@ export class IOService {
    * Opens the project zip
    * @param filePath the full path to the map project
    */
+  public initPackage() {
+    this.mapFileName = 'map.map';
+    this.zip = new JSZip();
+    this.map.mapProjectOpened.next(this.zip);
+  }
+
   private async openPackage(filePath: string) {
     this._packageFilePath = filePath;
 
@@ -157,12 +165,14 @@ export class IOService {
     /*
      * Insert the map configuration.
      */
+    console.log(this.mapFileName);
     this.zip.file(this.mapFileName, response);    // overwrite file with new response
 
     /*
      * Add imgs to package.
      */
     const images = this.spriteService.getModifiedImages();
+    console.log(images);
     for (const { blob, type } of images) {
       this.zip.folder('img').file(AssetType[type] + '.png', blob);
     }
@@ -170,7 +180,8 @@ export class IOService {
     /*
      * Add snds to package.
      */
-    const sounds = ['./peasant/acknowledge1.wav'];
+    // const sounds = ['./peasant/acknowledge1.wav'];
+    const sounds = [];
     for (const sndPath of sounds) {
       this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
     }
@@ -227,6 +238,7 @@ export class IOService {
     this.map.terrainLayer = [];
     this.map.assetLayer = [];
     this.map.drawLayer = [];
+    this.initPackage();
 
     for (let y = 0; ; y++) {
       this.map.partialBits.push(Uint8Array.from(new Array(width + 1).fill(0xF)));
