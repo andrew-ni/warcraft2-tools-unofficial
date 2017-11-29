@@ -86,19 +86,7 @@ export class FileService {
 
 
   public async getSnd(relativePath: string) {
-    this.snd.folder('peasant').forEach(name => console.log(name));
-    const customAssetFile = (this.snd === undefined) ? null : this.snd.folder('peasant').file('ready.wav');
-    const sound = await customAssetFile.async('nodebuffer');
-
-    fs.writeFile('data/customsoundtest.wav', sound, err => {
-      if (err) console.error(err);
-    });
-
-    //   return (customAssetFile === null)
-    //   ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
-    //   : await customAssetFile.async('blob');  // load custom asset.
-
-
+    // TODO maybe or sound service can stay as is.
   }
 
   private async parseSoundData() {
