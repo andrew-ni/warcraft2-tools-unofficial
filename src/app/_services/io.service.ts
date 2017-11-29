@@ -71,95 +71,98 @@ export class IOService {
      * Event listener for when a map has been loaded from a file
      * `mapData` is the raw file contents as a string
      */
-    ipcRenderer.on('map:loaded', (event: Electron.IpcMessageEvent, filePath: string) => {
-      this._packageFilePath = filePath;
-
-      fs.readFile(filePath, async (err, data) => {
-        if (err) { console.error(err); return; }
-
-        this.zip = new JSZip();
-
-        if (path.parse(filePath).ext === '.zip') {  // check if package
-          await this.zip.loadAsync(data);
-          const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
-          const mapData: string = await mapFile.async('text');
-          this.mapFileName = await mapFile.name;    // save filename for later saving
-
-          this.extractCustomSnds();
-
-          this.serializeService.initMapFromFile(mapData, filePath);
-        } else {
-          this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
-        }
-
-        this.zip.folder('img');
-        this.zip.folder('snd');
-        this.zip.folder('scripts');
-        this.map.mapProjectOpened.next(this.zip);
-      });
-    });
+    ipcRenderer.on('map:loaded', (_, filePath: string) => this.openPackage(filePath));
 
     /**
      * Event listener for when we want to save the map
      */
-    ipcRenderer.on('menu:file:save', async (event: Electron.IpcMessageEvent, filePath?: string) => {
-      if (filePath) {
-        this._packageFilePath = filePath;    // update our save location
-      }
-
-      const response: string = this.serializeService.serializeMap();
-
-      if (response === undefined) {
-        console.warn('save-map rejected because Map returned null');
-        // TODO: add save-failed message
-
-        return; // don't make ipc call
-      }
-
-      // implement package generation here
-      // save map into zip
-      this.zip.file(this.mapFileName, response);    // overwrite file with new response
-      // save custom images
-      // save custom sounds
-      // include scripts
-
-
-      /**
-       * Use save as if the map is created by the editor
-       */
-      if (this._packageFilePath === undefined) {
-        this._packageFilePath = dialog.showSaveDialog({
-          filters: [
-            { name: 'Map Package (.zip)', extensions: ['zip'] }
-          ]
-        });
-      }
-      if (this._packageFilePath === undefined) {
-        return;
-      }
-      console.log('saving...');
-
-
-      // Save the modified images back out.
-      const images = this.spriteService.getModifiedImages();
-      for (const { blob, type } of images) {
-        this.zip.folder('img').file(AssetType[type] + '.png', blob);
-      }
-
-      const file = await this.zip.generateAsync({ type: 'nodebuffer' });
-      fs.writeFile(this._packageFilePath, file, err => {
-        if (err) console.error(err);
-      });
-    });
+    ipcRenderer.on('menu:file:save', async (_, filePath?: string) => this.savePackage(filePath));
 
     /**
      * Event listener for once the terrain is loaded, send next event to calcTileIndices(). See terrain.service.ts
      */
-    ipcRenderer.on('terrain:loaded', (event: Electron.IpcMessageEvent, terrainData: string) => {
+    ipcRenderer.on('terrain:loaded', (_, terrainData: string) => {
       this.serializeService.parseTileSet(terrainData);
       this.map.mapLoaded.next();
     });
+  }
 
+  private async openPackage(filePath: string) {
+    this._packageFilePath = filePath;
+
+    fs.readFile(filePath, async (err, data) => {
+      if (err) { console.error(err); return; }
+
+      this.zip = new JSZip();
+
+      if (path.parse(filePath).ext === '.zip') {  // check if package
+        await this.zip.loadAsync(data);
+        const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
+        const mapData: string = await mapFile.async('text');
+        this.mapFileName = await mapFile.name;    // save filename for later saving
+
+        this.extractCustomSnds();
+
+        this.serializeService.initMapFromFile(mapData, filePath);
+      } else {
+        this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
+      }
+
+      this.zip.folder('img');
+      this.zip.folder('snd');
+      this.zip.folder('scripts');
+      this.map.mapProjectOpened.next(this.zip);
+    });
+  }
+
+  private async savePackage(filePath?: string) {
+    if (filePath) {
+      this._packageFilePath = filePath;    // update our save location
+    }
+
+    const response: string = this.serializeService.serializeMap();
+
+    if (response === undefined) {
+      console.warn('save-map rejected because Map returned null');
+      // TODO: add save-failed message
+
+      return; // don't make ipc call
+    }
+
+    // implement package generation here
+    // save map into zip
+    this.zip.file(this.mapFileName, response);    // overwrite file with new response
+    // save custom images
+    // save custom sounds
+    // include scripts
+
+
+    /**
+     * Use save as if the map is created by the editor
+     */
+    if (this._packageFilePath === undefined) {
+      this._packageFilePath = dialog.showSaveDialog({
+        filters: [
+          { name: 'Map Package (.zip)', extensions: ['zip'] }
+        ]
+      });
+    }
+    if (this._packageFilePath === undefined) {
+      return;
+    }
+    console.log('saving...');
+
+
+    // Save the modified images back out.
+    const images = this.spriteService.getModifiedImages();
+    for (const { blob, type } of images) {
+      this.zip.folder('img').file(AssetType[type] + '.png', blob);
+    }
+
+    const file = await this.zip.generateAsync({ type: 'nodebuffer' });
+    fs.writeFile(this._packageFilePath, file, err => {
+      if (err) console.error(err);
+    });
   }
 
   private async extractCustomSnds() {
