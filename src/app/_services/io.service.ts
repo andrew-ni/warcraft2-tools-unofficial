@@ -88,6 +88,10 @@ export class IOService {
     });
   }
 
+  /**
+   * Opens the project zip
+   * @param filePath the full path to the map project
+   */
   private async openPackage(filePath: string) {
     this._packageFilePath = filePath;
 
@@ -116,6 +120,10 @@ export class IOService {
     });
   }
 
+  /**
+   * Packages everything into a zip file and saves it out.
+   * @param filePath The absolute path to save the map zip.
+   */
   private async savePackage(filePath?: string) {
     if (filePath) {
       this._packageFilePath = filePath;    // update our save location
@@ -176,6 +184,9 @@ export class IOService {
     });
   }
 
+  /**
+   * Extracts the sounds files from the zip and saves them to CUSTOMSND_DIR
+   */
   private async extractCustomSnds() {
     // empty customSnd folder on disk
     await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir

@@ -136,7 +136,7 @@ export class SerializeService {
    * @param mapData Entire file contents in string form
    * @param filePath Map file path (for locality)
    */
-  public initMapFromFile(mapData: string, filePath = '', pkg?: JSZip): void {
+  public initMapFromFile(mapData: string, filePath = ''): void {
     this.map.canSave = false;
     this.map.terrainLayer = undefined;
     this.map.assetLayer = undefined;
