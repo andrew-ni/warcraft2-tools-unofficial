@@ -89,12 +89,11 @@ export class FileService {
     // TODO maybe or sound service can stay as is.
   }
 
-  private async parseSoundData() {
-    const fileData = await this.readDataFile('snd/', 'SoundClips');
-
-
-  }
-
+  /**
+   * Returns the content of the dat file.
+   * @param directory The directory relative to the default path
+   * @param fileName the file name (without .dat)
+   */
   private async readDataFile(directory: string, fileName: string) {
     return new Promise<string>((resolve, reject) => {
       fs.readFile(pathJoin(this.defaultPath, directory, fileName + '.dat'), 'utf8', (err, data) => {
