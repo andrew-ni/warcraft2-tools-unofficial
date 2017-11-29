@@ -45,7 +45,7 @@ export class FileService {
       this.img = (zip === undefined) ? undefined : zip.folder('img');
       this.snd = (zip === undefined) ? undefined : zip.folder('snd');
       resolve();
-      this.getSnd('./peasant/ready.wav');
+      // this.getSnd('./peasant/ready.wav');
       this.map.mapProjectLoaded.next();
     });
   }

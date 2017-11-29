@@ -45,6 +45,7 @@ interface IMap {
  */
 @Injectable()
 export class IOService {
+  /** Custom sound directory for temporary storage of custom sounds. */
   public static readonly CUSTOMSND_DIR = 'data/customSnd';
 
   /** Package file path, for save map default save location. */
@@ -129,13 +130,6 @@ export class IOService {
       return; // don't make ipc call
     }
 
-    // implement package generation here
-    // save map into zip
-    this.zip.file(this.mapFileName, response);    // overwrite file with new response
-    // save custom images
-    // save custom sounds
-    // include scripts
-
 
     /**
      * Use save as if the map is created by the editor
@@ -152,13 +146,30 @@ export class IOService {
     }
     console.log('saving...');
 
+    /*
+     * Insert the map configuration.
+     */
+    this.zip.file(this.mapFileName, response);    // overwrite file with new response
 
-    // Save the modified images back out.
+    /*
+     * Add imgs to package.
+     */
     const images = this.spriteService.getModifiedImages();
     for (const { blob, type } of images) {
       this.zip.folder('img').file(AssetType[type] + '.png', blob);
     }
 
+    /*
+     * Add snds to package.
+     */
+    const sounds = [ './peasant/acknowledge1.wav' ];
+    for (const sndPath of sounds) {
+      this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
+    }
+
+    /*
+     * Dump zip to disk.
+     */
     const file = await this.zip.generateAsync({ type: 'nodebuffer' });
     fs.writeFile(this._packageFilePath, file, err => {
       if (err) console.error(err);
