@@ -45,6 +45,7 @@ export class FileService {
       this.img = (zip === undefined) ? undefined : zip.folder('img');
       this.snd = (zip === undefined) ? undefined : zip.folder('snd');
       resolve();
+      this.getSnd('./peasant/ready.wav');
       this.map.mapProjectLoaded.next();
     });
   }
@@ -60,15 +61,6 @@ export class FileService {
       return relativePath.trim();
     };
 
-    const readDataFile = (fileName: string) => {
-      return new Promise<string>((resolve, reject) => {
-        fs.readFile(pathJoin(this.defaultPath, 'img/', fileName + '.dat'), 'utf8', (err, data) => {
-          if (err) { console.error(err); reject(err); }
-          resolve(data);
-        });
-      });
-    };
-
     const readImageFile = (relativePath: string) => {
       return new Promise<Blob>((resolve, reject) => {
         fs.readFile(pathJoin(this.defaultPath, 'img/', relativePath), (err, data) => {
@@ -81,7 +73,7 @@ export class FileService {
     {
       const assetName = AssetType[type];
 
-      const fileData = await readDataFile(assetName);
+      const fileData = await this.readDataFile('img/', assetName);
       const relativePath = parseRelativePath(fileData);
 
       const customAssetFile = (this.img === undefined) ? null : this.img.file(pathJoin(relativePath));
@@ -90,5 +82,35 @@ export class FileService {
         ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
         : { fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
     }
+  }
+
+
+  public async getSnd(relativePath: string) {
+    this.snd.folder('peasant').forEach(name => console.log(name));
+    const customAssetFile = (this.snd === undefined) ? null : this.snd.folder('peasant').file('ready.wav');
+    const sound = await customAssetFile.async('binarystring');
+
+    fs.writeFileSync('data/customsoundtest.wav', new Uint8Array(sound));
+
+ //   return (customAssetFile === null)
+ //   ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
+ //   : await customAssetFile.async('blob');  // load custom asset.
+
+
+  }
+
+  private async parseSoundData() {
+    const fileData = await this.readDataFile('snd/', 'SoundClips');
+
+
+  }
+
+  private async readDataFile(directory: string, fileName: string){
+    return new Promise<string>((resolve, reject) => {
+      fs.readFile(pathJoin(this.defaultPath, directory, fileName + '.dat'), 'utf8', (err, data) => {
+        if (err) { console.error(err); reject(err); }
+        resolve(data);
+      });
+    });
   }
 }
