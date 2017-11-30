@@ -33,10 +33,10 @@ const dimensionMap: Map<AssetType, number> = new Map([
   [AssetType.Blacksmith, 3],
   [AssetType.Farm, 2],
   [AssetType.CannonTower, 2],
-  [AssetType.Castle, 3], // ?
+  [AssetType.Castle, 4], // ?
   [AssetType.GoldMine, 3],
   [AssetType.GuardTower, 2],
-  [AssetType.Keep, 3], // ?
+  [AssetType.Keep, 4], // ?
   [AssetType.LumberMill, 3],
   [AssetType.ScoutTower, 2],
   [AssetType.TownHall, 4],
