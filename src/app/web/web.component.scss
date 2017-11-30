@@ -1,0 +1,21 @@
+:host {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    margin: 20px;
+    display: flex;
+    align-items: center;
+}
+
+#login {
+    flex: 1;
+    width: 100%;
+    padding: 10px;
+    form {
+        max-width: 450px;
+        margin: 0 auto;
+    }
+}

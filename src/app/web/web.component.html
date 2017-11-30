@@ -1,3 +1,22 @@
-<p>
-  web works!
-</p>
+<div *ngIf="!loggedIn"
+     id="login">
+  <form class="ui form"
+        [formGroup]="form">
+    <div class="field">
+      <label>User Name</label>
+      <input type="text"
+             name="username"
+             formControlName="username"
+             placeholder="User Name">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password"
+             name="password"
+             formControlName="password">
+    </div>
+    <button class="ui button fluid large"
+            (click)="login()"
+            [disabled]="!form.valid">Login</button>
+  </form>
+</div>
