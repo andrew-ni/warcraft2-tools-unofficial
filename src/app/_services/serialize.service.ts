@@ -274,6 +274,12 @@ export class SerializeService {
     }
   }
 
+  /**
+   * Parses AI portion of map configuration.
+   * @param aiDifficulty AI Difficulty settings
+   * @param aiEvents AI event actions
+   * @param aiTriggers AI Triggers.
+   */
   private parseAI(aiDifficulty: string, aiEvents: string, aiTriggers: string) {
     let difficulty: string[] = [];
     let events: string[] = [];
