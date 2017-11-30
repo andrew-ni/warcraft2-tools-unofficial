@@ -1,0 +1,42 @@
+#ai {
+  background-color: #ffffff;
+  margin-top: 5%;
+  margin-left: calc((100% - 600px)/2);
+  padding: 20px 50px;
+  width: 600px;
+  height:650px;
+  text-align: left;
+  overflow-y: scroll;
+}
+
+.newScript {
+  float: right;
+}
+
+.newTrigger {
+  float: right;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+}
+
+.filename {
+  float: left;
+  width: 300px;
+  overflow-x: scroll;
+}
+
+app-trigger-component {
+  float: left;
+  display: flex;
+  flex-direction: row;
+  width: 400px;
+  overflow-x: scroll;
+}
+
+.delScript {
+  float: right;
+}
