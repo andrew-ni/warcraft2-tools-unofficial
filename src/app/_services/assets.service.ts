@@ -22,7 +22,6 @@ interface IMap {
   assetsUpdated: Subject<Region>;
   assetRemoved: Subject<Region>;
   tilesUpdated: Subject<Region>;
-  MAX_PLAYERS: number;
 }
 
 
@@ -163,7 +162,7 @@ export class AssetsService {
   */
   public updateOwner(selectedAssets: Asset[], newOwner: number) {
     // invalid owner
-    if (newOwner < 0 || newOwner > this.map.MAX_PLAYERS) throw Error('invalid player number');
+    if (newOwner < 0 || newOwner > MapService.MAX_PLAYERS) throw Error('invalid player number');
     for (const asset of selectedAssets) {
       if (asset.type !== AssetType.GoldMine) {
         asset.owner = newOwner;

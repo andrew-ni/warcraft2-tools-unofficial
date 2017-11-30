@@ -12,15 +12,9 @@ export module IO {
    * @param filename string of which .map file we want to open
    */
   export async function loadMap(window: Electron.WebContents, filename: string) {
-    console.log('loadMap');
+    console.log('loadMap ' + filename);
 
-    fs.readFile(filename, 'utf8', (err: Error, data: string) => {
-      if (err) {
-        console.log(err);
-      } else {
-        window.send('map:loaded', data, filename);
-      }
-    });
+    window.send('map:loaded', filename);
   }
 
   /**
