@@ -168,7 +168,7 @@ export class CanvasService {
    * @param ctx Canvas context to clear. Always going to be the assets canvas
    * @param reg The region that the asset is in
    */
-  public clearAsset(ctx: CanvasRenderingContext2D, reg: Region) {
+  public clearAsset(ctx: CanvasRenderingContext2D, reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
     reg = this.expandRegionUp(reg);
     reg = this.expandRegionRight(reg);
     reg = this.expandRegionDown(reg);
