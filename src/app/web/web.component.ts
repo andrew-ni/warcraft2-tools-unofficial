@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { IOService } from 'services/io.service';
 import { SerializeService } from 'services/serialize.service';
 
 
@@ -25,6 +26,7 @@ export class WebComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private serializeService: SerializeService,
+    private ioService: IOService,
   ) { }
 
   ngOnInit() {
@@ -69,8 +71,13 @@ export class WebComponent implements OnInit {
     }
   }
 
-  private exportMap() {
-    const file = new File([this.serializeService.serializeMap()], Math.random().toString() + '.map', { type: 'text/plain', });
+  private async exportMap(zip = true) {
+    let file: File;
+    if (zip) {
+      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip', }) ;
+    }
+    console.log(file);
+
 
     const formData = new FormData();
     formData.append('fileToUpload', file);

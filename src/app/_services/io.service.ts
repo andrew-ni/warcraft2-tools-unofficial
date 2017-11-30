@@ -70,6 +70,8 @@ export class IOService {
     private spriteService: SpriteService,
   ) {
     this.map = mapService;
+    setTimeout(() => this.openPackage('./map/newTerrain.zip'), 2000);
+
 
     /**
      * Event listener for when a map has been loaded from a file
@@ -162,39 +164,12 @@ export class IOService {
     fs.writeFileSync(this.openedFilePath, response);
   }
 
-  /**
-   * Packages everything into a zip file and saves it out.
-   * @param filePath The absolute path to save the map zip.
-   */
-  private async savePackage(filePath?: string) {
-    if (filePath) {
-      this.openedFilePath = filePath;    // update our save location
-    }
-
+  public async buildPackage() {
     const response: string = this.serializeService.serializeMap();
 
-    if (response === undefined) {
-      console.warn('save-map rejected because Map returned null');
-      // TODO: add save-failed message
-
-      return; // don't make ipc call
-    }
-
-
-    /**
-     * Use save as if the map is created by the editor
-     */
-    if (this.openedFilePath === undefined) {
-      this.openedFilePath = dialog.showSaveDialog(savePackageOptions);
-    }
-    if (this.openedFilePath === undefined) {
-      return;
-    }
-    console.log('saving...');
-
     /*
-     * Insert the map configuration.
-     */
+    * Insert the map configuration.
+    */
     this.zip.file(this.mapFileName, response);    // overwrite file with new response
 
     /*
@@ -219,10 +194,34 @@ export class IOService {
       this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
     }
 
+    return this.zip.generateAsync({ type: 'nodebuffer' });
+  }
+
+  /**
+   * Packages everything into a zip file and saves it out.
+   * @param filePath The absolute path to save the map zip.
+   */
+  public async savePackage(filePath?: string) {
+    if (filePath) {
+      this.openedFilePath = filePath;    // update our save location
+    }
+
+
+    /**
+     * Use save as if the map is created by the editor
+     */
+    if (this.openedFilePath === undefined) {
+      this.openedFilePath = dialog.showSaveDialog(savePackageOptions);
+    }
+    if (this.openedFilePath === undefined) {
+      return;
+    }
+    console.log('saving...');
+
+    const file = await this.buildPackage();
     /*
      * Dump zip to disk.
      */
-    const file = await this.zip.generateAsync({ type: 'nodebuffer' });
     fs.writeFile(this.openedFilePath, file, err => {
       if (err) console.error(err);
     });
