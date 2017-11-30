@@ -39,6 +39,8 @@ export class TilesetService {
       error: err => console.error(err),
       complete: null
     });
+
+    this.drawCanvas();
   }
 
   private drawCanvas() {

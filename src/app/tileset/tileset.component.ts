@@ -58,6 +58,12 @@ export class TilesetComponent implements OnInit {
     });
   }
 
+  public async resetToDefaultTileset() {
+    await this.spriteService.reset(AssetType.Terrain);
+    this.mapService.tilesUpdated.next({ y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
+    this.tilesetService.tilesetLoad();
+  }
+
   private saveTileset() {
     const newCanvas = document.createElement('canvas');
     const context = newCanvas.getContext('2d');

@@ -10,7 +10,9 @@
   <option *ngFor="let i of multiplierOptions"
         [value]="i">{{i}}</option>
   </select>
-  <button class="ui button" (click)="saveTileset()">SAVE</button> 
+  <button class="ui button" (click)="saveTileset()">Save</button> 
+  <button class="ui button" (click)="resetToDefaultTileset()">Default</button> 
+  
 </div>
 
 <div id="tilesetevents">
