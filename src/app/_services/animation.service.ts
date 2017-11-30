@@ -186,4 +186,42 @@ export class AnimationService {
     this.animation.sprite.isCustom = false;
     this.draw();
   }
+
+  private getAudio(optional?: string) {
+    const peasantMap: Map<string, string[]> = new Map([
+      ['selected', ['peasant-selected1', 'peasant-selected2', 'peasant-selected3', 'peasant-selected4']],
+      ['walk', ['basic-acknowledge1', 'basic-acknowledge2', 'basic-acknowledge3', 'basic-acknowledge4']],
+      ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
+      ['lumber', ['harvest1', 'harvest2', 'harvest3', 'harvest4']],
+      ['death', ['unit-death']],
+    ]);
+
+    const footmanMap: Map<string, string[]> = new Map([
+      // ['selected', ['peasant-selected1', 'peasant-selected2', 'peasant-selected3', 'peasant-selected4']],
+      ['walk', ['basic-acknowledge1', 'basic-acknowledge2', 'basic-acknowledge3', 'basic-acknowledge4']],
+      ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
+      ['death', ['unit-death']],
+    ]);
+
+    const archerRangerMap: Map<string, string[]> = new Map([
+      // ['selected', ['peasant-selected1', 'peasant-selected2', 'peasant-selected3', 'peasant-selected4']],
+      ['walk', ['basic-acknowledge1', 'basic-acknowledge2', 'basic-acknowledge3', 'basic-acknowledge4']],
+      ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
+      ['death', ['unit-death']],
+    ]);
+
+    const goldmineMap: Map<string, string[]> = new Map([
+      ['selected', ['gold-mine-selected']],
+    ]);
+
+    const lumbermillMap: Map<string, string[]> = new Map([
+      ['selected', ['gold-mine-selected']],
+    ]);
+
+    // this._currentAsset;
+    let action = this._currentAction;
+    if (optional !== undefined) {
+      action = optional;
+    }
+  }
 }
