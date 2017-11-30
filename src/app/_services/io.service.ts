@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import * as fsx from 'fs-extra';
 import * as JSZip from 'jszip';
 import * as path from 'path';
+import { saveMapOptions, savePackageOptions } from '../../../main/menubar';
 
 const { dialog } = require('electron').remote;
 
@@ -49,7 +50,7 @@ export class IOService {
   public static readonly CUSTOMSND_DIR = 'data/customSnd';
 
   /** Package file path, for save map default save location. */
-  private _packageFilePath: string;
+  private openedFilePath: string;
 
   /** IMap interface for access to map information. */
   private map: IMap;
@@ -77,9 +78,14 @@ export class IOService {
     ipcRenderer.on('map:loaded', (_, filePath: string) => this.openPackage(filePath));
 
     /**
-     * Event listener for when we want to save the map
+     * Event listener for when we want to save the map ONLY
      */
-    ipcRenderer.on('menu:file:save', async (_, filePath?: string) => this.savePackage(filePath));
+    ipcRenderer.on('menu:file:savemap', async (_, filePath?: string) => this.saveMap(filePath));
+
+    /**
+     * Event listener for when we want to save the map PACKAGE
+     */
+    ipcRenderer.on('menu:file:savepackage', async (_, filePath?: string) => this.savePackage(filePath));
 
     /**
      * Event listener for once the terrain is loaded, send next event to calcTileIndices(). See terrain.service.ts
@@ -101,7 +107,7 @@ export class IOService {
   }
 
   private async openPackage(filePath: string) {
-    this._packageFilePath = filePath;
+    this.openedFilePath = filePath;
 
     fs.readFile(filePath, async (err, data) => {
       if (err) { console.error(err); return; }
@@ -128,13 +134,41 @@ export class IOService {
     });
   }
 
+  private saveMap(filePath?: string) {
+    if (filePath) {
+      this.openedFilePath = filePath;    // update our save location
+    }
+
+    const response: string = this.serializeService.serializeMap();
+
+    if (response === undefined) {
+      console.warn('save-map rejected because Map returned null');
+      // TODO: add save-failed message
+
+      return; // don't make ipc call
+    }
+
+    /**
+     * Use save as if the map is created by the editor
+     */
+    if (this.openedFilePath === undefined) {
+      this.openedFilePath = dialog.showSaveDialog(saveMapOptions);
+    }
+    if (this.openedFilePath === undefined) {
+      return;
+    }
+    console.log('saving...');
+
+    fs.writeFileSync(this.openedFilePath, response);
+  }
+
   /**
    * Packages everything into a zip file and saves it out.
    * @param filePath The absolute path to save the map zip.
    */
   private async savePackage(filePath?: string) {
     if (filePath) {
-      this._packageFilePath = filePath;    // update our save location
+      this.openedFilePath = filePath;    // update our save location
     }
 
     const response: string = this.serializeService.serializeMap();
@@ -150,14 +184,10 @@ export class IOService {
     /**
      * Use save as if the map is created by the editor
      */
-    if (this._packageFilePath === undefined) {
-      this._packageFilePath = dialog.showSaveDialog({
-        filters: [
-          { name: 'Map Package (.zip)', extensions: ['zip'] }
-        ]
-      });
+    if (this.openedFilePath === undefined) {
+      this.openedFilePath = dialog.showSaveDialog(savePackageOptions);
     }
-    if (this._packageFilePath === undefined) {
+    if (this.openedFilePath === undefined) {
       return;
     }
     console.log('saving...');
@@ -189,7 +219,7 @@ export class IOService {
      * Dump zip to disk.
      */
     const file = await this.zip.generateAsync({ type: 'nodebuffer' });
-    fs.writeFile(this._packageFilePath, file, err => {
+    fs.writeFile(this.openedFilePath, file, err => {
       if (err) console.error(err);
     });
   }
@@ -227,7 +257,7 @@ export class IOService {
    * @param players player number and starting resource
    */
   public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
-    this._packageFilePath = undefined;
+    this.openedFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
     this.map.description = description;

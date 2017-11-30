@@ -2,9 +2,21 @@ import { dialog, Menu } from 'electron';
 
 import { IO } from './fileIO';
 
-const options = {
+const openOptions = {
   filters: [
-    { name: 'Map File/Package', extensions: ['map', 'zip'] },
+    { name: 'Map File/Package (.map, .zip)', extensions: ['map', 'zip'] },
+  ]
+};
+
+export const saveMapOptions = {
+  filters: [
+    { name: 'Map File (.map)', extensions: ['map'] },
+  ]
+};
+
+export const savePackageOptions = {
+  filters: [
+    { name: 'Map Package (.zip)', extensions: ['zip'] },
   ]
 };
 
@@ -23,9 +35,9 @@ export function buildMenu(window: Electron.WebContents): void {
           click() { window.send('menu:file:new'); }
         },
         {
-          label: 'Load Map',
+          label: 'Load Map/Package',
           async click() {   // declare async because opening files takes a long time
-            dialog.showOpenDialog(options, (paths: string[]) => {
+            dialog.showOpenDialog(openOptions, (paths: string[]) => {
               if (paths === undefined) return;
 
               console.log(paths[0]);
@@ -36,16 +48,33 @@ export function buildMenu(window: Electron.WebContents): void {
         {
           label: 'Save Map',
           click() {
-            window.send('menu:file:save');
+            window.send('menu:file:map');
           }
         },
         {
           label: 'Save Map As...',
           async click() {
-            dialog.showSaveDialog(options, (filePath) => {
+            dialog.showSaveDialog(saveMapOptions, (filePath) => {
               if (filePath) {
                 console.log(filePath);
-                window.send('menu:file:save', filePath);
+                window.send('menu:file:map', filePath);
+              }
+            });
+          }
+        },
+        {
+          label: 'Save Package',
+          click() {
+            window.send('menu:file:savepackage');
+          }
+        },
+        {
+          label: 'Save Package As...',
+          async click() {
+            dialog.showSaveDialog(savePackageOptions, (filePath) => {
+              if (filePath) {
+                console.log(filePath);
+                window.send('menu:file:savepackage', filePath);
               }
             });
           }
