@@ -13,6 +13,15 @@ interface LoginResponse {
   status_message: string;
 }
 
+interface GetMapResponse {
+
+}
+
+export interface MapDisplay {
+  map_name: string;
+  is_private: boolean;
+}
+
 @Component({
   selector: 'app-web',
   templateUrl: './web.component.html',
@@ -22,6 +31,12 @@ export class WebComponent implements OnInit {
   private loggedIn = false;
   private userId: number;
   private form: FormGroup;
+  private maps = [
+    { map_name: 'map1', is_private: true },
+    { map_name: 'map2', is_private: false },
+    { map_name: 'map3', is_private: true },
+    { map_name: 'map4', is_private: false },
+  ];
 
   constructor(
     private http: HttpClient,
@@ -70,14 +85,35 @@ export class WebComponent implements OnInit {
         });
     }
   }
+  private async importMap() {
+    const params = new HttpParams()
+      .append('name', 'blhough')
+      .append('password', '123');
+    // .append('name', this.form.value.username)
+    // .append('password', this.form.value.password);
+
+    this.http.get('http://34.214.129.0/login/multi/index.php', { params })
+      .do(resp => console.log(resp))
+      .subscribe({
+        next: resp => {
+          const file = new File([resp as Buffer], Math.random().toString() + '.zip', { type: 'application/zip', });
+          this.ioService.readPackage(resp as Buffer, true);
+          console.log(resp);
+        },
+        error: err => {
+          this.loggedIn = false;
+          this.userId = undefined;
+          console.error(err);
+        }
+      });
+  }
 
   private async exportMap(zip = true) {
     let file: File;
     if (zip) {
-      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip', }) ;
+      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip', });
     }
     console.log(file);
-
 
     const formData = new FormData();
     formData.append('fileToUpload', file);

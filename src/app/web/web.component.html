@@ -1,4 +1,4 @@
-<div *ngIf="!loggedIn"
+<div *ngIf="loggedIn"
      id="login">
   <form class="ui form"
         [formGroup]="form">
@@ -20,3 +20,25 @@
             [disabled]="!form.valid && false">Login</button>
   </form>
 </div>
+
+<div>
+  <button class="ui button fluid"
+          (click)="exportMap()">Export Map</button>
+</div>
+<div class="ui divider"></div>
+  <div id="privatemaps"
+       class="ui cards">
+    <ng-container *ngFor="let mapData of maps">
+      <app-map-display *ngIf="mapData.is_private"
+                       [mapData]="mapData"
+                       class="card"></app-map-display>
+    </ng-container>
+  </div>
+  <div id="publicmaps"
+       class="ui cards">
+    <ng-container *ngFor="let mapData of maps">
+      <app-map-display *ngIf="!mapData.is_private"
+                       [mapData]="mapData"
+                       class="card"></app-map-display>
+    </ng-container>
+  </div>

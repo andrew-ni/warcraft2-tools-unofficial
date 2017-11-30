@@ -28,6 +28,7 @@ import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { TilesetComponent } from './tileset/tileset.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
 import { WebComponent } from './web/web.component';
+import { MapDisplayComponent } from './web/map-display/map-display.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { WebComponent } from './web/web.component';
     AnimationComponent,
     AudioComponent,
     WebComponent,
+    MapDisplayComponent,
   ],
   imports: [
     BrowserModule,

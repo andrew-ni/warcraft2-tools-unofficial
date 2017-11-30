@@ -114,26 +114,30 @@ export class IOService {
     fs.readFile(filePath, async (err, data) => {
       if (err) { console.error(err); return; }
 
-      this.zip = new JSZip();
-
-      if (path.parse(filePath).ext === '.zip') {  // check if package
-        await this.zip.loadAsync(data);
-        const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
-        const mapData: string = await mapFile.async('text');
-        this.mapFileName = await mapFile.name;    // save filename for later saving
-
-        this.extractCustomSnds();
-
-        this.serializeService.initMapFromFile(mapData, filePath);
-      } else {
-        this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
-      }
-
-      this.zip.folder('img');
-      this.zip.folder('snd');
-      this.zip.folder('scripts');
-      this.map.mapProjectOpened.next(this.zip);
+      this.readPackage(data, path.parse(filePath).ext === '.zip');
     });
+  }
+
+  public async readPackage(data: Buffer, isZip: boolean) {
+    this.zip = new JSZip();
+
+    if (isZip) {  // check if package
+      await this.zip.loadAsync(data);
+      const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
+      const mapData: string = await mapFile.async('text');
+      this.mapFileName = await mapFile.name;    // save filename for later saving
+
+      this.extractCustomSnds();
+
+      this.serializeService.initMapFromFile(mapData);
+    } else {
+      this.serializeService.initMapFromFile(data.toString('utf8'));
+    }
+
+    this.zip.folder('img');
+    this.zip.folder('snd');
+    this.zip.folder('scripts');
+    this.map.mapProjectOpened.next(this.zip);
   }
 
   private saveMap(filePath?: string) {
