@@ -11,6 +11,8 @@ import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
+import * as JSZip from 'jszip';
+
 /**
  * Narrow IMap interface to discourage access of unrelated attributes
  */
@@ -170,7 +172,6 @@ export class SerializeService {
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
-    this.map.assetsUpdated.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
     this.appRef.tick(); // we can optimize this to not update the whole app
   }
 

@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { MapService } from 'services/map.service';
 import { AnimationComponent } from './animation/animation.component';
 
 
@@ -11,7 +12,9 @@ export class AppComponent {
   @ViewChild(AnimationComponent) animation: AnimationComponent;
   title = 'ECS160 Tools';
 
-  constructor() { }
+  constructor(
+    private mapService: MapService,
+  ) { }
 
   /**
    * Handles changing tabs using the labelled buttons
@@ -25,6 +28,8 @@ export class AppComponent {
       x[i].style.display = 'none';
     }
     if (tabName === 'main') {
+      this.mapService.assetRemoved.next(undefined);
+      this.mapService.assetsUpdated.next(undefined);
       document.getElementById(tabName).style.display = 'flex';
     } else {
       if (tabName === 'animation') {

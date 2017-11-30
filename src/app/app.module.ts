@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { AnimationService } from 'services/animation.service';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
+import { FileService } from 'services/file.service';
 import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
@@ -51,6 +52,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     AnimationService,
     AssetsService,
     CanvasService,
+    FileService,
     IOService,
     MapService,
     SerializeService,
