@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { AssetType } from 'asset';
 import { Coordinate, Region } from 'interfaces';
+import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
 import { Sprite } from 'sprite';
 
@@ -16,6 +17,7 @@ export class TilesetService {
 
   constructor(
     private spriteService: SpriteService,
+    private mapService: MapService,
   ) { }
 
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -24,23 +26,22 @@ export class TilesetService {
     this.spriteService.initializing.then(() => this.init());
   }
 
-  // public redrawCanvas() { // this causes image quality loss
-  //   const newCanvas = document.createElement('canvas');
-  //   const ctx = newCanvas.getContext('2d');
-  //   newCanvas.width = this.canvas.width;
-  //   newCanvas.height = this.canvas.height;
-  //   ctx.drawImage(this.canvas, 0, 0);
-
-  //   this.canvas.width = this.terrainSprite.image.width * this.MULTIPLIER;
-  //   this.canvas.height = this.terrainSprite.image.height * this.MULTIPLIER;
-  //   this.context.drawImage(newCanvas, 0, 0, this.canvas.width, this.canvas.height);
-  // }
-
   public tilesetLoad() {
-    this.init();
+    this.drawCanvas();
   }
 
   private init() {
+    this.mapService.mapProjectLoaded.do(() => console.log('mapLoaded:TilesetTab')).subscribe({
+      next: async () => {
+        await this.spriteService.init();
+        this.drawCanvas();
+      },
+      error: err => console.error(err),
+      complete: null
+    });
+  }
+
+  private drawCanvas() {
     this.terrainSprite = this.spriteService.get(AssetType.Terrain);
     this.canvas.width = this.terrainSprite.image.width * this.MULTIPLIER;
     this.canvas.height = this.terrainSprite.image.height * this.MULTIPLIER;
