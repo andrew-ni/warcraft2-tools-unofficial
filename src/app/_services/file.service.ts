@@ -77,9 +77,9 @@ export class FileService {
       const fileData = await this.readDataFile('img/', assetName);
       const relativePath = parseRelativePath(fileData);
 
-      const customAssetFile = (this.img === undefined) ? undefined : this.img.file(pathJoin(relativePath));
+      const customAssetFile = (this.img === undefined) ? null : this.img.file(pathJoin(relativePath));
 
-      if (reset || customAssetFile === undefined) {
+      if (reset || customAssetFile === null) {
         return { isCustom: false, fileData, image: await createImageBitmap(await readImageFile(relativePath)) };   // load default asset.
       } else {
         return { isCustom: true, fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
