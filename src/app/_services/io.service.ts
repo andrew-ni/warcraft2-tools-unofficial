@@ -10,6 +10,7 @@ import { SerializeService } from 'services/serialize.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { TilesetService } from 'services/tileset.service';
+import { Sprite } from 'sprite';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
@@ -101,10 +102,15 @@ export class IOService {
       this.map.mapLoaded.next();
     });
 
+    /**
+     * Event listener for changing tileset to a chosen .png image.
+     */
     ipcRenderer.on('menu:file:loadtilesetimg', async (event: Electron.IpcMessageEvent, filepath) => {
-      // await this.spriteService.prefetch(AssetType.Terrain, filepath);
-      // this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
-      // this.tilesetService.tilesetLoad();
+      const chosenTilesetImg = await this.spriteService.loadImage(filepath);
+      const imageBitmap = await createImageBitmap(chosenTilesetImg);
+      this.spriteService.get(AssetType.Terrain).setCustomImage(imageBitmap);
+      this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
+      this.tilesetService.tilesetLoad();
     });
   }
 
