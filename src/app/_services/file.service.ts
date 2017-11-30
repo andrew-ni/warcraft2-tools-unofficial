@@ -53,8 +53,9 @@ export class FileService {
   /**
    * Gets the ImageBitmap associated with the AssetType provided.
    * @param type AssetType to retrieve.
+   * @param reset true to force retrieve default image.
    */
-  public async getImg(type: AssetType) {
+  public async getImg(type: AssetType, reset: boolean = false) {
 
     const parseRelativePath = (fileData: string) => {
       const [, relativePath] = fileData.split(/#.*?\r?\n/);
@@ -76,11 +77,14 @@ export class FileService {
       const fileData = await this.readDataFile('img/', assetName);
       const relativePath = parseRelativePath(fileData);
 
-      const customAssetFile = (this.img === undefined) ? null : this.img.file(pathJoin(relativePath));
+      const customAssetFile = (this.img === undefined) ? undefined : this.img.file(pathJoin(relativePath));
 
-      return (customAssetFile === null)
-        ? { isCustom: false, fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
-        : { isCustom: true, fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
+      if (reset || customAssetFile === undefined) {
+        return { isCustom: false, fileData, image: await createImageBitmap(await readImageFile(relativePath)) };   // load default asset.
+      } else {
+        return { isCustom: true, fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
+
+      }
     }
   }
 

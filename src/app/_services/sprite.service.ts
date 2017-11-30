@@ -122,7 +122,7 @@ export class SpriteService {
    */
   public async reset(type: AssetType) {
     const sprite = this.sprites.get(type);
-    const { image } = await this.fileService.getImg(type);
+    const { image } = await this.fileService.getImg(type, true);  // true to force default png
     sprite.image = await (neutralAssets.has(type) ? image : this.recolorBitmap(image));
   }
 
