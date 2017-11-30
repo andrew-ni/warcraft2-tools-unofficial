@@ -200,6 +200,8 @@ export class IOService {
     /*
      * Add imgs to package.
      */
+    this.zip.remove('img');   // empty the folder to remove original edits
+    this.zip.folder('img');
     const images = this.spriteService.getModifiedImages();
     console.log(images);
     for (const { blob, type } of images) {
@@ -210,6 +212,8 @@ export class IOService {
      * Add snds to package.
      */
     // const sounds = ['./peasant/acknowledge1.wav'];
+    this.zip.remove('snd');
+    this.zip.folder('snd');
     const sounds = [];
     for (const sndPath of sounds) {
       this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
