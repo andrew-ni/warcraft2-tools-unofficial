@@ -16,6 +16,12 @@ import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
+import { AiComponent } from './ai/ai.component';
+import { DynamicSubtriggerComponent } from './ai/trigger/dynamic-subtrigger.component';
+import {
+  StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent
+} from './ai/trigger/subtrigger.component';
+import { TriggerComponent } from './ai/trigger/trigger.component';
 import { AnimationComponent } from './animation/animation.component';
 import { AudioComponent } from './audio/audio.component';
 import { MapComponent } from './map/map.component';
@@ -42,6 +48,13 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     TilesetComponent,
     AnimationComponent,
     AudioComponent,
+    AiComponent,
+    TriggerComponent,
+    DynamicSubtriggerComponent,
+    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,
+  ],
+  entryComponents: [
+    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,
   ],
   imports: [
     BrowserModule,

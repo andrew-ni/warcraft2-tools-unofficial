@@ -35,8 +35,6 @@ export class MapService {
   /** A list of assets. */
   public assets: Asset[] = [];
 
-
-
   /**
    * A matrix that tracks the location of assets in the map.
    * Assets larger than 1x1 will be assigned to multiple cells.
@@ -61,6 +59,11 @@ export class MapService {
 
   /** The tile set used to draw the map. */
   public tileSet: Tileset;
+
+  /** AI stuff. */
+  public difficulty: string[] = [];
+  public events: string[] = [];
+  public triggers: string[] = [];
 
   // Events
 
