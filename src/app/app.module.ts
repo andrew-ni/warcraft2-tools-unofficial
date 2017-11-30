@@ -27,6 +27,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { TilesetComponent } from './tileset/tileset.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { WebComponent } from './web/web.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     TilesetComponent,
     AnimationComponent,
     AudioComponent,
+    WebComponent,
   ],
   imports: [
     BrowserModule,
