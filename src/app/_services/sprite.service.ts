@@ -42,8 +42,15 @@ export class SpriteService {
     mapService: MapService,
   ) {
     this.map = mapService;
-
+    this.preInit();
     this.initializing = this.init();
+  }
+
+  public preInit() {
+
+    for (let type = 0; type < AssetType.MAX; type++) {
+      this.sprites.set(type, new Sprite(undefined, undefined, undefined, undefined, false));
+    }
   }
 
   /**
@@ -105,7 +112,7 @@ export class SpriteService {
     const { fileData, image, isCustom } = await this.fileService.getImg(type);
     const { defaultIndex, imagePath, animationSets } = this.parseDataFile(fileData);
     const bitmap = neutralAssets.has(type) ? image : await this.recolorBitmap(image);
-    this.sprites.set(type, new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
+    Object.assign(this.sprites.get(type), new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
     if (type === AssetType.Terrain) { this.map.tileSet = new Tileset(fileData); this.map.mapLoaded.next(); }
   }
 
