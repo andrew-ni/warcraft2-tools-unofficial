@@ -79,8 +79,8 @@ export class FileService {
       const customAssetFile = (this.img === undefined) ? null : this.img.file(pathJoin(relativePath));
 
       return (customAssetFile === null)
-        ? { fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
-        : { fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
+        ? { isCustom: false, fileData, image: await createImageBitmap(await readImageFile(relativePath)) }   // load default asset.
+        : { isCustom: true, fileData, image: await createImageBitmap(await customAssetFile.async('blob')) }; // load custom asset.
     }
   }
 

@@ -76,8 +76,6 @@ export class SpriteService {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
-
-      // TODO crop here
       canvas.width = neutralAssets.has(type) ? image.width : image.width / MapService.MAX_PLAYERS;
       canvas.height = image.height;
 
@@ -91,7 +89,7 @@ export class SpriteService {
     const ret = new Array<{ type: AssetType, blob: Promise<Blob> }>();
 
     this.sprites.forEach((sprite, key) => {
-      if (sprite.isModified) ret.push({ type: key, blob: getBlob(sprite.image, key) });
+      if (sprite.isCustom) ret.push({ type: key, blob: getBlob(sprite.image, key) });
     });
 
     return ret;
@@ -104,10 +102,10 @@ export class SpriteService {
    * @param type The asset type of the sprite
    */
   private async prefetch(type: AssetType) {
-    const { fileData, image } = await this.fileService.getImg(type);
+    const { fileData, image, isCustom } = await this.fileService.getImg(type);
     const { defaultIndex, imagePath, animationSets } = this.parseDataFile(fileData);
     const bitmap = neutralAssets.has(type) ? image : await this.recolorBitmap(image);
-    this.sprites.set(type, new Sprite(bitmap, imagePath, defaultIndex, animationSets));
+    this.sprites.set(type, new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
     if (type === AssetType.Terrain) { this.map.tileSet = new Tileset(fileData); this.map.mapLoaded.next(); }
   }
 
@@ -118,7 +116,7 @@ export class SpriteService {
   public async reset(type: AssetType) {
     const sprite = this.sprites.get(type);
     const { image } = await this.fileService.getImg(type);
-    sprite.setImage(await (neutralAssets.has(type) ? image : this.recolorBitmap(image)), false);
+    sprite.image = await (neutralAssets.has(type) ? image : this.recolorBitmap(image));
   }
 
   /**

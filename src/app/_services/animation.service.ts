@@ -175,7 +175,7 @@ export class AnimationService {
       change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
 
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
-    this.animation.sprite.setImage(result);
+    this.animation.sprite.setCustomImage(result);
 
     this.draw();
   }
@@ -183,6 +183,7 @@ export class AnimationService {
   /** Resets the sprite in memory by refreshing its ImageBitmap, and resets isCustom to false. */
   private async resetSprite() {
     await this.spriteService.reset(this._currentAsset);
+    this.animation.sprite.isCustom = false;
     this.draw();
   }
 }
