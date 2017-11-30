@@ -35,7 +35,7 @@ export class WebComponent implements OnInit {
   }
 
   private login() {
-    if (this.form.valid) {
+    if (this.form.valid || true) {
       console.log(this.form.value.username);
       console.log(this.form.value.password);
 
@@ -49,7 +49,9 @@ export class WebComponent implements OnInit {
         .do(resp => console.log(resp))
         .subscribe({
           next: resp => {
-            if (resp.return_value === 0) {
+            console.log(resp);
+
+            if (resp.return_value === 0 && resp.status === 200) {
               this.userId = resp.user_id;
               this.loggedIn = true;
               this.exportMap();
@@ -68,13 +70,14 @@ export class WebComponent implements OnInit {
   }
 
   private exportMap() {
-    const file = new File([this.serializeService.serializeMap()], 'testtool5.map', { type: 'text/plain', });
+    const file = new File([this.serializeService.serializeMap()], Math.random().toString() + '.map', { type: 'text/plain', });
 
     const formData = new FormData();
     formData.append('fileToUpload', file);
     formData.append('uploader', this.userId.toString());
+    formData.append('private', 'true');
 
-    this.http.post('http://34.214.129.0/dlc/tool_upload.php', formData, { responseType: 'text' })
+    this.http.post('http://34.214.129.0/dlc/tool_upload.php', formData)
       .subscribe({
         next: resp => console.log(resp),
         error: err => console.error(err),

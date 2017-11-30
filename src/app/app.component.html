@@ -4,9 +4,11 @@
     <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
     <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
     <button class="ui button" (click)="openTab('ai')">AI Tool</button>
+    <button class="ui button" (click)="openTab('web')">Web Tool</button>
+    
 
 </div>
-<div id="main" class="tab" style="display:flex">
+<div id="main" class="tab" style="display:none">
     <app-sidebar></app-sidebar>
     <app-map></app-map>
 </div>
@@ -23,7 +25,7 @@
     <h2>AI Tab</h2>
     <p>Insert AI tool here</p>
 </div>
-<div id="web" class="tab" style="display:none">
+<div id="web" class="tab" style="display:inline-block">
     <app-web></app-web>>
 </div>
 <app-newmap></app-newmap>
