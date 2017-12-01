@@ -21,10 +21,13 @@ const options = {
 })
 export class TilesetComponent implements OnInit {
 
+  /** The canvas displaying the current tileset */
   private tilesetCanvas: HTMLCanvasElement;
+
+  /** The context for the tileset canvas */
   private tilesetContext: CanvasRenderingContext2D;
-  private saveCanvas; HTMLCanvasElement;
-  private saveContext: CanvasRenderingContext2D;
+
+  /** All possible multiplier options */
   private multiplierOptions = [1, 2, 3];
 
   constructor(
@@ -40,6 +43,10 @@ export class TilesetComponent implements OnInit {
     this.setClickListeners();
   }
 
+  /**
+   * Adds a click listener to the tileset canvas.
+   * We can figure out which tile the user wants to replace using their click position
+   */
   private setClickListeners() {
     let clickPos: Coordinate;
     this.tilesetCanvas.addEventListener('click', (event) => {
@@ -57,16 +64,23 @@ export class TilesetComponent implements OnInit {
     });
   }
 
+  /**
+   * Calls SpriteService's reset function on AssetType.Terrain to reset the map's tileset to the default tileset
+   * Fires a tilesUpdated event from mapService so the map knows to redraw itself
+   * Calls tilesetLoad() to redraw the tileset tab's canvas
+   */
   public async resetToDefaultTileset() {
     await this.spriteService.reset(AssetType.Terrain);
     this.mapService.tilesUpdated.next({ y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
     this.tilesetService.tilesetLoad();
   }
 
+  /**
+   * On pressing 'save' in the tileset tab:
+   * Creates a clone canvas that is scaled down to the required size
+   * Updates the sprite mapping in SpriteService with the new image
+   */
   private async saveTileset() {
-
-    console.log('saving tileset');
-
     const newCanvas = document.createElement('canvas');
     const context = newCanvas.getContext('2d');
     newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
@@ -78,6 +92,10 @@ export class TilesetComponent implements OnInit {
     this.spriteService.get(AssetType.Terrain).setCustomImage(tilesetImgBitmap);
   }
 
+  /**
+   * Generates a white border box around the tile that the user clicked to replace
+   * @param clickPos A Coordinate that contains the x and y click positions relative to the canvas
+   */
   private selectTile(clickPos: Coordinate) {
     const tileIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
     const nd = document.getElementById('tilesBox');
@@ -89,9 +107,12 @@ export class TilesetComponent implements OnInit {
     nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
   }
 
+  /**
+   * On changing the 'magnification factor', the tileset must be redrawn using the updated multiplier
+   * @param newValue The new value selected from the 'magnification factor' drop-down menu
+   */
   private updateMultiplier(newValue) {
     this.tilesetService.MULTIPLIER = newValue;
     this.tilesetService.tilesetLoad();
-    console.log(this.tilesetService.MULTIPLIER);
   }
 }
