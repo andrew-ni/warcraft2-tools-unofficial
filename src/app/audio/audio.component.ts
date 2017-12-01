@@ -19,7 +19,6 @@ const options = {
 export class AudioComponent implements OnInit {
 
   SongCategories = [];
-  // Sounds = ["Sound #1", "Sound #2", "Sound #3"];
   Sounds: string[] = [];
   isSoundLoaded: Boolean = false;
   selectedClip: HTMLAudioElement;
@@ -27,27 +26,18 @@ export class AudioComponent implements OnInit {
   selectedClipName: string;
   destPath: string;
 
-  test: string;
 
   constructor(
     private soundService: SoundService,
   ) {
   }
 
-  // fun_close() {
-  //   document.getElementById('audioModal').setAttribute('style', 'display: none;');
-  // }
+  ngOnInit() {
+    this.soundService.parseSndData();
+    this.SongCategories = [...this.soundService.soundMap.keys()];
+    this.selectedCategory = this.SongCategories[0];
+  }
 
-  // SelectedAudio() {
-  //   document.getElementById('audio1').setAttribute('style', 'background-color: #666; color:#fff;');
-  // }
-
-  // loadSounds() {
-  //   this.SongCategories = [...this.soundService.soundMap.keys()];
-  //   this.selectedCategory = this.SongCategories[0];
-  //   // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.destPath+ '" type="audio/wav">';
-  //   // this.isSoundLoaded = true;
-  // }
 
   showSound(category) {
     this.isSoundLoaded = true;
@@ -83,14 +73,9 @@ export class AudioComponent implements OnInit {
     console.log('DEST PATH; ' + this.destPath);
     this.soundService.deleteSound('dist/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
-    const orig = '../dist/assets/snd' + name;
+    const orig = new Audio('../dist/assets/snd' + name);
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + orig + '" type="audio/wav">';
   }
 
-  ngOnInit() {
-    this.soundService.parseSndData();
-    this.SongCategories = [...this.soundService.soundMap.keys()];
-    this.selectedCategory = this.SongCategories[0];
-  }
+
 }

@@ -75,7 +75,7 @@ export class SoundService {
 
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
-      document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
+      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
       console.log('done copying');
     });
   }
@@ -83,7 +83,8 @@ export class SoundService {
   public editSoundMap(category, sound, clip) {
     console.log('editSound');
     this.soundMap.get(category).set(sound, clip);
-    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
+    const newsnd = this.soundMap.get(category).get(sound);
+    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + newsnd.src + '" type="audio/wav">';
 
     // this.soundUpdated.next(undefined);
   }

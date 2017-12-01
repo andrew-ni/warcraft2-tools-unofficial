@@ -109,4 +109,7 @@ export class Structure extends Asset {
     this.validTiles = new Set<TileType>([TileType.DarkGrass, TileType.LightGrass]);
     if (neutralAssets.has(type)) { this.owner = 0; }
   }
+
+
+
 }
