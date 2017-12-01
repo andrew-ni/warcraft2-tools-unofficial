@@ -42,13 +42,8 @@ export class TestmapComponent implements OnInit {
      */
     this.topCanvas.addEventListener('mousedown', (event) => {
       if (event.button === 0) {
-        this.pathfind({ x: event.offsetX, y: event.offsetY });
+        this.testmapService.pathfind({ x: event.offsetX, y: event.offsetY });
       }
     });
   }
-
-  private pathfind(coord: Coordinate) {
-    console.log(coord.x, coord.y);
-  }
-
 }

@@ -84,13 +84,44 @@ export class TestmapService {
   }
 
   public spawn(s: string) {
-    if(this.current) {this.clear(this.current);}
+    if (this.current) { this.clear(this.current); }
     console.log(AssetType[s]);
     this.current = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.current.gridCoord = { x: 7, y: 7 };
     this.draw(this.current);
 
   }
+
+
+  public pathfind(coord: Coordinate) {
+    if (this.current) {
+      // 20 pixels hardcoded to account for offset inside spritesheet
+      const source = { x: this.current.coord.x + 20, y: this.current.coord.y + 20 };
+      const destX = coord.x;
+      const destY = coord.y;
+
+      console.log(coord.x, coord.y, this.compare(source.x, destX), this.compare(source.y, destY));
+
+    }
+  }
+
+  /**
+   * Comparison helper function. Should always take (source, dest), since assets starting at
+   * the top left corner is assumed to be default behavior.
+   * 32 is hardcoded as the "visual width" of a sprite.
+   * @param source Source
+   * @param dest Destination
+   */
+  private compare(source: number, dest: number): number {
+    if (source > dest) { // less
+      return -1;
+    } else if ((source + 32) > dest) { // equal
+      return 0;
+    } else { // greater
+      return 1;
+    }
+  }
+
 
   /**
    * Plays audio for current animation using string mappings to audio service.
