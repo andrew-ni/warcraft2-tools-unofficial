@@ -18,6 +18,18 @@ export class TestmapService {
   private topCanvas: HTMLCanvasElement;
   private topContext: CanvasRenderingContext2D;
 
+  rotation: Map<string, string> = new Map([
+    ['0,-1', 'n'],
+    ['1,-1', 'ne'],
+    ['1,0', 'e'],
+    ['1,1', 'se'],
+    ['0,1', 's'],
+    ['-1,1', 'sw'],
+    ['-1,0', 'w'],
+    ['-1,-1', 'nw'],
+    ['0,0', 'none']
+  ]);
+
   private goldmine: AnimationContext;
   private farm: AnimationContext;
   private blacksmith: AnimationContext;
@@ -100,8 +112,9 @@ export class TestmapService {
       const destX = coord.x;
       const destY = coord.y;
 
-      console.log(coord.x, coord.y, this.compare(source.x, destX), this.compare(source.y, destY));
-
+      this.current.setDirection(this.rotation.get(this.coordToString({ x: this.compare(source.x, destX), y: this.compare(source.y, destY) })));
+      this.clear(this.current);
+      this.draw(this.current);
     }
   }
 
@@ -120,6 +133,10 @@ export class TestmapService {
     } else { // greater
       return 1;
     }
+  }
+
+  private coordToString(c: Coordinate) {
+    return '' + c.x + ',' + c.y;
   }
 
 
