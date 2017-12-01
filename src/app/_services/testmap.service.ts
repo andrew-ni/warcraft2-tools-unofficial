@@ -26,7 +26,6 @@ enum Action {
 @Injectable()
 export class TestmapService {
   public static readonly BACKGROUND_PATH = './data/testmap.png';
-  public static readonly ANIMATION_DELAY = 250;
 
   private terrainCanvas: HTMLCanvasElement;
   private terrainContext: CanvasRenderingContext2D;
@@ -269,9 +268,29 @@ export class TestmapService {
     }
 
     this.player.setDirection(direction);
-    this.clearPlayer();
-    this.player.coord = newLoc;
-    this.drawPlayer();
+    let animStepNum = 0;
+    let animInterval: NodeJS.Timer;
+
+    const animStep = () => {
+      if (++animStepNum > MapService.TERRAIN_SIZE) {
+        clearInterval(animInterval);
+        animInterval = undefined;
+        animStepNum = 0;
+        console.log('animation stopped');
+        return;
+      }
+
+      this.clearPlayer();
+      this.player.coord.x += delta.x;
+      this.player.coord.y += delta.y;
+      this.drawPlayer();
+    };
+
+    animInterval = setInterval(animStep, AnimationService.ANIMATION_DELAY / 32);
+
+    // this.clearPlayer();
+    // this.player.coord = newLoc;
+    // this.drawPlayer();
   }
 
   private performAction() {
