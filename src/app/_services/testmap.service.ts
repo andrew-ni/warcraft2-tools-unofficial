@@ -42,9 +42,45 @@ export class TestmapService {
     this.enemyArcher = new AnimationContext(this.spriteService.get(AssetType.Archer));
     this.enemyRanger = new AnimationContext(this.spriteService.get(AssetType.Ranger));
 
-    // const f: File = new File([''], TestmapService.BACKGROUND_PATH);
-    // console.log(f.path);
-    // this.backgroundImage = await createImageBitmap(new File([''], TestmapService.BACKGROUND_PATH));
+    this.prepareInitialStates();
+
+    this.draw(this.goldmine);
+    this.draw(this.farm);
+    this.draw(this.blacksmith);
+    this.draw(this.lumbermill);
+    this.draw(this.enemyKnight);
+    this.draw(this.enemyArcher);
+    this.draw(this.enemyRanger);
+    // this.draw(this.current);
+  }
+
+  private prepareInitialStates() {
+
+    this.lumbermill.gridCoord = { x: 2, y: 11};
+    this.lumbermill.setAction('inactive');
+
+    this.blacksmith.gridCoord = { x: 2, y: 8};
+    this.blacksmith.setAction('inactive');
+
+    this.farm.gridCoord = { x: 3, y: 6};
+    this.farm.setAction('inactive');
+
+    this.goldmine.gridCoord = { x: 2, y: 3};
+    this.goldmine.setAction('inactive');
+
+    this.enemyKnight.coord = { x: 13 * 32 - 20, y: 3 * 32 - 25};
+    this.enemyKnight.setAction('walk');
+    this.enemyKnight.setDirection('w');
+
+    this.enemyArcher.coord = { x: 13 * 32 - 20, y: 8 * 32 - 25};
+    this.enemyArcher.setAction('walk');
+    this.enemyArcher.setDirection('w');
+
+
+    this.enemyRanger.coord = { x: 13 * 32 - 20, y: 13 * 32 - 25};
+    this.enemyRanger.setAction('walk');
+    this.enemyRanger.setDirection('w');
+
   }
 
   /**
@@ -158,11 +194,14 @@ export class TestmapService {
 
   private draw(context: AnimationContext) {
     const c: Coordinate = context.coord;
-    const slice = context.sprite.image.width / 8;
+    let slice = context.sprite.image.width / 8;
+    if (context === this.goldmine) {slice = context.sprite.image.width; }
     this.topContext.drawImage(
       context.sprite.image,
-      0, 0, slice, slice,
-      c.x, c.y, slice, slice * (context.getCurFrame() + 1));
+      0, slice * context.getCurFrame(), slice, slice,
+      c.x, c.y, slice, slice);
+
+    console.log('asset drawn');
   }
 
 

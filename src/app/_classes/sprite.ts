@@ -69,7 +69,7 @@ export class AnimationContext {
   private _direction: AnimationDirection;
 
   /** Location of asset that owns this animation context. Only used by testmap. */
-  private _coord: Coordinate;
+  private _coord: Coordinate = { x: 0, y: 0 };
 
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
@@ -90,7 +90,9 @@ export class AnimationContext {
   get actionList() { return this.sprite.actions; }
   get directionList() { return this._action.directions; }
   get coord() { return this._coord; }
+  get gridCoord() { return { x: Math.floor(this._coord.x / 32), y: Math.floor(this._coord.y / 32)}; }
   set coord(c: Coordinate) { this._coord = c; }
+  set gridCoord(c: Coordinate) { this._coord = { x: c.x * 32 , y: c.y * 32 }; console.log(this._coord); }
 
   /**
    * Set the action to the index specified.
