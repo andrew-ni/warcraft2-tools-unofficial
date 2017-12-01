@@ -21,24 +21,43 @@
   </form>
 </div>
 
-<div>
-  <button class="ui button fluid"
-          (click)="exportMap()">Export Map</button>
+
+<div class="ui vertically divided grid">
+
+  <div class="one column row">
+    <div class="column">
+      <div class="item">
+        <div class="ui right floated button">Export Map</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="one column row segments">
+    <div class="ui top attached label">Private Maps</div>
+    <div class="segment">
+      <div id="privatemaps"
+           class="ui cards">
+        <ng-container *ngFor="let mapData of maps">
+          <app-map-display *ngIf="mapData.is_private"
+                           [mapData]="mapData"
+                           class="card"></app-map-display>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="one column row segments">
+      <div class="ui top attached label">Public Maps</div>
+      <div class="segment">
+        <div id="publicmaps"
+             class="ui cards">
+          <ng-container *ngFor="let mapData of maps">
+            <app-map-display *ngIf="!mapData.is_private"
+                             [mapData]="mapData"
+                             class="card"></app-map-display>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
 </div>
-<div class="ui divider"></div>
-  <div id="privatemaps"
-       class="ui cards">
-    <ng-container *ngFor="let mapData of maps">
-      <app-map-display *ngIf="mapData.is_private"
-                       [mapData]="mapData"
-                       class="card"></app-map-display>
-    </ng-container>
-  </div>
-  <div id="publicmaps"
-       class="ui cards">
-    <ng-container *ngFor="let mapData of maps">
-      <app-map-display *ngIf="!mapData.is_private"
-                       [mapData]="mapData"
-                       class="card"></app-map-display>
-    </ng-container>
-  </div>

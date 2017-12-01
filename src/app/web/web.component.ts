@@ -33,6 +33,10 @@ export class WebComponent implements OnInit {
   private form: FormGroup;
   private maps = [
     { map_name: 'map1', is_private: true },
+    { map_name: 'map1', is_private: true },
+    { map_name: 'map1', is_private: true },
+    { map_name: 'map1', is_private: true },
+    { map_name: 'map1', is_private: true },
     { map_name: 'map2', is_private: false },
     { map_name: 'map3', is_private: true },
     { map_name: 'map4', is_private: false },
