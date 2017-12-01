@@ -35,9 +35,12 @@ export class AudioComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    // parse the soundclips.dat
     this.soundService.parseSndData();
     this.SongCategories = [...this.soundService.soundMap.keys()];
 
+    // sets listener so that whenever a new package is loaded, the sounds are updated
     this.mapService.mapProjectLoaded.do(() => console.log('soundLoaded')).subscribe({
       next: async () => {
         this.soundService.parseSndData();
@@ -49,7 +52,10 @@ export class AudioComponent implements OnInit {
 
   }
 
-
+  /**
+   * shows all sounds of selected category
+   * @param category category of first drop down menu
+   */
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
@@ -57,6 +63,10 @@ export class AudioComponent implements OnInit {
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
   }
 
+  /**
+   * sets audio player to play source of name in second drop down menu
+   * @param clipName clip to be played
+   */
   playSound(clipName) {
     this.selectedClipName = clipName;
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
@@ -68,6 +78,9 @@ export class AudioComponent implements OnInit {
     player.src = this.selectedClip.src;
   }
 
+  /**
+   * replaces the current selected audio
+   */
   changeAudio() {
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
@@ -77,6 +90,9 @@ export class AudioComponent implements OnInit {
     console.log(this.soundService.soundMap);
   }
 
+  /**
+   * reverts audio to default by deleting custom sound
+   */
   revertAudio() {
     this.soundService.deleteSound('data/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
