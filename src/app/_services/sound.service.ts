@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AssetType } from 'asset';
+import { MapService } from 'services/map.service';
 import { AssetTypeToClips } from 'sound';
 
 import * as fs from 'fs';
@@ -10,7 +11,6 @@ export class SoundService {
   public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
   constructor() {
-    this.soundMap = new Map();
     this.nameToAudio = new Map();
   }
 
@@ -18,13 +18,14 @@ export class SoundService {
  * Reads the SoundClips dat file and populates the map's soundMap.
  */
   public parseSndData() {
+    this.soundMap = new Map();
     const sndData = this.readSndDat().trim();
     const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
     const lines = clips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
-      const filepath = '../dist/assets/snd/' + type + '/' + file;
+      const filepath = '../data/snd/' + type + '/' + file;
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
       if (this.soundMap.has(type)) {
@@ -42,7 +43,7 @@ export class SoundService {
   public readSndDat(): string {
     let content: string;
 
-    content = fs.readFileSync('src/assets/snd/SoundClips.dat', 'utf8');
+    content = fs.readFileSync('data/snd/SoundClips.dat', 'utf8');
 
     if (content === undefined) {
       throw new Error('File not read');
@@ -53,11 +54,11 @@ export class SoundService {
 
   public checkForCustomSound(filepath: string): string {
     const [, , , type, file] = filepath.split('/');
-    const customFilePath = 'src/assets/customSnd/' + type + '/' + file;
-
+    const customFilePath = 'dist/../data/customSnd/' + type + '/' + file;
     try {
       fs.accessSync(customFilePath);
-      return customFilePath;
+      console.log(customFilePath);
+      return '../' + customFilePath;
     } catch (e) {
       return filepath;
     }
@@ -66,8 +67,6 @@ export class SoundService {
   // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
   public copyFile(src, dest, category, sound, clip) {
     const readStream = fs.createReadStream(src);
-    console.log('src: ' + src);
-    console.log('dest: ' + dest);
 
     readStream.once('error', (err) => {
       console.log(err);
@@ -76,12 +75,10 @@ export class SoundService {
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
       // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
-      console.log('done copying');
     });
   }
 
   public editSoundMap(category, sound, clip) {
-    console.log('editSound');
     this.soundMap.get(category).set(sound, clip);
     const newsnd = this.soundMap.get(category).get(sound);
     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + newsnd.src + '" type="audio/wav">';
