@@ -9,6 +9,20 @@ import { join as pathJoin } from 'path';
 import { AnimationService } from 'services/animation.service';
 import { MapService } from 'services/map.service';
 
+enum Action {
+  Forest,
+  GoldMine,
+  Farm,
+  BlackSmith,
+  LumberMill,
+  EnemyKnight,
+  EnemyArcher,
+  EnemyRanger,
+  Grass,
+}
+
+
+
 @Injectable()
 export class TestmapService {
   public static readonly BACKGROUND_PATH = './data/testmap.png';
@@ -35,6 +49,9 @@ export class TestmapService {
     ['0,0', 'none']
   ]);
 
+
+  private actionLayer: Action[][];
+
   private goldmine: AnimationContext;
   private farm: AnimationContext;
   private blacksmith: AnimationContext;
@@ -48,11 +65,21 @@ export class TestmapService {
 
   private moveInterval: NodeJS.Timer = undefined;
 
+
+
   constructor(
     private spriteService: SpriteService,
   ) { }
 
   public init() {
+    this.actionLayer = [];
+    this.actionLayer.length = 16;
+
+    for (let y = 0; y < this.actionLayer.length; y++) {
+      this.actionLayer[y] = [];
+      this.actionLayer[y].length = 16;
+    }
+
     this.goldmine = new AnimationContext(this.spriteService.get(AssetType.GoldMine));
     this.farm = new AnimationContext(this.spriteService.get(AssetType.Farm));
     this.blacksmith = new AnimationContext(this.spriteService.get(AssetType.Blacksmith));
@@ -63,6 +90,16 @@ export class TestmapService {
 
     this.prepareInitialStates();
 
+    this.addAssetToActionLayer(this.goldmine);
+    this.addAssetToActionLayer(this.farm);
+    this.addAssetToActionLayer(this.blacksmith);
+    this.addAssetToActionLayer(this.lumbermill);
+    this.addAssetToActionLayer(this.enemyKnight);
+    this.addAssetToActionLayer(this.enemyArcher);
+    this.addAssetToActionLayer(this.enemyRanger);
+
+
+
     this.drawAsset(this.goldmine);
     this.drawAsset(this.farm);
     this.drawAsset(this.blacksmith);
@@ -70,6 +107,63 @@ export class TestmapService {
     this.drawAsset(this.enemyKnight);
     this.drawAsset(this.enemyArcher);
     this.drawAsset(this.enemyRanger);
+  }
+
+  private addAssetToActionLayer(a: AnimationContext) {
+    const x: number = a.gridCoord.x;
+    const y: number = a.gridCoord.y;
+
+
+    let width: number = a.sprite.image.width / MapService.MAX_PLAYERS / MapService.TERRAIN_SIZE;
+
+    // if (a === this.goldmine) { width = a.sprite.image.width / MapService.TERRAIN_SIZE; }
+    // else if (a ===this.enemyArcher || a === this.enemyKnight || a === this.enemyRanger) {width = 1;}
+
+    let action: Action;
+    switch (a) {
+      case this.goldmine: {
+        action = Action.GoldMine;
+        width = a.sprite.image.width / MapService.TERRAIN_SIZE;
+        break;
+      }
+      case this.farm: {
+        action = Action.Farm;
+        break;
+      }
+      case this.blacksmith: {
+        action = Action.BlackSmith;
+        break;
+      }
+      case this.lumbermill: {
+        action = Action.LumberMill;
+        break;
+      }
+      case this.enemyKnight: {
+        action = Action.EnemyKnight;
+        width = 1;
+        break;
+      }
+      case this.enemyArcher: {
+        action = Action.EnemyArcher;
+        width = 1;
+        break;
+      }
+      case this.enemyRanger: {
+        action = Action.EnemyRanger;
+        width = 1;
+        break;
+      }
+      default: {
+        // statements;
+        break;
+      }
+    }
+
+    for (let n = x; n < x + width; n++) {
+      for (let m = y; m < y + width; m++) {
+        this.actionLayer[n][m] = action;
+      }
+    }
   }
 
   private prepareInitialStates() {
@@ -112,6 +206,7 @@ export class TestmapService {
 
   public moveTo(dest: Coordinate) {
     if (this.moveInterval === undefined) {
+      console.log(this.actionLayer[Math.floor(dest.x / 32)][Math.floor(dest.y / 32)]);
       this.moveInterval = setInterval(() => this.moveStep(dest), AnimationService.ANIMATION_DELAY);
     }
   }
