@@ -49,7 +49,7 @@ export class TestmapComponent implements OnInit {
      */
     this.playerCanvas.addEventListener('mousedown', (event) => {
       if (event.button === 0) {
-        this.testmapService.moveTo({ x: event.offsetX, y: event.offsetY });
+        this.testmapService.click({ x: event.offsetX, y: event.offsetY });
       }
     });
   }

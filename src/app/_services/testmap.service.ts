@@ -60,12 +60,12 @@ export class TestmapService {
   private enemyArcher: AnimationContext;
   private enemyRanger: AnimationContext;
   private player: AnimationContext;
+  private playerAsset: AssetType;
 
   private backgroundImage: ImageBitmap;
 
   private moveInterval: NodeJS.Timer = undefined;
-
-
+  private currentAction: Action = undefined;
 
   constructor(
     private spriteService: SpriteService,
@@ -79,7 +79,6 @@ export class TestmapService {
       this.actionLayer[y] = [];
       this.actionLayer[y].length = 16;
     }
-
 
     this.goldmine = new AnimationContext(this.spriteService.get(AssetType.GoldMine));
     this.farm = new AnimationContext(this.spriteService.get(AssetType.Farm));
@@ -115,12 +114,17 @@ export class TestmapService {
     let x, y;
     for (x = 5; x <= 12; x++) {
       this.actionLayer[x][14] = Action.Forest;
+      this.actionLayer[x][15] = Action.Forest;
+      this.actionLayer[x][0] = Action.Forest;
+      this.actionLayer[x][1] = Action.Forest;
       this.actionLayer[x][2] = Action.Forest;
     }
 
     for (y = 4; y <= 12; y++) {
       if (this.actionLayer[13][y] === undefined) {
         this.actionLayer[13][y] = Action.Forest;
+        this.actionLayer[14][y] = Action.Forest;
+        this.actionLayer[15][y] = Action.Forest;
       }
     }
 
@@ -134,12 +138,7 @@ export class TestmapService {
   private addAssetToActionLayer(a: AnimationContext) {
     const x: number = a.gridCoord.x;
     const y: number = a.gridCoord.y;
-
-
     let width: number = a.sprite.image.width / MapService.MAX_PLAYERS / MapService.TERRAIN_SIZE;
-
-    // if (a === this.goldmine) { width = a.sprite.image.width / MapService.TERRAIN_SIZE; }
-    // else if (a ===this.enemyArcher || a === this.enemyKnight || a === this.enemyRanger) {width = 1;}
 
     let action: Action;
     switch (a) {
@@ -214,21 +213,38 @@ export class TestmapService {
     this.enemyRanger.gridCoord = { x: 13, y: 13 };
     this.enemyRanger.setAction('walk');
     this.enemyRanger.setDirection('w');
+  }
 
+  public click(c: Coordinate) {
+    const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
+    if (action !== undefined) {
+      if (Math.floor(c.x / 32) < 5) {
+        c.x = 5 * 32;
+      } else if (Math.floor(c.x / 32) > 12) {
+        c.x = 12 * 32;
+      }
+
+      if (Math.floor(c.y / 32) < 3) {
+        c.y = 3 * 32;
+      } else if (Math.floor(c.y / 32) > 13) {
+        c.y = 13 * 32;
+      }
+
+      this.moveTo(c);
+      this.currentAction = action;
+    }
   }
 
   public spawn(s: string) {
     if (this.player) { this.clearPlayer(); }
-    console.log(AssetType[s]);
+    this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
     this.drawPlayer();
-
   }
 
-  public moveTo(dest: Coordinate) {
+  private moveTo(dest: Coordinate) {
     if (this.moveInterval === undefined) {
-      console.log(this.actionLayer[Math.floor(dest.x / 32)][Math.floor(dest.y / 32)]);
       this.moveInterval = setInterval(() => this.moveStep(dest), AnimationService.ANIMATION_DELAY);
     }
   }
@@ -240,11 +256,14 @@ export class TestmapService {
     const newLoc: Coordinate = { x: this.player.coord.x + delta.x * MapService.TERRAIN_SIZE, y: this.player.coord.y + delta.y * MapService.TERRAIN_SIZE };
     const direction: string = this.deltaToDirection.get(this.deltaToString(delta));
 
+    /*
+     * End of pathfinding.
+     */
     if (direction === 'none' || newLoc.x / MapService.TERRAIN_SIZE > 12 || newLoc.x / MapService.TERRAIN_SIZE < 5 || newLoc.y / MapService.TERRAIN_SIZE < 3 || newLoc.y / MapService.TERRAIN_SIZE > 13) {   // we have finished pathfinding
       clearInterval(this.moveInterval);
       this.moveInterval = undefined;
-
       console.log('Arrived at (' + this.player.gridCoord.x + ', ' + this.player.gridCoord.y + ')');
+      this.performAction();
 
       return;
     }
@@ -253,6 +272,38 @@ export class TestmapService {
     this.clearPlayer();
     this.player.coord = newLoc;
     this.drawPlayer();
+  }
+
+  private performAction() {
+    switch (this.currentAction) {
+      case Action.Forest: {
+        if (this.playerAsset === AssetType.Peasant) {
+          console.log('chop wood for 3 cycles');
+        }
+
+        break;
+      }
+
+      case Action.EnemyArcher: {
+        console.log('attack archer for 3 cycles');
+
+        break;
+      }
+
+      case Action.EnemyKnight: {
+        console.log('attack knight for 3 cycles');
+
+        break;
+      }
+
+      case Action.EnemyRanger: {
+        console.log('attack ranger for 3 cycles');
+
+        break;
+      }
+    }
+
+    this.currentAction = undefined;
   }
 
   /**

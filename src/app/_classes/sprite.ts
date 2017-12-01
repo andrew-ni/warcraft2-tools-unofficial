@@ -98,9 +98,12 @@ export class AnimationContext {
    * Set the action to the index specified.
    * @param a String or number, index of action within this Sprite to take on.
    */
-  public setAction(a: string | number): void {
+  public setAction(a: string | number, preserve: boolean = false): void {
     this._action = this._sprite.actions[a];
-    this.setDirection(0);
+
+    if (!preserve) {
+      this.setDirection(0);
+    }
   }
 
   /**
