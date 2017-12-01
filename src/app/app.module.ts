@@ -33,6 +33,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { TilesetComponent } from './tileset/tileset.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { TestmapComponent } from './testmap/testmap.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     AiComponent,
     TriggerComponent,
     DynamicSubtriggerComponent,
-    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,
+    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent, TestmapComponent,
   ],
   entryComponents: [
     StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,

@@ -1,5 +1,6 @@
 <div>
     <button class="ui button" (click)="openTab('main')">Map Tool</button>
+    <button class="ui button" (click)="openTab('testmap')">Test Map</button>
     <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
     <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
     <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
@@ -9,6 +10,9 @@
 <div id="main" class="tab" style="display:flex">
     <app-sidebar></app-sidebar>
     <app-map></app-map>
+</div>
+<div id="testmap" class="tab" style="display:none">
+    <app-testmap></app-testmap>
 </div>
 <div id="animation" class="tab" style="display:none">
     <app-animation></app-animation>
