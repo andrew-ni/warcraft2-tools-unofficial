@@ -128,13 +128,13 @@ export class TestmapService {
 
   }
 
-    /**
-   * Sets canvas and context elements, initializing this TestMap.
-   * @param bCanvas canvas element for drawing terrain
-   * @param bCtx context for terrain
-   * @param tCanvas canvas element for drawing assets
-   * @param tCtx context for assets
-   */
+  /**
+ * Sets canvas and context elements, initializing this TestMap.
+ * @param bCanvas canvas element for drawing terrain
+ * @param bCtx context for terrain
+ * @param tCanvas canvas element for drawing assets
+ * @param tCtx context for assets
+ */
   public setCanvases(bCanvas: HTMLCanvasElement, bCtx: CanvasRenderingContext2D, tCanvas: HTMLCanvasElement, tCtx: CanvasRenderingContext2D): void {
     this.bottomCanvas = bCanvas;
     this.bottomContext = bCtx;
@@ -147,7 +147,9 @@ export class TestmapService {
 
     this.bottomContext.fillRect(0, 0, 10, 10);
 
-    this.bottomContext.drawImage(img, 0, 0);
+    img.addEventListener('load', () => {
+      this.bottomContext.drawImage(img, 0, 0);
+    }, false);
   }
 
 }
