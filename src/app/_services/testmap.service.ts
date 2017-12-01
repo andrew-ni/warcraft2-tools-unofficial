@@ -4,8 +4,12 @@ import { Coordinate } from 'interfaces';
 import { SpriteService } from 'services/sprite.service';
 import { AnimationContext } from 'sprite';
 
+import * as fs from 'fs';
+import { join as pathJoin } from 'path';
+
 @Injectable()
 export class TestmapService {
+  public static readonly BACKGROUND_PATH = './data/testmap.png';
   public static readonly ANIMATION_DELAY = 250;
 
   private bottomCanvas: HTMLCanvasElement;
@@ -23,11 +27,13 @@ export class TestmapService {
   private enemyRanger: AnimationContext;
   private current: AnimationContext;
 
+  private backgroundImage: ImageBitmap;
+
   constructor(
     private spriteService: SpriteService,
   ) { }
 
-  private init() {
+  public init() {
     this.goldmine = new AnimationContext(this.spriteService.get(AssetType.GoldMine));
     this.farm = new AnimationContext(this.spriteService.get(AssetType.Farm));
     this.blacksmith = new AnimationContext(this.spriteService.get(AssetType.Blacksmith));
@@ -36,6 +42,9 @@ export class TestmapService {
     this.enemyArcher = new AnimationContext(this.spriteService.get(AssetType.Archer));
     this.enemyRanger = new AnimationContext(this.spriteService.get(AssetType.Ranger));
 
+    // const f: File = new File([''], TestmapService.BACKGROUND_PATH);
+    // console.log(f.path);
+    // this.backgroundImage = await createImageBitmap(new File([''], TestmapService.BACKGROUND_PATH));
   }
 
   /**
@@ -131,6 +140,14 @@ export class TestmapService {
     this.bottomContext = bCtx;
     this.topCanvas = tCanvas;
     this.topContext = tCtx;
+
+    this.spriteService.initializing.then(() => this.init());
+    const img = new Image();
+    img.src = TestmapService.BACKGROUND_PATH;
+
+    this.bottomContext.fillRect(0, 0, 10, 10);
+
+    this.bottomContext.drawImage(img, 0, 0);
   }
 
 }
