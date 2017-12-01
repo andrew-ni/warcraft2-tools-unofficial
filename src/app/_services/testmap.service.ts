@@ -56,30 +56,39 @@ export class TestmapService {
 
   private prepareInitialStates() {
 
-    this.lumbermill.gridCoord = { x: 2, y: 11};
+    this.lumbermill.gridCoord = { x: 2, y: 11 };
     this.lumbermill.setAction('inactive');
 
-    this.blacksmith.gridCoord = { x: 2, y: 8};
+    this.blacksmith.gridCoord = { x: 2, y: 8 };
     this.blacksmith.setAction('inactive');
 
-    this.farm.gridCoord = { x: 3, y: 6};
+    this.farm.gridCoord = { x: 3, y: 6 };
     this.farm.setAction('inactive');
 
-    this.goldmine.gridCoord = { x: 2, y: 3};
+    this.goldmine.gridCoord = { x: 2, y: 3 };
     this.goldmine.setAction('inactive');
 
-    this.enemyKnight.coord = { x: 13 * 32 - 20, y: 3 * 32 - 25};
+    this.enemyKnight.coord = { x: 13 * 32 - 20, y: 3 * 32 - 25 };
     this.enemyKnight.setAction('walk');
     this.enemyKnight.setDirection('w');
 
-    this.enemyArcher.coord = { x: 13 * 32 - 20, y: 8 * 32 - 25};
+    this.enemyArcher.coord = { x: 13 * 32 - 20, y: 8 * 32 - 25 };
     this.enemyArcher.setAction('walk');
     this.enemyArcher.setDirection('w');
 
 
-    this.enemyRanger.coord = { x: 13 * 32 - 20, y: 13 * 32 - 25};
+    this.enemyRanger.coord = { x: 13 * 32 - 20, y: 13 * 32 - 25 };
     this.enemyRanger.setAction('walk');
     this.enemyRanger.setDirection('w');
+
+  }
+
+  public spawn(s: string) {
+    if(this.current) {this.clear(this.current);}
+    console.log(AssetType[s]);
+    this.current = new AnimationContext(this.spriteService.get(AssetType[s]));
+    this.current.gridCoord = { x: 7, y: 7 };
+    this.draw(this.current);
 
   }
 
@@ -188,14 +197,15 @@ export class TestmapService {
 
   private clear(context: AnimationContext) {
     const c: Coordinate = context.coord;
-    const slice = context.sprite.image.width / 8;
+    let slice = context.sprite.image.width / 8;
+    if (context === this.goldmine) { slice = context.sprite.image.width; }
     this.topContext.clearRect(c.x, c.y, slice, slice);
   }
 
   private draw(context: AnimationContext) {
     const c: Coordinate = context.coord;
     let slice = context.sprite.image.width / 8;
-    if (context === this.goldmine) {slice = context.sprite.image.width; }
+    if (context === this.goldmine) { slice = context.sprite.image.width; }
     this.topContext.drawImage(
       context.sprite.image,
       0, slice * context.getCurFrame(), slice, slice,
