@@ -35,12 +35,6 @@ interface IMap {
  */
 @Injectable()
 export class CanvasService {
-  /** Sprite edge length in pixels */
-  public static readonly TERRAIN_SIZE = 32;
-
-  /** max number of players */
-  public static readonly MAX_PLAYERS = 8;
-
   /** Contains the canvas HTML element for terrain */
   private terrainCanvas: HTMLCanvasElement;
 
@@ -79,8 +73,8 @@ export class CanvasService {
    */
   public static drawImage(layer: CanvasRenderingContext2D, image: ImageBitmap, player: number, width: number, pos: Coordinate, index: number) {
     let offset = 0;
-    if (width % CanvasService.TERRAIN_SIZE !== 0) {
-      offset = (width - CanvasService.TERRAIN_SIZE) / 2;
+    if (width % MapService.TERRAIN_SIZE !== 0) {
+      offset = (width - MapService.TERRAIN_SIZE) / 2;
     }
     // Allows neutral units (owner 0) to be drawn correctly. Corrects spritesheet access, doesn't touch actual asset data.
     if (player === 0) { player = 1; }
@@ -90,8 +84,8 @@ export class CanvasService {
       index * width,
       width,
       width,
-      pos.x * CanvasService.TERRAIN_SIZE - offset,
-      pos.y * CanvasService.TERRAIN_SIZE - offset,
+      pos.x * MapService.TERRAIN_SIZE - offset,
+      pos.y * MapService.TERRAIN_SIZE - offset,
       width,
       width
     );
@@ -155,10 +149,10 @@ export class CanvasService {
    */
   public clearRegion(ctx: CanvasRenderingContext2D, reg: Region) {
     ctx.clearRect(
-      reg.x * CanvasService.TERRAIN_SIZE,
-      reg.y * CanvasService.TERRAIN_SIZE,
-      reg.width * CanvasService.TERRAIN_SIZE,
-      reg.height * CanvasService.TERRAIN_SIZE
+      reg.x * MapService.TERRAIN_SIZE,
+      reg.y * MapService.TERRAIN_SIZE,
+      reg.width * MapService.TERRAIN_SIZE,
+      reg.height * MapService.TERRAIN_SIZE
     );
   }
 
@@ -374,7 +368,7 @@ export class CanvasService {
           const img = this.spriteService.get(currentAsset.type);
           let single = img.image.width;
 
-          if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / CanvasService.MAX_PLAYERS; }
+          if (!neutralAssets.has(currentAsset.type)) { single = img.image.width / MapService.MAX_PLAYERS; }
           CanvasService.drawImage(this.assetContext, img.image, currentAsset.owner, single, { x: currentAsset.x, y: currentAsset.y }, img.index);
         }
       }

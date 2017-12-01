@@ -7,6 +7,7 @@ import { AnimationContext } from 'sprite';
 import * as fs from 'fs';
 import { join as pathJoin } from 'path';
 import { AnimationService } from 'services/animation.service';
+import { MapService } from 'services/map.service';
 
 @Injectable()
 export class TestmapService {
@@ -85,16 +86,16 @@ export class TestmapService {
     this.goldmine.gridCoord = { x: 2, y: 3 };
     this.goldmine.setAction('inactive');
 
-    this.enemyKnight.coord = { x: 13 * 32 - 20, y: 3 * 32 - 25 };
+    this.enemyKnight.gridCoord = { x: 13, y: 3 };
     this.enemyKnight.setAction('walk');
     this.enemyKnight.setDirection('w');
 
-    this.enemyArcher.coord = { x: 13 * 32 - 20, y: 8 * 32 - 25 };
+    this.enemyArcher.gridCoord = { x: 13, y: 8 };
     this.enemyArcher.setAction('walk');
     this.enemyArcher.setDirection('w');
 
 
-    this.enemyRanger.coord = { x: 13 * 32 - 20, y: 13 * 32 - 25 };
+    this.enemyRanger.gridCoord = { x: 13, y: 13 };
     this.enemyRanger.setAction('walk');
     this.enemyRanger.setDirection('w');
 
@@ -115,17 +116,19 @@ export class TestmapService {
     }
   }
 
-  public moveStep(dest: Coordinate) {
+  private moveStep(dest: Coordinate) {
     // 20 pixels hardcoded to account for offset inside spritesheet
-    const source = { x: this.player.coord.x + 20, y: this.player.coord.y + 20 };
+    const source = { x: this.player.coord.x, y: this.player.coord.y };
     const delta: Coordinate = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
-    const newLoc: Coordinate = { x: this.player.coord.x + delta.x * 32, y: this.player.coord.y + delta.y * 32 };
+    const newLoc: Coordinate = { x: this.player.coord.x + delta.x * MapService.TERRAIN_SIZE, y: this.player.coord.y + delta.y * MapService.TERRAIN_SIZE };
     const direction: string = this.deltaToDirection.get(this.deltaToString(delta));
 
-    if (direction === 'none') {   // we have finished pathfinding
-      console.log('destination reached');
+    if (direction === 'none' || newLoc.x / MapService.TERRAIN_SIZE > 12 || newLoc.x / MapService.TERRAIN_SIZE < 5 || newLoc.y / MapService.TERRAIN_SIZE < 3 || newLoc.y / MapService.TERRAIN_SIZE > 13) {   // we have finished pathfinding
       clearInterval(this.moveInterval);
       this.moveInterval = undefined;
+
+      console.log('Arrived at (' + this.player.gridCoord.x + ', ' + this.player.gridCoord.y + ')');
+
       return;
     }
 
@@ -138,14 +141,14 @@ export class TestmapService {
   /**
    * Comparison helper function. Should always take (source, dest), since assets starting at
    * the top left corner is assumed to be default behavior.
-   * 32 is hardcoded as the "visual width" of a sprite.
+   * MapService.TERRAIN_SIZE is hardcoded as the "visual width" of a sprite.
    * @param source Source
    * @param dest Destination
    */
   private compare(source: number, dest: number): number {
     if (source > dest) { // less
       return -1;
-    } else if ((source + 32) > dest) { // equal
+    } else if ((source + MapService.TERRAIN_SIZE) > dest) { // equal
       return 0;
     } else { // greater
       return 1;
@@ -266,39 +269,66 @@ export class TestmapService {
 
   private clearAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
-    let slice = context.sprite.image.width / 8;
+    let slice = context.sprite.image.width / MapService.MAX_PLAYERS;
+
+    let offset = 0;
+
+    if (slice % MapService.TERRAIN_SIZE !== 0) {
+      offset = (slice - MapService.TERRAIN_SIZE) / 2;
+    }
     if (context === this.goldmine) { slice = context.sprite.image.width; }
-    this.assetContext.clearRect(c.x, c.y, slice, slice);
+    this.assetContext.clearRect(c.x - offset, c.y - offset, slice, slice);
   }
 
   private drawAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
-    let slice = context.sprite.image.width / 8;
-    if (context === this.goldmine) { slice = context.sprite.image.width; }
-    this.assetContext.drawImage(
-      context.sprite.image,
-      0, slice * context.getCurFrame(), slice, slice,
-      c.x, c.y, slice, slice);
+    const img = context.sprite.image;
 
-    console.log('asset drawn');
+    let slice = context.sprite.image.width / MapService.MAX_PLAYERS;
+
+    if (context === this.goldmine) { slice = context.sprite.image.width; }
+
+    let offset = 0;
+
+    if (slice % MapService.TERRAIN_SIZE !== 0) {
+      offset = (slice - MapService.TERRAIN_SIZE) / 2;
+    }
+
+    console.log(offset);
+
+    this.assetContext.drawImage(
+      img,
+      0, slice * context.getCurFrame(), slice, slice,
+      c.x - offset, c.y - offset, slice, slice);
   }
 
   private clearPlayer() {
     const c: Coordinate = this.player.coord;
-    const slice = this.player.sprite.image.width / 8;
-    this.playerContext.clearRect(c.x, c.y, slice, slice);
+    const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
+
+    let offset = 0;
+
+    if (slice % MapService.TERRAIN_SIZE !== 0) {
+      offset = (slice - MapService.TERRAIN_SIZE) / 2;
+    }
+
+    this.playerContext.clearRect(c.x - offset, c.y - offset, slice, slice);
   }
 
   private drawPlayer() {
     const c: Coordinate = this.player.coord;
-    const slice = this.player.sprite.image.width / 8;
+    const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
+
+    let offset = 0;
+
+    if (slice % MapService.TERRAIN_SIZE !== 0) {
+      offset = (slice - MapService.TERRAIN_SIZE) / 2;
+    }
 
     this.playerContext.drawImage(
       this.player.sprite.image,
       0, slice * this.player.getCurFrame(), slice, slice,
-      c.x, c.y, slice, slice);
-
-    console.log('player drawn');
+      c.x - offset, c.y - offset, slice, slice);
   }
 
 

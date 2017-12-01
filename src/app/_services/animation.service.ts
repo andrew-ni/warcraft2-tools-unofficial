@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AssetType, neutralAssets } from 'asset';
 import { Edit } from 'interfaces';
 import { CanvasService } from 'services/canvas.service';
+import { MapService } from 'services/map.service';
 import { SpriteService } from 'services/sprite.service';
 import { AnimationContext } from 'sprite';
 
@@ -84,7 +85,7 @@ export class AnimationService {
     CanvasService.drawImage(
       this.context,
       this.animation.sprite.image, 1,
-      neutralAssets.has(this._currentAsset) ? this.animation.sprite.image.width : this.animation.sprite.image.width / CanvasService.MAX_PLAYERS,
+      neutralAssets.has(this._currentAsset) ? this.animation.sprite.image.width : this.animation.sprite.image.width / MapService.MAX_PLAYERS,
       { x: 4, y: 4 },
       this.animation.getCurFrame());
   }
@@ -161,7 +162,7 @@ export class AnimationService {
   private async editSprite(change: Edit) {
     const index = this.animation.getCurFrame();
     const image = this.animation.sprite.image;
-    const width = neutralAssets.has(this._currentAsset) ? image.width : image.width / CanvasService.MAX_PLAYERS;
+    const width = neutralAssets.has(this._currentAsset) ? image.width : image.width / MapService.MAX_PLAYERS;
 
     const editCanvas = document.createElement('canvas');
     const editContext = editCanvas.getContext('2d');
@@ -170,9 +171,9 @@ export class AnimationService {
     editCanvas.height = image.height;
     editContext.drawImage(image, 0, 0);
 
-    editContext.clearRect(0, index * width, width * CanvasService.MAX_PLAYERS, width);
-    editContext.drawImage(image, 0, index * width, width * CanvasService.MAX_PLAYERS, width,
-      change.dx, index * width + change.dy, width * CanvasService.MAX_PLAYERS, width);
+    editContext.clearRect(0, index * width, width * MapService.MAX_PLAYERS, width);
+    editContext.drawImage(image, 0, index * width, width * MapService.MAX_PLAYERS, width,
+      change.dx, index * width + change.dy, width * MapService.MAX_PLAYERS, width);
 
     const result: ImageBitmap = await createImageBitmap(editContext.getImageData(0, 0, image.width, image.height));
     this.animation.sprite.setCustomImage(result);
