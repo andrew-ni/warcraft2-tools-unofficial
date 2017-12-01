@@ -64,7 +64,6 @@ export class SoundService {
     }
   }
 
-  // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
   public copyFile(src, dest, category, sound, clip) {
     const readStream = fs.createReadStream(src);
 
@@ -74,16 +73,16 @@ export class SoundService {
 
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
-      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
     });
   }
 
   public editSoundMap(category, sound, clip) {
     this.soundMap.get(category).set(sound, clip);
     const newsnd = this.soundMap.get(category).get(sound);
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + newsnd.src + '" type="audio/wav">';
 
-    // this.soundUpdated.next(undefined);
+    const player = document.getElementById('audio-player') as HTMLAudioElement;
+    player.src = newsnd.src;
+
   }
 
   public deleteSound(tbd: string) {

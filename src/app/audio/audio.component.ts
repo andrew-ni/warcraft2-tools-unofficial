@@ -37,13 +37,11 @@ export class AudioComponent implements OnInit {
   ngOnInit() {
     this.soundService.parseSndData();
     this.SongCategories = [...this.soundService.soundMap.keys()];
-    this.selectedCategory = this.SongCategories[0];
 
     this.mapService.mapProjectLoaded.do(() => console.log('soundLoaded')).subscribe({
       next: async () => {
         this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
-        this.selectedCategory = this.SongCategories[0];
       },
       error: err => console.error(err),
       complete: null
@@ -57,7 +55,6 @@ export class AudioComponent implements OnInit {
     this.selectedCategory = category;
 
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
-    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.soundService.soundMap.get(item) + '" type="audio/wav">';
   }
 
   playSound(clipName) {
@@ -66,7 +63,9 @@ export class AudioComponent implements OnInit {
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
     this.destPath = '../data/customSnd/' + this.selectedCategory + '/' + file;
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.selectedClip.src + '" type="audio/wav">';
+
+    const player = document.getElementById('audio-player') as HTMLAudioElement;
+    player.src = this.selectedClip.src;
   }
 
   changeAudio() {
