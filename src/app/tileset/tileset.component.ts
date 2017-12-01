@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Menu } from 'electron';
-import { saveAs } from 'file-saver';
 
 import { AssetType } from 'asset';
 import { Coordinate } from 'interfaces';
@@ -64,7 +63,10 @@ export class TilesetComponent implements OnInit {
     this.tilesetService.tilesetLoad();
   }
 
-  private saveTileset() {
+  private async saveTileset() {
+
+    console.log('saving tileset');
+
     const newCanvas = document.createElement('canvas');
     const context = newCanvas.getContext('2d');
     newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
@@ -72,9 +74,8 @@ export class TilesetComponent implements OnInit {
     context.scale(1 / this.tilesetService.MULTIPLIER, 1 / this.tilesetService.MULTIPLIER);
     context.drawImage(this.tilesetCanvas, 0, 0);
 
-    newCanvas.toBlob(async (blob) => {
-      saveAs(blob, 'Terrain.png');
-    });
+    const tilesetImgBitmap = await createImageBitmap(newCanvas);
+    this.spriteService.get(AssetType.Terrain).setCustomImage(tilesetImgBitmap);
   }
 
   private selectTile(clickPos: Coordinate) {
