@@ -1,25 +1,42 @@
 import { Injectable } from '@angular/core';
 import { AssetType } from 'asset';
-import { ReplaySubject } from 'rxjs';
-import { MapService } from 'services/map.service';
 import { AssetTypeToClips } from 'sound';
 
 import * as fs from 'fs';
 
-interface IMap {
-  soundMap: Map<string, Map<string, string>>;
-}
-
 @Injectable()
 export class SoundService {
-  private map: IMap;
   public nameToAudio: Map<string, HTMLAudioElement>;
+  public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
-  public soundUpdated = new ReplaySubject<void>(1);
-
-  constructor(mapService: MapService) {
-    this.map = mapService;
+  constructor() {
+    this.soundMap = new Map();
     this.nameToAudio = new Map();
+  }
+
+  /**
+ * Reads the SoundClips dat file and populates the map's soundMap.
+ */
+  public parseSndData() {
+    const sndData = this.readSndDat().trim();
+    const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
+    const lines = clips.split(/\r?\n/);
+
+    for (let i = 0; i < lines.length; i += 2) {
+      const [, type, file] = lines[i + 1].split('/');
+      const filepath = '../dist/assets/snd/' + type + '/' + file;
+      const checkedPath = this.checkForCustomSound(filepath);
+      const checkedAudio = new Audio(checkedPath);
+      if (this.soundMap.has(type)) {
+        this.soundMap.get(type).set(lines[i], checkedAudio);
+      } else {
+        const fileToAudio: Map<string, HTMLAudioElement> = new Map;
+        fileToAudio.set(lines[i], checkedAudio);
+        this.soundMap.set(type, fileToAudio);
+      }
+      this.nameToAudio.set(lines[i], checkedAudio);
+    }
+    console.log(this.soundMap);
   }
 
   public readSndDat(): string {
@@ -47,7 +64,7 @@ export class SoundService {
   }
 
   // stolen from https://stackoverflow.com/questions/38595524/copy-a-source-file-to-another-destination-in-nodejs
-  public copyFile(src, dest) {
+  public copyFile(src, dest, category, sound, clip) {
     const readStream = fs.createReadStream(src);
     console.log('src: ' + src);
     console.log('dest: ' + dest);
@@ -56,26 +73,18 @@ export class SoundService {
       console.log(err);
     });
 
-    readStream.once('end', () => {
-      // this.soundUpdated.next(undefined);
-    });
-    const writeStream = fs.createWriteStream(dest);
-
-    writeStream.on('finish', () => {
-      console.log('write end');
-    });
-    readStream.pipe(writeStream).on('finish', () => {
-      // document.getElementById('soundplayers').innerHTML = '';
-      // console.log('set to empty');
-      document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
-
+    readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
+      this.editSoundMap(category, sound, clip);
+      document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
       console.log('done copying');
     });
   }
 
-  public editSoundMap(category: string, sound: string, dest: string) {
+  public editSoundMap(category, sound, clip) {
     console.log('editSound');
-    this.map.soundMap.get(category).set(sound, dest);
+    this.soundMap.get(category).set(sound, clip);
+    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + dest + '" type="audio/wav">';
+
     // this.soundUpdated.next(undefined);
   }
 
@@ -84,7 +93,7 @@ export class SoundService {
   }
 
 
-  public getAudioForAssetType(asset: AssetType){
+  public getAudioForAssetType(asset: AssetType) {
     const clipNames = AssetTypeToClips.get(asset);
     const clipNameToAudio = new Map<string, HTMLAudioElement>();
 

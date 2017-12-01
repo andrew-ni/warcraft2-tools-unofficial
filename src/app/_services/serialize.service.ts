@@ -7,7 +7,6 @@ import { Dimension, Region } from 'interfaces';
 import { Player } from 'player';
 import { AssetsService } from 'services/assets.service';
 import { MapService } from 'services/map.service';
-import { SoundService } from 'services/sound.service';
 import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -22,7 +21,6 @@ interface IMap {
   width: number;
   height: number;
   terrainLayer: TileType[][];
-  soundMap: Map<string, Map<string, string>>;
   assetLayer: Asset[][];
   drawLayer: Tile[][];
   partialBits: Uint8Array[];
@@ -62,7 +60,6 @@ export class SerializeService {
     mapService: MapService,
     private terrainService: TerrainService,
     private assetsService: AssetsService,
-    private soundService: SoundService,
     private appRef: ApplicationRef
   ) {
     this.map = mapService;
@@ -148,7 +145,6 @@ export class SerializeService {
     this.map.tileSet = undefined;
     // this.map.soundMap = new Map<string, Map<string, string>>();
     this.parseMapData(mapData);
-    this.parseSndData();
     console.log('init Map');
 
     ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
@@ -279,27 +275,27 @@ export class SerializeService {
     }
   }
 
-  /**
-   * Reads the SoundClips dat file and populates the map's soundMap.
-   */
-  private parseSndData() {
-    const sndData = this.soundService.readSndDat().trim();
-    const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
-    const lines = clips.split(/\r?\n/);
+  // /**
+  //  * Reads the SoundClips dat file and populates the map's soundMap.
+  //  */
+  // private parseSndData() {
+  //   const sndData = this.soundService.readSndDat().trim();
+  //   const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
+  //   const lines = clips.split(/\r?\n/);
 
-    for (let i = 0; i < lines.length; i += 2) {
-      const [, type, file] = lines[i + 1].split('/');
-      const filepath = '../dist/assets/snd/' + type + '/' + file;
-      const checkedPath = this.soundService.checkForCustomSound(filepath);
-      if (this.map.soundMap.has(type)) {
-        this.map.soundMap.get(type).set(lines[i], checkedPath);
-      } else {
-        const fileToPath: Map<string, string> = new Map;
-        fileToPath.set(lines[i], checkedPath);
-        this.map.soundMap.set(type, fileToPath);
-      }
-      this.soundService.nameToAudio.set(lines[i], new Audio(checkedPath));
-    }
-    console.log(this.map.soundMap);
-  }
+  //   for (let i = 0; i < lines.length; i += 2) {
+  //     const [, type, file] = lines[i + 1].split('/');
+  //     const filepath = '../dist/assets/snd/' + type + '/' + file;
+  //     const checkedPath = this.soundService.checkForCustomSound(filepath);
+  //     if (this.map.soundMap.has(type)) {
+  //       this.map.soundMap.get(type).set(lines[i], checkedPath);
+  //     } else {
+  //       const fileToPath: Map<string, string> = new Map;
+  //       fileToPath.set(lines[i], checkedPath);
+  //       this.map.soundMap.set(type, fileToPath);
+  //     }
+  //     this.soundService.nameToAudio.set(lines[i], new Audio(checkedPath));
+  //   }
+  //   console.log(this.map.soundMap);
+  // }
 }

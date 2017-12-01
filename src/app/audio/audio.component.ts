@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Menu } from 'electron';
-import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
 const { dialog } = require('electron').remote;
@@ -21,29 +20,18 @@ export class AudioComponent implements OnInit {
 
   SongCategories = [];
   // Sounds = ["Sound #1", "Sound #2", "Sound #3"];
-  Sounds: string[] =  [];
-  isCatLoaded: Boolean = false;
+  Sounds: string[] = [];
   isSoundLoaded: Boolean = false;
-  selectedPath: string;
+  selectedClip: HTMLAudioElement;
   selectedCategory: string;
-  selectedSound: string;
+  selectedClipName: string;
   destPath: string;
-  selectedSOUND: HTMLAudioElement;
 
   test: string;
 
   constructor(
-    private mapService: MapService,
     private soundService: SoundService,
   ) {
-    // console.log('thasdf' + this.serializeService.soundMap);
-    // this.soundService.soundUpdated.do(x => console.log('soundUpdated: ', JSON.stringify(x))).subscribe({
-    //   next: () => {
-    //     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
-    //     console.log('next'); },
-    //   error: err => console.error(err),
-    //   complete: null
-    // });
   }
 
   // fun_close() {
@@ -54,85 +42,55 @@ export class AudioComponent implements OnInit {
   //   document.getElementById('audio1').setAttribute('style', 'background-color: #666; color:#fff;');
   // }
 
-  loadSounds() {
-    this.SongCategories = [...this.mapService.soundMap.keys()];
-    this.isCatLoaded = true;
-    this.selectedCategory = this.SongCategories[0];
-    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.destPath+ '" type="audio/wav">';
+  // loadSounds() {
+  //   this.SongCategories = [...this.soundService.soundMap.keys()];
+  //   this.selectedCategory = this.SongCategories[0];
+  //   // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.destPath+ '" type="audio/wav">';
+  //   // this.isSoundLoaded = true;
+  // }
 
-    // this.isSoundLoaded = true;
-  }
-
-  showSound(item) {
+  showSound(category) {
     this.isSoundLoaded = true;
     this.Sounds = [];
-    const clipNames = this.mapService.soundMap.get(item);
-    for (const name of clipNames.keys()) {
+    const clipNames = this.soundService.soundMap.get(category).keys();
+    for (const name of clipNames) {
       this.Sounds.push(name);
     }
-    this.selectedCategory = item;
-    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.mapService.soundMap.get(item) + '" type="audio/wav">';
+    this.selectedCategory = category;
+    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.soundService.soundMap.get(item) + '" type="audio/wav">';
 
   }
 
-  // // updatePlayer() {
-  // //   this.soundService.soundUpdated.do(x => console.log('soundUpdated: ', JSON.stringify(x))).subscribe({
-  // //     next: () => {
-  // //       document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + this.destPath + '" type="audio/wav">';
-  // //       console.log('next'); },
-  // //     error: err => console.error(err),
-  // //     complete: null
-  // //   });
-  // // }
-
-  playSound(item) {
-    this.selectedSound = item;
-    this.selectedPath = this.mapService.soundMap.get(this.selectedCategory).get(item);
-    const file = this.selectedPath.split('/')[5];
+  playSound(clipName) {
+    this.selectedClipName = clipName;
+    this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
+    const split = this.selectedClip.src.split('/');
+    const file = split[split.length - 1];
     this.destPath = '../dist/assets/customSnd/' + this.selectedCategory + '/' + file;
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.selectedPath + '" type="audio/wav">';
+    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.selectedClip.src + '" type="audio/wav">';
   }
 
   changeAudio() {
-    let myaudio: HTMLAudioElement;
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
-
-      // const pathSplit = this.selectedPath.split('snd');
-      // const dest = 'src/asset/customSnd' + pathSplit[1];
-      // const dest = pathSplit[0] + 'customSnd' + pathSplit[1];
-      // this.soundService.copyFile(paths[0], this.destPath);
-      myaudio = new Audio(paths[0]);
-      // this.selectedSOUND.play();
-      this.soundService.copyFile(paths[0], 'dist/' + this.destPath);
-
-      this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, this.destPath);
-      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + myaudio.src + '" type="audio/wav">';
-     // IO.loadMap(window, paths[0]);
+      const newClip = new Audio(paths[0]);
+      this.soundService.copyFile(paths[0], 'dist/' + this.destPath, this.selectedCategory, this.selectedClipName, newClip);
     });
-    // myaudio.play();
-    console.log(this.mapService.soundMap);
+    console.log(this.soundService.soundMap);
   }
 
   revertAudio() {
-    // const tbd = 'src/assets/customSnd/' + this.selectedCategory + '/' + this.selectedSound;
     console.log('DEST PATH; ' + this.destPath);
     this.soundService.deleteSound('dist/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
     const orig = '../dist/assets/snd' + name;
-    this.soundService.editSoundMap(this.selectedCategory, this.selectedSound, orig);
+    this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + orig + '" type="audio/wav">';
   }
 
   ngOnInit() {
-    this.SongCategories = [...this.mapService.soundMap.keys()];
-    this.isCatLoaded = true;
+    this.soundService.parseSndData();
+    this.SongCategories = [...this.soundService.soundMap.keys()];
     this.selectedCategory = this.SongCategories[0];
-
   }
-
-  // private debug() {
-  //   console.log([...this.mapService.soundMap.keys()]);
-  //   console.log(this.SongCategories);
-  // }
 }
