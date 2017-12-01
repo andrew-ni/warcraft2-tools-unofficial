@@ -1,3 +1,4 @@
+import { Coordinate } from 'app/_interfaces';
 
 /**
  * Sprite contains all information about an Asset parsed from their `.dat`
@@ -67,6 +68,9 @@ export class AnimationContext {
   /** The direction of this current animation. */
   private _direction: AnimationDirection;
 
+  /** Location of asset that owns this animation context. Only used by testmap. */
+  private _coord: Coordinate;
+
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
    * @param _sprite The new sprite this AnimationContext should reflect.
@@ -85,6 +89,8 @@ export class AnimationContext {
   get direction() { return this._direction; }
   get actionList() { return this.sprite.actions; }
   get directionList() { return this._action.directions; }
+  get coord() { return this._coord; }
+  set coord(c: Coordinate) { this._coord = c; }
 
   /**
    * Set the action to the index specified.

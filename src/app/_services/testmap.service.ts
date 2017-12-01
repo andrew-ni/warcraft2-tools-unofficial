@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AssetType } from 'asset';
+import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
 import { SpriteService } from 'services/sprite.service';
 import { AnimationContext } from 'sprite';
@@ -145,11 +145,25 @@ export class TestmapService {
     const img = new Image();
     img.src = TestmapService.BACKGROUND_PATH;
 
-    this.bottomContext.fillRect(0, 0, 10, 10);
-
     img.addEventListener('load', () => {
       this.bottomContext.drawImage(img, 0, 0);
     }, false);
   }
+
+  private clear(context: AnimationContext) {
+    const c: Coordinate = context.coord;
+    const slice = context.sprite.image.width / 8;
+    this.topContext.clearRect(c.x, c.y, slice, slice);
+  }
+
+  private draw(context: AnimationContext) {
+    const c: Coordinate = context.coord;
+    const slice = context.sprite.image.width / 8;
+    this.topContext.drawImage(
+      context.sprite.image,
+      0, 0, slice, slice,
+      c.x, c.y, slice, slice * (context.getCurFrame() + 1));
+  }
+
 
 }
