@@ -11,6 +11,8 @@ import { TerrainService } from 'services/terrain.service';
 import { charToTileType, numToChar, Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
+import * as JSZip from 'jszip';
+
 /**
  * Narrow IMap interface to discourage access of unrelated attributes
  */
@@ -29,6 +31,9 @@ interface IMap {
   mapVersion: string;
   terrainPath: string;
   tileSet: Tileset;
+  difficulty: string[];
+  events: string[];
+  triggers: string[];
   mapResized: Subject<Dimension>;
   assetsUpdated: Subject<Region>;
 }
@@ -49,8 +54,10 @@ export class SerializeService {
   public static readonly PLAYER_RESOURCES_HEADER = '# Starting resources Player Gold Lumber';
   public static readonly ASSET_NUM_HEADER = '# Number of assets';
   public static readonly ASSET_DETAIL_HEADER = '# Starting assets Type Owner X Y';
-  public static readonly AI_NUM_HEADER = '# Number of scripts';
-  public static readonly AI_SCRIPTS_HEADER = '# AI Scripts';
+  public static readonly AI_DIFFICULTY_HEADER = '# AI Difficulty Scripts';
+  public static readonly AI_EVENTS_HEADER = '# Events Scripts';
+  public static readonly AI_TRIGGER_COUNT = '# Trigger Count';
+  public static readonly AI_TRIGGERS = '# Triggers';
   public static readonly DESCRIPTION_HEADER = '# Map Description';
   public static readonly TILESET_HEADER = '# Map Tileset';
 
@@ -122,6 +129,21 @@ export class SerializeService {
       lines.push(AssetType[asset.type] + ' ' + asset.owner + ' ' + asset.x + ' ' + asset.y);
     }
 
+    lines.push(SerializeService.AI_DIFFICULTY_HEADER);
+    for (const script of this.map.difficulty) {
+      lines.push(script);
+    }
+    lines.push(SerializeService.AI_EVENTS_HEADER);
+    for (const script of this.map.events) {
+      lines.push(script);
+    }
+    lines.push(SerializeService.AI_TRIGGER_COUNT);
+    lines.push(String(this.map.triggers.length));
+    lines.push(SerializeService.AI_TRIGGERS);
+    for (const script of this.map.triggers) {
+      lines.push(script);
+    }
+
     return lines.join('\n');  // join all lines with newline
   }
 
@@ -143,7 +165,9 @@ export class SerializeService {
     this.map.players = [];
     this.map.assets = [];
     this.map.tileSet = undefined;
-    // this.map.soundMap = new Map<string, Map<string, string>>();
+    this.map.difficulty = [];
+    this.map.events = [];
+    this.map.triggers = [];
     this.parseMapData(mapData);
     console.log('init Map');
 
@@ -156,7 +180,7 @@ export class SerializeService {
    * @param mapData Map file contents
    */
   private parseMapData(mapData: string): void {
-    const [mapVersion, name, dimension, mapDescription, terrainPath, terrain, partialbits, , players, , assets] = mapData.split(/#.*?\r?\n/g);
+    const [mapVersion, name, dimension, mapDescription, terrainPath, terrain, partialbits, , players, , assets, aiDifficulty, aiEvents, , aiTriggers] = mapData.split(/#.*?\r?\n/g);
     this.map.mapVersion = mapVersion.trim();
     this.map.name = name.trim();
     [this.map.width, this.map.height] = dimension.trim().split(' ').map((dim) => parseInt(dim, 10));
@@ -167,11 +191,11 @@ export class SerializeService {
     this.initAssetLayer();
     this.parseAssets(assets ? assets.trim() : undefined);
     this.map.players = this.parsePlayers(players.trim(), this.map.assets);
+    [this.map.difficulty, this.map.events, this.map.triggers] = this.parseAI(aiDifficulty ? aiDifficulty.trim() : undefined, aiEvents ? aiEvents.trim() : undefined, aiTriggers ? aiTriggers.trim() : undefined);
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
     this.map.mapResized.next({ width: this.map.width, height: this.map.height });
-    this.map.assetsUpdated.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
     this.appRef.tick(); // we can optimize this to not update the whole app
   }
 
@@ -248,6 +272,29 @@ export class SerializeService {
       // .map format is type owner x y, whereas asset construction is owner type x y
       this.assetsService.placeAsset(parseInt(owner, 10), AssetType[type], { x: parseInt(x, 10), y: parseInt(y, 10) }, false);
     }
+  }
+
+  /**
+   * Parses AI portion of map configuration.
+   * @param aiDifficulty AI Difficulty settings
+   * @param aiEvents AI event actions
+   * @param aiTriggers AI Triggers.
+   */
+  private parseAI(aiDifficulty: string, aiEvents: string, aiTriggers: string) {
+    let difficulty: string[] = [];
+    let events: string[] = [];
+    let triggers: string[] = [];
+    if (aiDifficulty !== undefined) {
+      difficulty = aiDifficulty.split(/\r?\n/);
+    }
+    if (aiEvents !== undefined) {
+      events = aiEvents.split(/\r?\n/);
+    }
+    if (aiTriggers !== undefined) {
+      triggers = aiTriggers.split(/\r?\n/);
+    }
+
+    return [difficulty, events, triggers];
   }
 
   /**

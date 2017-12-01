@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
 import { readFile } from 'fs';
 import { join as pathJoin } from 'path';
+import { Subject } from 'rxjs/Rx';
 
 import { AssetType, neutralAssets } from 'asset';
 import { Coordinate } from 'interfaces';
+import { FileService } from 'services/file.service';
+import { MapService } from 'services/map.service';
 import { AnimationAction, AnimationDirection, Sprite } from 'sprite';
+import { Tileset } from 'tileset';
+
+
+interface IMap {
+  tileSet: Tileset;
+  mapLoaded: Subject<void>;
+}
 
 /**
  * Handles all sprite loading and recoloring for assets
@@ -25,8 +35,22 @@ export class SpriteService {
 
   public initializing: Promise<void[]>;
 
-  constructor() {
+  private map: IMap;
+
+  constructor(
+    private fileService: FileService,
+    mapService: MapService,
+  ) {
+    this.map = mapService;
+    this.preInit();
     this.initializing = this.init();
+  }
+
+  public preInit() {
+
+    for (let type = 0; type < AssetType.MAX; type++) {
+      this.sprites.set(type, new Sprite(undefined, undefined, undefined, undefined, false));
+    }
   }
 
   /**
@@ -36,19 +60,46 @@ export class SpriteService {
    * Needs to be called before `get`
    */
   public async init() {
-    if (!this.isInitialized) {
-      this.isInitialized = true;
+    await this.fileService.initializing;
 
-      const prefetches: Promise<void>[] = [];
-      for (let type = 0; type < AssetType.MAX; type++) {
-        prefetches.push(this.prefetch(type));
-      }
-
-      /** Initialize the colorMap with Colors.png */
-      this.colorMap = await this.HTMLImageToImageData(await this.loadImage('assets/img/Colors.png'));
-
-      return Promise.all(prefetches);
+    const prefetches: Promise<void>[] = [];
+    for (let type = 0; type < AssetType.MAX; type++) {
+      prefetches.push(this.prefetch(type));
     }
+
+    /** Initialize the colorMap with Colors.png */
+    this.colorMap = await this.HTMLImageToImageData(await this.loadImage('data/img/Colors.png'));
+
+    return Promise.all(prefetches);
+  }
+
+  /**
+ * Returns an array of all sprites that are not default. Intended
+ * to be used for packaging purposes.
+ */
+  public getModifiedImages() {
+
+    const getBlob = (image: ImageBitmap, type: AssetType) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      canvas.width = neutralAssets.has(type) ? image.width : image.width / MapService.MAX_PLAYERS;
+      canvas.height = image.height;
+
+      context.drawImage(image, 0, 0);
+
+      return new Promise<Blob>(resolve => {
+        canvas.toBlob(blob => resolve(blob));
+      });
+    };
+
+    const ret = new Array<{ type: AssetType, blob: Promise<Blob> }>();
+
+    this.sprites.forEach((sprite, key) => {
+      if (sprite.isCustom) ret.push({ type: key, blob: getBlob(sprite.image, key) });
+    });
+
+    return ret;
   }
 
   /**
@@ -58,17 +109,21 @@ export class SpriteService {
    * @param type The asset type of the sprite
    */
   private async prefetch(type: AssetType) {
-    if (!this.sprites.has(type)) {
-      this.sprites.set(type, undefined);
+    const { fileData, image, isCustom } = await this.fileService.getImg(type);
+    const { defaultIndex, imagePath, animationSets } = this.parseDataFile(fileData);
+    const bitmap = neutralAssets.has(type) ? image : await this.recolorBitmap(image);
+    Object.assign(this.sprites.get(type), new Sprite(bitmap, imagePath, defaultIndex, animationSets, isCustom));
+    if (type === AssetType.Terrain) { this.map.tileSet = new Tileset(fileData); this.map.mapLoaded.next(); }
+  }
 
-      return new Promise<void>(async resolve => {
-        const { defaultIndex, imagePath, animationSets } = await this.readDataFile(AssetType[type]);
-        const rawImage = await this.loadImage(imagePath);
-        const image = neutralAssets.has(type) ? this.HTMLImageToBitmap(rawImage) : this.recolorSprite(rawImage);
-        this.sprites.set(type, new Sprite(await image, imagePath, defaultIndex, animationSets));
-        resolve();
-      });
-    }
+  /**
+   * Recreates the ImageBitmap for a given Sprite. AssetType is needed to determine if recoloring is needed.
+   * @param type The asset type of the sprite
+   */
+  public async reset(type: AssetType) {
+    const sprite = this.sprites.get(type);
+    const { image } = await this.fileService.getImg(type, true);  // true to force default png
+    sprite.image = await (neutralAssets.has(type) ? image : this.recolorBitmap(image));
   }
 
   /**
@@ -131,12 +186,12 @@ export class SpriteService {
   }
 
   /**
-   * Given a sprite it will resize the image to width * MaxPlayers,
-   * And recolor each sprite for each player.
+   * Given a bitmap it will resize the image to width * MaxPlayers,
+   * And recolor each bitmap for each player.
    * The recoloring is based of colorMap.
-   * @param htmlImage The sprite to recolor for each player.
+   * @param bitmap The bitmap to recolor for each player.
    */
-  private async recolorSprite(htmlImage: HTMLImageElement) {
+  private async recolorBitmap(bitmap: ImageBitmap) {
     const [r, g, b, a] = [0, 1, 2, 4];
 
     /** @returns A Uint8ClampedArray of length 4, where [R,G,B,A] are the elements. */
@@ -175,15 +230,15 @@ export class SpriteService {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
-    canvas.width = htmlImage.width * this.colorMap.height;
-    canvas.height = htmlImage.height;
+    canvas.width = bitmap.width * this.colorMap.height;
+    canvas.height = bitmap.height;
 
     for (let player = 0; player < this.colorMap.height; player++) {
-      context.drawImage(htmlImage, player * htmlImage.width, 0);
+      context.drawImage(bitmap, player * bitmap.width, 0);
     }
 
-    const image = context.getImageData(0, 0, htmlImage.width * this.colorMap.height, htmlImage.height);
-    recolor(image, htmlImage.width);
+    const image = context.getImageData(0, 0, bitmap.width * this.colorMap.height, bitmap.height);
+    recolor(image, bitmap.width);
     return createImageBitmap(image);
   }
 
@@ -192,11 +247,10 @@ export class SpriteService {
   /**
    * Reads the .dat files for the desired asset.
    * Parses the image path, the default index, and all of the animation information.
-   * @param assetName AssetType to parse (e.g. 'Peasant')
+   * @param fileData AssetType to parse (e.g. 'Peasant')
    * @returns The image path, animation data, and default index for the asset type.
    */
-  private async readDataFile(assetName: string) {
-
+  private parseDataFile(fileData: string) {
     /**
      * Parses the relative image path and the frame names for the animations
      * @param fileData The raw .dat file contents.
@@ -305,19 +359,11 @@ export class SpriteService {
     };
 
     {
-      // Read the contents of the data file.
-      const fileData = await new Promise<string>((resolve, reject) => {
-        readFile('src/assets/img/' + assetName + '.dat', 'utf8', (err, data) => {
-          if (err) { console.error(err); reject(err); }
-          resolve(data);
-        });
-      });
-
       const parsedData = { animationSets: [] } as ParsedData;
 
       // Extract the image path and raw frame data.
       const { relativePath, frameNames } = parseFileSections(fileData);
-      parsedData.imagePath = pathJoin('assets/img/', relativePath);
+      parsedData.imagePath = pathJoin('data/img/', relativePath);
 
       // Parse the frame data and build the animations.
       const { rawAnimationSets, defaultIndex } = parseFrames(frameNames);

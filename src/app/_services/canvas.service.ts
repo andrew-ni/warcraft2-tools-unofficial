@@ -21,6 +21,8 @@ interface IMap {
   drawLayer: Tile[][];
   assetLayer: Asset[][];
   tileSet: Tileset;
+  mapLoaded: Subject<void>;
+  mapProjectLoaded: Subject<void>;
   mapResized: Subject<Dimension>;
   tilesUpdated: Subject<Region>;
   assetsUpdated: Subject<Region>;
@@ -102,7 +104,14 @@ export class CanvasService {
    * Initialized before subscribing to the events.
    */
   private async init() {
-    await this.spriteService.init();
+    this.map.mapProjectLoaded.do(() => console.log('mapLoaded:Canvas')).subscribe({
+      next: async () => {
+        await this.spriteService.init();
+        this.map.assetsUpdated.next();
+      },
+      error: err => console.error(err),
+      complete: null
+    });
 
     this.map.mapResized.do(x => console.log('mapResized:Canvas: ', JSON.stringify(x))).subscribe({
       next: dim => {
@@ -136,7 +145,7 @@ export class CanvasService {
 
 
     // TEMP for convenience
-    ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
+    // ipcRenderer.send('map:load', './src/assets/map/nwhr2rn.map');
   }
 
   /**
@@ -159,7 +168,7 @@ export class CanvasService {
    * @param ctx Canvas context to clear. Always going to be the assets canvas
    * @param reg The region that the asset is in
    */
-  public clearAsset(ctx: CanvasRenderingContext2D, reg: Region) {
+  public clearAsset(ctx: CanvasRenderingContext2D, reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
     reg = this.expandRegionUp(reg);
     reg = this.expandRegionRight(reg);
     reg = this.expandRegionDown(reg);
