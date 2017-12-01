@@ -14,6 +14,9 @@ const options = {
   ]
 };
 
+/**
+ * This component deals with the saving, loading, click listeners, and html linking, that the tileset tab requires
+ */
 @Component({
   selector: 'app-tileset',
   templateUrl: './tileset.component.html',
