@@ -6,6 +6,7 @@ import { AnimationContext } from 'sprite';
 
 import * as fs from 'fs';
 import { join as pathJoin } from 'path';
+import { AnimationService } from 'services/animation.service';
 
 @Injectable()
 export class TestmapService {
@@ -43,6 +44,8 @@ export class TestmapService {
   private player: AnimationContext;
 
   private backgroundImage: ImageBitmap;
+
+  private moveInterval: NodeJS.Timer = undefined;
 
   constructor(
     private spriteService: SpriteService,
@@ -106,15 +109,27 @@ export class TestmapService {
 
   }
 
-  public moveStep(coord: Coordinate) {
+  public moveTo(dest: Coordinate) {
+    if (this.moveInterval === undefined) {
+      this.moveInterval = setInterval(() => this.moveStep(dest), AnimationService.ANIMATION_DELAY);
+    }
+  }
+
+  public moveStep(dest: Coordinate) {
     // 20 pixels hardcoded to account for offset inside spritesheet
     const source = { x: this.player.coord.x + 20, y: this.player.coord.y + 20 };
-    const destX = coord.x;
-    const destY = coord.y;
-    const delta: Coordinate = { x: this.compare(source.x, destX), y: this.compare(source.y, destY) };
+    const delta: Coordinate = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
     const newLoc: Coordinate = { x: this.player.coord.x + delta.x * 32, y: this.player.coord.y + delta.y * 32 };
+    const direction: string = this.deltaToDirection.get(this.deltaToString(delta));
 
-    this.player.setDirection(this.deltaToDirection.get(this.deltaToString(delta)));
+    if (direction === 'none') {   // we have finished pathfinding
+      console.log('destination reached');
+      clearInterval(this.moveInterval);
+      this.moveInterval = undefined;
+      return;
+    }
+
+    this.player.setDirection(direction);
     this.clearPlayer();
     this.player.coord = newLoc;
     this.drawPlayer();
