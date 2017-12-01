@@ -119,6 +119,11 @@ export class AnimationContext {
     return this._direction.frames[this.frameNum];
   }
 
+  /** Resets frame to first frame. */
+  public resetFrame() {
+    this.frameNum = 0;
+  }
+
   /** Advance to next frame and return updated frame number. */
   public nextFrame(): number {
     this.frameNum++;

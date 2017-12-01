@@ -21,8 +21,6 @@ enum Action {
   Grass,
 }
 
-
-
 @Injectable()
 export class TestmapService {
   public static readonly BACKGROUND_PATH = './data/testmap.png';
@@ -65,12 +63,14 @@ export class TestmapService {
 
   private moveInterval: NodeJS.Timer = undefined;
   private currentAction: Action = undefined;
+  private frameInterval: NodeJS.Timer = undefined;
 
   constructor(
     private spriteService: SpriteService,
   ) { }
 
   public init() {
+    // initialize 16x16 action layer
     this.actionLayer = [];
     this.actionLayer.length = 16;
 
@@ -79,6 +79,7 @@ export class TestmapService {
       this.actionLayer[y].length = 16;
     }
 
+    // initialize Animation contexts
     this.goldmine = new AnimationContext(this.spriteService.get(AssetType.GoldMine));
     this.farm = new AnimationContext(this.spriteService.get(AssetType.Farm));
     this.blacksmith = new AnimationContext(this.spriteService.get(AssetType.Blacksmith));
@@ -99,7 +100,6 @@ export class TestmapService {
 
     this.addDefaultRegions();
 
-
     this.drawAsset(this.goldmine);
     this.drawAsset(this.farm);
     this.drawAsset(this.blacksmith);
@@ -109,6 +109,7 @@ export class TestmapService {
     this.drawAsset(this.enemyRanger);
   }
 
+  /** Adds Forest and Grass Action enums to action layer. */
   private addDefaultRegions() {
     let x, y;
     for (x = 5; x <= 12; x++) {
@@ -134,6 +135,7 @@ export class TestmapService {
     }
   }
 
+  /** Adds corresponding action enum to action layer, based on given context. */
   private addAssetToActionLayer(a: AnimationContext) {
     const x: number = a.gridCoord.x;
     const y: number = a.gridCoord.y;
@@ -186,6 +188,7 @@ export class TestmapService {
     }
   }
 
+  /** Declare initial locations and animation states. */
   private prepareInitialStates() {
 
     this.lumbermill.gridCoord = { x: 2, y: 11 };
@@ -214,6 +217,12 @@ export class TestmapService {
     this.enemyRanger.setDirection('w');
   }
 
+  /**
+   * Entry function called from click handlers.
+   * Handles bounding, detects action to perform (based on clicked region),
+   * then calls another function to move.
+   * @param c Click coordinates.
+   */
   public click(c: Coordinate) {
     const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
     if (action !== undefined) {
@@ -234,6 +243,10 @@ export class TestmapService {
     }
   }
 
+  /**
+   * Called from html buttons to spawn an asset.
+   * @param s Name of asset to spawn.
+   */
   public spawn(s: string) {
     if (this.player) { this.clearPlayer(); }
     this.playerAsset = AssetType[s];
@@ -242,26 +255,40 @@ export class TestmapService {
     this.drawPlayer();
   }
 
+  /**
+   * Sets intervals for moveStep and nextFrame.
+   * @param dest Destination coordinates.
+   */
   private moveTo(dest: Coordinate) {
     if (this.moveInterval === undefined) {
+      this.frameInterval = setInterval(() => this.player.nextFrame(), AnimationService.ANIMATION_DELAY / 2.5);
       this.moveInterval = setInterval(() => this.moveStep(dest), AnimationService.ANIMATION_DELAY);
     }
   }
 
+  /**
+   * Called once per interval set in moveTo.
+   * Calculates direction for each movement step and moves the player one tile (32 pixels).
+   * Also creates intervals for animStep, for smoother movement.
+   * @param dest Destination coordinates.
+   */
   private moveStep(dest: Coordinate) {
-    // 20 pixels hardcoded to account for offset inside spritesheet
     const source = { x: this.player.coord.x, y: this.player.coord.y };
     const delta: Coordinate = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
     const newLoc: Coordinate = { x: this.player.coord.x + delta.x * MapService.TERRAIN_SIZE, y: this.player.coord.y + delta.y * MapService.TERRAIN_SIZE };
     const direction: string = this.deltaToDirection.get(this.deltaToString(delta));
 
     /*
-     * End of pathfinding.
+     * End of pathfinding. Clear intervals for frame and move.
      */
-    if (direction === 'none' || newLoc.x / MapService.TERRAIN_SIZE > 12 || newLoc.x / MapService.TERRAIN_SIZE < 5 || newLoc.y / MapService.TERRAIN_SIZE < 3 || newLoc.y / MapService.TERRAIN_SIZE > 13) {   // we have finished pathfinding
+    if (direction === 'none') {   // we have finished pathfinding
       clearInterval(this.moveInterval);
       this.moveInterval = undefined;
       console.log('Arrived at (' + this.player.gridCoord.x + ', ' + this.player.gridCoord.y + ')');
+      clearInterval(this.frameInterval);
+      this.frameInterval = undefined;
+      this.player.resetFrame();
+      this.drawPlayer();
       this.performAction();
 
       return;
@@ -281,18 +308,17 @@ export class TestmapService {
       }
 
       this.clearPlayer();
-      this.player.coord.x += delta.x;
+      this.player.coord.x += delta.x; // change pixels for drawPlayer
       this.player.coord.y += delta.y;
       this.drawPlayer();
     };
 
     animInterval = setInterval(animStep, AnimationService.ANIMATION_DELAY / 32);
-
-    // this.clearPlayer();
-    // this.player.coord = newLoc;
-    // this.drawPlayer();
   }
 
+  /**
+   * Decides what animation Actions to play (lumber, attack, death, etc).
+   */
   private performAction() {
     switch (this.currentAction) {
       case Action.Forest: {
@@ -342,10 +368,10 @@ export class TestmapService {
     }
   }
 
+  /** Helper function for mapping key workaround. */
   private deltaToString(c: Coordinate) {
     return '' + c.x + ',' + c.y;
   }
-
 
   /**
    * Plays audio for current animation using string mappings to audio service.
@@ -452,8 +478,11 @@ export class TestmapService {
     }, false);
   }
 
-  // DRAW FUNCTIONS
 
+  /**
+   * Clears an asset on canvas.
+   * @param context Animation context to clear.
+   */
   private clearAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
     let slice = context.sprite.image.width / MapService.MAX_PLAYERS;
@@ -467,6 +496,10 @@ export class TestmapService {
     this.assetContext.clearRect(c.x - offset, c.y - offset, slice, slice);
   }
 
+  /**
+   * Draws asset on canvas. Contains logic for visual offsets of foot units.
+   * @param context Animation context to draw.
+   */
   private drawAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
     const img = context.sprite.image;
@@ -489,6 +522,9 @@ export class TestmapService {
       c.x - offset, c.y - offset, slice, slice);
   }
 
+  /**
+   * Clears player's asset from canvas.
+   */
   private clearPlayer() {
     const c: Coordinate = this.player.coord;
     const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
@@ -502,6 +538,9 @@ export class TestmapService {
     this.playerContext.clearRect(c.x - offset, c.y - offset, slice, slice);
   }
 
+  /**
+   * Draws player's asset on canvas.
+   */
   private drawPlayer() {
     const c: Coordinate = this.player.coord;
     const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
@@ -517,6 +556,4 @@ export class TestmapService {
       0, slice * this.player.getCurFrame(), slice, slice,
       c.x - offset, c.y - offset, slice, slice);
   }
-
-
 }

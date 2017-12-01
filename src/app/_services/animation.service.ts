@@ -14,7 +14,7 @@ import { AnimationContext } from 'sprite';
  */
 @Injectable()
 export class AnimationService {
-  public static readonly ANIMATION_DELAY = 125;
+  public static readonly ANIMATION_DELAY = 200;
 
   /** Contains the canvas HTML element. */
   private canvas: HTMLCanvasElement;
