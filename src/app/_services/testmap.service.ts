@@ -12,11 +12,14 @@ export class TestmapService {
   public static readonly BACKGROUND_PATH = './data/testmap.png';
   public static readonly ANIMATION_DELAY = 250;
 
-  private bottomCanvas: HTMLCanvasElement;
-  private bottomContext: CanvasRenderingContext2D;
+  private terrainCanvas: HTMLCanvasElement;
+  private terrainContext: CanvasRenderingContext2D;
 
-  private topCanvas: HTMLCanvasElement;
-  private topContext: CanvasRenderingContext2D;
+  private assetCanvas: HTMLCanvasElement;
+  private assetContext: CanvasRenderingContext2D;
+
+  private playerCanvas: HTMLCanvasElement;
+  private playerContext: CanvasRenderingContext2D;
 
   rotation: Map<string, string> = new Map([
     ['0,-1', 'n'],
@@ -37,7 +40,7 @@ export class TestmapService {
   private enemyKnight: AnimationContext;
   private enemyArcher: AnimationContext;
   private enemyRanger: AnimationContext;
-  private current: AnimationContext;
+  private player: AnimationContext;
 
   private backgroundImage: ImageBitmap;
 
@@ -56,13 +59,13 @@ export class TestmapService {
 
     this.prepareInitialStates();
 
-    this.draw(this.goldmine);
-    this.draw(this.farm);
-    this.draw(this.blacksmith);
-    this.draw(this.lumbermill);
-    this.draw(this.enemyKnight);
-    this.draw(this.enemyArcher);
-    this.draw(this.enemyRanger);
+    this.drawAsset(this.goldmine);
+    this.drawAsset(this.farm);
+    this.drawAsset(this.blacksmith);
+    this.drawAsset(this.lumbermill);
+    this.drawAsset(this.enemyKnight);
+    this.drawAsset(this.enemyArcher);
+    this.drawAsset(this.enemyRanger);
     // this.draw(this.current);
   }
 
@@ -96,25 +99,25 @@ export class TestmapService {
   }
 
   public spawn(s: string) {
-    if (this.current) { this.clear(this.current); }
+    if (this.player) { this.clearPlayer(); }
     console.log(AssetType[s]);
-    this.current = new AnimationContext(this.spriteService.get(AssetType[s]));
-    this.current.gridCoord = { x: 7, y: 7 };
-    this.draw(this.current);
+    this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
+    this.player.gridCoord = { x: 7, y: 7 };
+    this.drawPlayer();
 
   }
 
 
   public pathfind(coord: Coordinate) {
-    if (this.current) {
+    if (this.player) {
       // 20 pixels hardcoded to account for offset inside spritesheet
-      const source = { x: this.current.coord.x + 20, y: this.current.coord.y + 20 };
+      const source = { x: this.player.coord.x + 20, y: this.player.coord.y + 20 };
       const destX = coord.x;
       const destY = coord.y;
 
-      this.current.setDirection(this.rotation.get(this.coordToString({ x: this.compare(source.x, destX), y: this.compare(source.y, destY) })));
-      this.clear(this.current);
-      this.draw(this.current);
+      this.player.setDirection(this.rotation.get(this.coordToString({ x: this.compare(source.x, destX), y: this.compare(source.y, destY) })));
+      this.clearPlayer();
+      this.drawPlayer();
     }
   }
 
@@ -228,38 +231,58 @@ export class TestmapService {
  * @param tCanvas canvas element for drawing assets
  * @param tCtx context for assets
  */
-  public setCanvases(bCanvas: HTMLCanvasElement, bCtx: CanvasRenderingContext2D, tCanvas: HTMLCanvasElement, tCtx: CanvasRenderingContext2D): void {
-    this.bottomCanvas = bCanvas;
-    this.bottomContext = bCtx;
-    this.topCanvas = tCanvas;
-    this.topContext = tCtx;
+  public setCanvases(bCanvas: HTMLCanvasElement, bCtx: CanvasRenderingContext2D, tCanvas: HTMLCanvasElement, tCtx: CanvasRenderingContext2D, pCanvas: HTMLCanvasElement, pCtx: CanvasRenderingContext2D): void {
+    this.terrainCanvas = bCanvas;
+    this.terrainContext = bCtx;
+    this.assetCanvas = tCanvas;
+    this.assetContext = tCtx;
+    this.playerCanvas = pCanvas;
+    this.playerContext = pCtx;
 
     this.spriteService.initializing.then(() => this.init());
     const img = new Image();
     img.src = TestmapService.BACKGROUND_PATH;
 
     img.addEventListener('load', () => {
-      this.bottomContext.drawImage(img, 0, 0);
+      this.terrainContext.drawImage(img, 0, 0);
     }, false);
   }
 
-  private clear(context: AnimationContext) {
+  private clearAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
     let slice = context.sprite.image.width / 8;
     if (context === this.goldmine) { slice = context.sprite.image.width; }
-    this.topContext.clearRect(c.x, c.y, slice, slice);
+    this.assetContext.clearRect(c.x, c.y, slice, slice);
   }
 
-  private draw(context: AnimationContext) {
+  private drawAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
     let slice = context.sprite.image.width / 8;
     if (context === this.goldmine) { slice = context.sprite.image.width; }
-    this.topContext.drawImage(
+    this.assetContext.drawImage(
       context.sprite.image,
       0, slice * context.getCurFrame(), slice, slice,
       c.x, c.y, slice, slice);
 
     console.log('asset drawn');
+  }
+
+  private clearPlayer() {
+    const c: Coordinate = this.player.coord;
+    const slice = this.player.sprite.image.width / 8;
+    this.assetContext.clearRect(c.x, c.y, slice, slice);
+  }
+
+  private drawPlayer() {
+    const c: Coordinate = this.player.coord;
+    const slice = this.player.sprite.image.width / 8;
+
+    this.playerContext.drawImage(
+      this.player.sprite.image,
+      0, slice * this.player.getCurFrame(), slice, slice,
+      c.x, c.y, slice, slice);
+
+    console.log('player drawn');
   }
 
 

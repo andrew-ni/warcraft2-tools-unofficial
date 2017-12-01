@@ -14,6 +14,9 @@ export class TestmapComponent implements OnInit {
   private topCanvas: HTMLCanvasElement;
   private topContext: CanvasRenderingContext2D;
 
+  private playerCanvas: HTMLCanvasElement;
+  private playerContext: CanvasRenderingContext2D;
+
   constructor(
     private testmapService: TestmapService,
   ) { }
@@ -23,13 +26,17 @@ export class TestmapComponent implements OnInit {
     this.bottomContext = this.bottomCanvas.getContext('2d');
     this.topCanvas = document.getElementById('topCanvas') as HTMLCanvasElement;
     this.topContext = this.topCanvas.getContext('2d');
+    this.playerCanvas = document.getElementById('playerCanvas') as HTMLCanvasElement;
+    this.playerContext = this.topCanvas.getContext('2d');
     this.topCanvas.width = 512;
     this.topCanvas.height = 512;
     this.bottomCanvas.width = 512;
     this.bottomCanvas.height = 512;
+    this.playerCanvas.width = 512;
+    this.playerCanvas.height = 512;
 
     this.setClickListeners();
-    this.testmapService.setCanvases(this.bottomCanvas, this.bottomContext, this.topCanvas, this.topContext);
+    this.testmapService.setCanvases(this.bottomCanvas, this.bottomContext, this.topCanvas, this.topContext, this.playerCanvas, this.playerContext);
   }
 
   private setClickListeners() {
@@ -40,7 +47,7 @@ export class TestmapComponent implements OnInit {
      * On mousedown, being pathfinding calculations
      * https://developer.mozilla.org/en-US/docs/Web/Events/mousedown; 0=leftclick, 1=middleclick, 2=rightclick
      */
-    this.topCanvas.addEventListener('mousedown', (event) => {
+    this.playerCanvas.addEventListener('mousedown', (event) => {
       if (event.button === 0) {
         this.testmapService.pathfind({ x: event.offsetX, y: event.offsetY });
       }
