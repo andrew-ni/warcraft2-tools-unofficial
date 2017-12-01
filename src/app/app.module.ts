@@ -16,6 +16,7 @@ import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
 
+import { TestmapService } from 'services/testmap.service';
 import { AiComponent } from './ai/ai.component';
 import { DynamicSubtriggerComponent } from './ai/trigger/dynamic-subtrigger.component';
 import {
@@ -31,9 +32,9 @@ import { StructuresComponent } from './sidebar/assets/structures/structures.comp
 import { UnitsComponent } from './sidebar/assets/units/units.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerrainComponent } from './sidebar/terrain/terrain.component';
+import { TestmapComponent } from './testmap/testmap.component';
 import { TilesetComponent } from './tileset/tileset.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
-import { TestmapComponent } from './testmap/testmap.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { TestmapComponent } from './testmap/testmap.component';
     SerializeService,
     SpriteService,
     TerrainService,
+    TestmapService,
     UserService,
   ],
   bootstrap: [AppComponent]

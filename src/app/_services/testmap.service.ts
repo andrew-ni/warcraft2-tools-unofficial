@@ -8,6 +8,12 @@ import { AnimationContext } from 'sprite';
 export class TestmapService {
   public static readonly ANIMATION_DELAY = 250;
 
+  private bottomCanvas: HTMLCanvasElement;
+  private bottomContext: CanvasRenderingContext2D;
+
+  private topCanvas: HTMLCanvasElement;
+  private topContext: CanvasRenderingContext2D;
+
   private goldmine: AnimationContext;
   private farm: AnimationContext;
   private blacksmith: AnimationContext;
@@ -111,6 +117,20 @@ export class TestmapService {
       ['tock', ['tock']],
     ]);
 
+  }
+
+    /**
+   * Sets canvas and context elements, initializing this TestMap.
+   * @param bCanvas canvas element for drawing terrain
+   * @param bCtx context for terrain
+   * @param tCanvas canvas element for drawing assets
+   * @param tCtx context for assets
+   */
+  public setCanvases(bCanvas: HTMLCanvasElement, bCtx: CanvasRenderingContext2D, tCanvas: HTMLCanvasElement, tCtx: CanvasRenderingContext2D): void {
+    this.bottomCanvas = bCanvas;
+    this.bottomContext = bCtx;
+    this.topCanvas = tCanvas;
+    this.topContext = tCtx;
   }
 
 }

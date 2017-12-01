@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Coordinate } from 'interfaces';
+import { TestmapService } from 'services/testmap.service';
 
 @Component({
   selector: 'app-testmap',
@@ -15,7 +16,9 @@ export class TestmapComponent implements OnInit {
   private topCanvas: HTMLCanvasElement;
   private topContext: CanvasRenderingContext2D;
 
-  constructor() { }
+  constructor(
+    private testmapService: TestmapService,
+  ) { }
 
   ngOnInit() {
     this.eventHandler = document.getElementById('events') as HTMLDivElement;
@@ -30,6 +33,7 @@ export class TestmapComponent implements OnInit {
     console.log(this.bottomCanvas.height);
 
     this.setClickListeners();
+    this.testmapService.setCanvases(this.bottomCanvas, this.bottomContext, this.topCanvas, this.topContext);
   }
 
   private setClickListeners() {
