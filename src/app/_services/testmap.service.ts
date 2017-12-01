@@ -80,6 +80,7 @@ export class TestmapService {
       this.actionLayer[y].length = 16;
     }
 
+
     this.goldmine = new AnimationContext(this.spriteService.get(AssetType.GoldMine));
     this.farm = new AnimationContext(this.spriteService.get(AssetType.Farm));
     this.blacksmith = new AnimationContext(this.spriteService.get(AssetType.Blacksmith));
@@ -98,6 +99,7 @@ export class TestmapService {
     this.addAssetToActionLayer(this.enemyArcher);
     this.addAssetToActionLayer(this.enemyRanger);
 
+    this.addDefaultRegions();
 
 
     this.drawAsset(this.goldmine);
@@ -107,6 +109,26 @@ export class TestmapService {
     this.drawAsset(this.enemyKnight);
     this.drawAsset(this.enemyArcher);
     this.drawAsset(this.enemyRanger);
+  }
+
+  private addDefaultRegions() {
+    let x, y;
+    for (x = 5; x <= 12; x++) {
+      this.actionLayer[x][14] = Action.Forest;
+      this.actionLayer[x][2] = Action.Forest;
+    }
+
+    for (y = 4; y <= 12; y++) {
+      if (this.actionLayer[13][y] === undefined) {
+        this.actionLayer[13][y] = Action.Forest;
+      }
+    }
+
+    for (x = 5; x <= 12; x++) {
+      for (y = 3; y <= 13; y++) {
+        this.actionLayer[x][y] = Action.Grass;
+      }
+    }
   }
 
   private addAssetToActionLayer(a: AnimationContext) {
