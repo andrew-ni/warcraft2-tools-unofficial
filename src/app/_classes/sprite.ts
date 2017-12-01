@@ -1,4 +1,4 @@
-import { Coordinate } from 'app/_interfaces';
+import { Coordinate } from 'interfaces';
 
 /**
  * Sprite contains all information about an Asset parsed from their `.dat`
