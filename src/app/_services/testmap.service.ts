@@ -21,7 +21,7 @@ export class TestmapService {
   private playerCanvas: HTMLCanvasElement;
   private playerContext: CanvasRenderingContext2D;
 
-  rotation: Map<string, string> = new Map([
+  private deltaToDirection: Map<string, string> = new Map([
     ['0,-1', 'n'],
     ['1,-1', 'ne'],
     ['1,0', 'e'],
@@ -66,7 +66,6 @@ export class TestmapService {
     this.drawAsset(this.enemyKnight);
     this.drawAsset(this.enemyArcher);
     this.drawAsset(this.enemyRanger);
-    // this.draw(this.current);
   }
 
   private prepareInitialStates() {
@@ -107,18 +106,18 @@ export class TestmapService {
 
   }
 
+  public moveStep(coord: Coordinate) {
+    // 20 pixels hardcoded to account for offset inside spritesheet
+    const source = { x: this.player.coord.x + 20, y: this.player.coord.y + 20 };
+    const destX = coord.x;
+    const destY = coord.y;
+    const delta: Coordinate = { x: this.compare(source.x, destX), y: this.compare(source.y, destY) };
+    const newLoc: Coordinate = { x: this.player.coord.x + delta.x * 32, y: this.player.coord.y + delta.y * 32 };
 
-  public pathfind(coord: Coordinate) {
-    if (this.player) {
-      // 20 pixels hardcoded to account for offset inside spritesheet
-      const source = { x: this.player.coord.x + 20, y: this.player.coord.y + 20 };
-      const destX = coord.x;
-      const destY = coord.y;
-
-      this.player.setDirection(this.rotation.get(this.coordToString({ x: this.compare(source.x, destX), y: this.compare(source.y, destY) })));
-      this.clearPlayer();
-      this.drawPlayer();
-    }
+    this.player.setDirection(this.deltaToDirection.get(this.deltaToString(delta)));
+    this.clearPlayer();
+    this.player.coord = newLoc;
+    this.drawPlayer();
   }
 
   /**
@@ -138,7 +137,7 @@ export class TestmapService {
     }
   }
 
-  private coordToString(c: Coordinate) {
+  private deltaToString(c: Coordinate) {
     return '' + c.x + ',' + c.y;
   }
 
@@ -226,18 +225,18 @@ export class TestmapService {
 
   /**
  * Sets canvas and context elements, initializing this TestMap.
- * @param bCanvas canvas element for drawing terrain
- * @param bCtx context for terrain
- * @param tCanvas canvas element for drawing assets
- * @param tCtx context for assets
+ * @param terrainCanvas canvas element for drawing terrain
+ * @param terrainContext context for terrain
+ * @param assetCanvas canvas element for drawing assets
+ * @param assetContext context for assets
  */
-  public setCanvases(bCanvas: HTMLCanvasElement, bCtx: CanvasRenderingContext2D, tCanvas: HTMLCanvasElement, tCtx: CanvasRenderingContext2D, pCanvas: HTMLCanvasElement, pCtx: CanvasRenderingContext2D): void {
-    this.terrainCanvas = bCanvas;
-    this.terrainContext = bCtx;
-    this.assetCanvas = tCanvas;
-    this.assetContext = tCtx;
-    this.playerCanvas = pCanvas;
-    this.playerContext = pCtx;
+  public setCanvases(terrainCanvas: HTMLCanvasElement, terrainContext: CanvasRenderingContext2D, assetCanvas: HTMLCanvasElement, assetContext: CanvasRenderingContext2D, playerCanvas: HTMLCanvasElement, playerContext: CanvasRenderingContext2D): void {
+    this.terrainCanvas = terrainCanvas;
+    this.terrainContext = terrainContext;
+    this.assetCanvas = assetCanvas;
+    this.assetContext = assetContext;
+    this.playerCanvas = playerCanvas;
+    this.playerContext = playerContext;
 
     this.spriteService.initializing.then(() => this.init());
     const img = new Image();
@@ -247,6 +246,8 @@ export class TestmapService {
       this.terrainContext.drawImage(img, 0, 0);
     }, false);
   }
+
+  // DRAW FUNCTIONS
 
   private clearAsset(context: AnimationContext) {
     const c: Coordinate = context.coord;
@@ -270,7 +271,7 @@ export class TestmapService {
   private clearPlayer() {
     const c: Coordinate = this.player.coord;
     const slice = this.player.sprite.image.width / 8;
-    this.assetContext.clearRect(c.x, c.y, slice, slice);
+    this.playerContext.clearRect(c.x, c.y, slice, slice);
   }
 
   private drawPlayer() {

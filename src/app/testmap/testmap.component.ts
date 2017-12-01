@@ -27,7 +27,7 @@ export class TestmapComponent implements OnInit {
     this.topCanvas = document.getElementById('topCanvas') as HTMLCanvasElement;
     this.topContext = this.topCanvas.getContext('2d');
     this.playerCanvas = document.getElementById('playerCanvas') as HTMLCanvasElement;
-    this.playerContext = this.topCanvas.getContext('2d');
+    this.playerContext = this.playerCanvas.getContext('2d');
     this.topCanvas.width = 512;
     this.topCanvas.height = 512;
     this.bottomCanvas.width = 512;
@@ -49,7 +49,7 @@ export class TestmapComponent implements OnInit {
      */
     this.playerCanvas.addEventListener('mousedown', (event) => {
       if (event.button === 0) {
-        this.testmapService.pathfind({ x: event.offsetX, y: event.offsetY });
+        this.testmapService.moveStep({ x: event.offsetX, y: event.offsetY });
       }
     });
   }
