@@ -33,6 +33,9 @@ export class TilesetComponent implements OnInit {
   /** All possible multiplier options */
   private multiplierOptions = [1, 2, 3];
 
+  /** The value of the currently selected index on the terrain spritesheet */
+  private currentIndex: number;
+
   constructor(
     private tilesetService: TilesetService,
     private spriteService: SpriteService,
@@ -100,12 +103,12 @@ export class TilesetComponent implements OnInit {
    * @param clickPos A Coordinate that contains the x and y click positions relative to the canvas
    */
   private selectTile(clickPos: Coordinate) {
-    const tileIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
+    this.currentIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
     const nd = document.getElementById('tilesBox');
     nd.style.pointerEvents = 'none';
     nd.style.position = 'absolute';
     nd.style.border = 'white solid 1px';
-    nd.style.top = (tileIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    nd.style.top = (this.currentIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
     nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
     nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
   }
@@ -117,5 +120,9 @@ export class TilesetComponent implements OnInit {
   private updateMultiplier(newValue) {
     this.tilesetService.MULTIPLIER = newValue;
     this.tilesetService.tilesetLoad();
+    const nd = document.getElementById('tilesBox');
+    nd.style.top = (this.currentIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
   }
 }
