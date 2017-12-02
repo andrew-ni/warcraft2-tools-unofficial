@@ -111,7 +111,7 @@ export class AnimationContext {
   }
 
   /**
-   * Set the driection to the index specified.
+   * Set the direction to the index specified.
    * @param d String or number, index of direction within this action to take on.
    */
   public setDirection(d: string | number): void {

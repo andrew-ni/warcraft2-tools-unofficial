@@ -71,7 +71,7 @@ export class TestmapService {
   private movementDuration = 0;
   private deathDuration = 0;
 
-  private dying: boolean = false;
+  private dying = false;
 
   constructor(
     private spriteService: SpriteService,
@@ -298,63 +298,21 @@ export class TestmapService {
    * @param dest Destination coordinates.
    */
   private moveTo(dest: Coordinate) {
+    // Ignore other move commands when currently moving
     if (this.movementDuration === 0) {
       this.dest = dest;
       const source = { x: this.player.coord.x, y: this.player.coord.y };
       this.delta = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
       const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
       this.movementDuration = Math.floor(Math.max(Math.abs(source.x - dest.x), Math.abs(source.y - dest.y)) / 32) * 32;
+
+      // Click directly on unit
       if (direction === 'none') {
         this.movementDuration = 0;
         return;
       }
       this.player.setDirection(direction);
     }
-  }
-
-  /**
-   * Called once per interval set in moveTo.
-   * Calculates direction for each movement step and moves the player one tile (32 pixels).
-   * Also creates intervals for animStep, for smoother movement.
-   * @param dest Destination coordinates.
-   */
-  private moveStep(dest: Coordinate) {
-
-    /*
-     * End of pathfinding. Clear intervals for frame and move.
-     */
-    // if (direction === 'none') {   // we have finished pathfinding
-    //   clearInterval(this.moveInterval);
-    //   this.moveInterval = undefined;
-    //   clearInterval(this.frameInterval);
-    //   this.frameInterval = undefined;
-
-    //   this.clearPlayer();
-    //   this.player.resetFrame();
-    //   this.drawPlayer();
-    //   this.performAction();
-
-    //   return;
-    // }
-
-    //
-    // let animStepNum = 0;
-    // let animInterval: NodeJS.Timer;
-
-    // const animStep = () => {
-    //   if (++animStepNum > MapService.TERRAIN_SIZE) {
-    //     clearInterval(animInterval);
-    //     animInterval = undefined;
-    //     animStepNum = 0;
-    //     console.log('animation stopped');
-    //     return;
-    //   }
-
-
-    //   this.drawPlayer();
-    // };
-
-    // animInterval = setInterval(animStep, AnimationService.ANIMATION_DELAY / 32);
   }
 
   /**
@@ -611,23 +569,23 @@ export class TestmapService {
   }
 
   /**
-   * Draws player's asset on canvas.
+   * constantly polling, draws player when movementDuration is greater than zero (set in moveTo).
    */
   private drawPlayer() {
     if (this.player) {
       this.clearPlayer();
-
-      console.log('frame');
-
+      console.log(this.movementDuration);
+      // Calculates pathfinding direction and modifies coordinates by pixels
       if (this.movementDuration > 0 && !this.dying) {
         if (this.movementDuration % 32 === 0) {
           const source = { x: this.player.coord.x, y: this.player.coord.y };
           this.delta = { x: this.compare(source.x, this.dest.x), y: this.compare(source.y, this.dest.y) };
           const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
-          if (direction === 'none') {
-            this.movementDuration = 0;
-            return;
-          }
+          // if (direction === 'none') { // done pathfinding
+          //   console.log('none');
+          //   this.movementDuration = 0;
+          //   return;
+          // }
           this.player.setDirection(direction);
         }
         if (this.movementDuration % 5 === 0) this.player.nextFrame();
@@ -635,12 +593,13 @@ export class TestmapService {
         this.player.coord.y += this.delta.y;
         this.movementDuration--;
 
+        // Perform action after pathfinding is done
         if (this.movementDuration === 0) {
           this.performAction();
         }
-
       }
 
+      // Handles death animation
       if (this.deathDuration > 0) {
         if (this.deathDuration % 8 === 0) this.player.nextFrame();
         this.deathDuration--;
