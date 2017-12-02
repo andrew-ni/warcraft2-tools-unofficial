@@ -2,7 +2,6 @@
      id="audio">
   <h5 align="center">Customize Audio</h5>
     <div class = "audio">
-    <h3>Customize Sounds </h3> <br>
     <select id = 'category'  class="ui dropdown" [(ngModel)] = 'selectedCategory' (ngModelChange)='showSound($event)'>
       <option *ngFor="let i of SongCategories"
               [value]="i">{{i}}</option>
@@ -15,7 +14,5 @@
     <button class="ui button" *ngIf = "selectedClipName" (click) = 'changeAudio()'>Change</button>
     <button class="ui button" *ngIf = "selectedClipName" (click) = 'revertAudio()'>Revert</button>
     </div>
-    <div id='soundplayers'>
-      
-    </div>
+    <audio id = "audio-player" controls="controls" type="audio/wav"></audio>
 </div>

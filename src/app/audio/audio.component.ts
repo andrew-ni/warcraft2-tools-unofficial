@@ -36,9 +36,10 @@ export class AudioComponent implements OnInit {
 
   ngOnInit() {
     this.resetSoundContext();
+
+    // parse the soundclips.dat
     this.soundService.parseSndData();
     this.SongCategories = [...this.soundService.soundMap.keys()];
-    this.selectedCategory = this.SongCategories[0];
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
@@ -55,7 +56,6 @@ export class AudioComponent implements OnInit {
       next: async () => {
         this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
-        this.selectedCategory = this.SongCategories[0];
       },
       error: err => console.error(err),
       complete: null
@@ -73,24 +73,36 @@ export class AudioComponent implements OnInit {
     this.destPath = undefined;
   }
 
+  /**
+   * shows all sounds of selected category
+   * @param category category of first drop down menu
+   */
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
     console.log("show sound");
 
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
-    // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.soundService.soundMap.get(item) + '" type="audio/wav">';
   }
 
+  /**
+   * sets audio player to play source of name in second drop down menu
+   * @param clipName clip to be played
+   */
   playSound(clipName) {
     this.selectedClipName = clipName;
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
     this.destPath = '../data/customSnd/' + this.selectedCategory + '/' + file;
-    document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.selectedClip.src + '" type="audio/wav">';
+
+    const player = document.getElementById('audio-player') as HTMLAudioElement;
+    player.src = this.selectedClip.src;
   }
 
+  /**
+   * replaces the current selected audio
+   */
   changeAudio() {
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
@@ -100,6 +112,9 @@ export class AudioComponent implements OnInit {
     console.log(this.soundService.soundMap);
   }
 
+  /**
+   * reverts audio to default by deleting custom sound
+   */
   revertAudio() {
     this.soundService.deleteSound('data/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
