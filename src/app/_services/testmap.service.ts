@@ -65,9 +65,16 @@ export class TestmapService {
   private currentAction: Action = undefined;
   private frameInterval: NodeJS.Timer = undefined;
 
+  private delta: Coordinate = { x: 0, y: 0 };
+  private dest: Coordinate = { x: 0, y: 0 };
+  private movementDuration = 0;
+
   constructor(
     private spriteService: SpriteService,
-  ) { }
+  ) {
+
+
+  }
 
   public init() {
     // initialize 16x16 action layer
@@ -107,6 +114,9 @@ export class TestmapService {
     this.drawAsset(this.enemyKnight);
     this.drawAsset(this.enemyArcher);
     this.drawAsset(this.enemyRanger);
+
+    this.spawn('Peasant');
+    this.drawPlayer();
   }
 
   /** Adds Forest and Grass Action enums to action layer. */
@@ -252,7 +262,8 @@ export class TestmapService {
     this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
-    this.drawPlayer();
+    // this.drawPlayer();
+
   }
 
   /**
@@ -260,9 +271,17 @@ export class TestmapService {
    * @param dest Destination coordinates.
    */
   private moveTo(dest: Coordinate) {
-    if (this.moveInterval === undefined) {
-      this.frameInterval = setInterval(() => this.player.nextFrame(), AnimationService.ANIMATION_DELAY / 2.5);
-      this.moveInterval = setInterval(() => this.moveStep(dest), AnimationService.ANIMATION_DELAY);
+    if (this.movementDuration === 0) {
+      this.dest = dest;
+      const source = { x: this.player.coord.x, y: this.player.coord.y };
+      this.delta = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
+      const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
+      this.movementDuration =  Math.floor( Math.max(Math.abs(source.x - dest.x), Math.abs(source.y - dest.y)) / 32) * 32;
+      if (direction === 'none') {
+        this.movementDuration = 0;
+        return;
+      }
+      this.player.setDirection(direction);
     }
   }
 
@@ -273,48 +292,43 @@ export class TestmapService {
    * @param dest Destination coordinates.
    */
   private moveStep(dest: Coordinate) {
-    const source = { x: this.player.coord.x, y: this.player.coord.y };
-    const delta: Coordinate = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
-    const newLoc: Coordinate = { x: this.player.coord.x + delta.x * MapService.TERRAIN_SIZE, y: this.player.coord.y + delta.y * MapService.TERRAIN_SIZE };
-    const direction: string = this.deltaToDirection.get(this.deltaToString(delta));
+
 
     /*
      * End of pathfinding. Clear intervals for frame and move.
      */
-    if (direction === 'none') {   // we have finished pathfinding
-      clearInterval(this.moveInterval);
-      this.moveInterval = undefined;
-      clearInterval(this.frameInterval);
-      this.frameInterval = undefined;
+    // if (direction === 'none') {   // we have finished pathfinding
+    //   clearInterval(this.moveInterval);
+    //   this.moveInterval = undefined;
+    //   clearInterval(this.frameInterval);
+    //   this.frameInterval = undefined;
 
-      this.clearPlayer();
-      this.player.resetFrame();
-      this.drawPlayer();
-      this.performAction();
+    //   this.clearPlayer();
+    //   this.player.resetFrame();
+    //   this.drawPlayer();
+    //   this.performAction();
 
-      return;
-    }
+    //   return;
+    // }
 
-    this.player.setDirection(direction);
-    let animStepNum = 0;
-    let animInterval: NodeJS.Timer;
+    //
+    // let animStepNum = 0;
+    // let animInterval: NodeJS.Timer;
 
-    const animStep = () => {
-      if (++animStepNum > MapService.TERRAIN_SIZE) {
-        clearInterval(animInterval);
-        animInterval = undefined;
-        animStepNum = 0;
-        console.log('animation stopped');
-        return;
-      }
+    // const animStep = () => {
+    //   if (++animStepNum > MapService.TERRAIN_SIZE) {
+    //     clearInterval(animInterval);
+    //     animInterval = undefined;
+    //     animStepNum = 0;
+    //     console.log('animation stopped');
+    //     return;
+    //   }
 
-      this.clearPlayer();
-      this.player.coord.x += delta.x; // change pixels for drawPlayer
-      this.player.coord.y += delta.y;
-      this.drawPlayer();
-    };
 
-    animInterval = setInterval(animStep, AnimationService.ANIMATION_DELAY / 32);
+    //   this.drawPlayer();
+    // };
+
+    // animInterval = setInterval(animStep, AnimationService.ANIMATION_DELAY / 32);
   }
 
   /**
@@ -543,6 +557,27 @@ export class TestmapService {
    * Draws player's asset on canvas.
    */
   private drawPlayer() {
+    this.clearPlayer();
+
+    console.log('frame');
+
+    if (this.movementDuration > 0) {
+      if (this.movementDuration % 32 === 0) {
+        const source = { x: this.player.coord.x, y: this.player.coord.y };
+        this.delta = { x: this.compare(source.x, this.dest.x), y: this.compare(source.y, this.dest.y) };
+        const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
+        if (direction === 'none') {
+          this.movementDuration = 0;
+          return;
+        }
+        this.player.setDirection(direction);
+      }
+      if (this.movementDuration % 5 === 0) this.player.nextFrame();
+      this.player.coord.x += this.delta.x; // change pixels for drawPlayer
+      this.player.coord.y += this.delta.y;
+      this.movementDuration--;
+    }
+
     const c: Coordinate = this.player.coord;
     const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
 
@@ -556,5 +591,7 @@ export class TestmapService {
       this.player.sprite.image,
       0, slice * this.player.getCurFrame(), slice, slice,
       c.x - offset, c.y - offset, slice, slice);
+
+    setTimeout(() => this.drawPlayer(), 1000 / 60);
   }
 }
