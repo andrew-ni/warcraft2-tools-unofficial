@@ -35,11 +35,23 @@ export class AudioComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.resetSoundContext();
     this.soundService.parseSndData();
     this.SongCategories = [...this.soundService.soundMap.keys()];
     this.selectedCategory = this.SongCategories[0];
 
-    this.mapService.mapProjectLoaded.do(() => console.log('soundLoaded')).subscribe({
+    this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
+      next: async () => {
+        this.resetSoundContext();
+        this.soundService.parseSndData();
+        this.SongCategories = [...this.soundService.soundMap.keys()];
+        this.selectedCategory = this.SongCategories[0];
+      },
+      error: err => console.error(err),
+      complete: null
+    });
+
+    this.mapService.customSndLoaded.do(() => console.log('customSndLoaded')).subscribe({
       next: async () => {
         this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
@@ -51,10 +63,20 @@ export class AudioComponent implements OnInit {
 
   }
 
+  resetSoundContext() {
+    this.SongCategories = [];
+    this.Sounds = [];
+    this.isSoundLoaded = false;
+    this.selectedClip = undefined;
+    this.selectedCategory = undefined;
+    this.selectedClip = undefined;
+    this.destPath = undefined;
+  }
 
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
+    console.log("show sound");
 
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
     // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + this.soundService.soundMap.get(item) + '" type="audio/wav">';
@@ -82,7 +104,8 @@ export class AudioComponent implements OnInit {
     this.soundService.deleteSound('data/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
     const orig = new Audio('../data/snd' + name);
-    this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
+    const deleting = true;
+    this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig, deleting);
   }
 
 

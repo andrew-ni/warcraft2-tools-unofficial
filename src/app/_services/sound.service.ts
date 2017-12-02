@@ -4,14 +4,31 @@ import { MapService } from 'services/map.service';
 import { AssetTypeToClips } from 'sound';
 
 import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class SoundService {
   public nameToAudio: Map<string, HTMLAudioElement>;
   public soundMap: Map<string, Map<string, HTMLAudioElement>>;
+  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
 
   constructor() {
     this.nameToAudio = new Map();
+  }
+
+  public getSoundsForSave() {
+    return this.customSoundMap;
+  }
+
+  private updateCustomSoundMap(category, filepath, clip, deleting) {
+    if (deleting) {
+      this.customSoundMap.get(category).delete(filepath);
+    } else {
+      if (this.customSoundMap.get(category) === undefined) {
+        this.customSoundMap.set(category, new Map());
+      }
+      this.customSoundMap.get(category).set(filepath, clip);
+    }
   }
 
   /**
@@ -19,6 +36,7 @@ export class SoundService {
  */
   public parseSndData() {
     this.soundMap = new Map();
+    this.customSoundMap = new Map();
     const sndData = this.readSndDat().trim();
     const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
     const lines = clips.split(/\r?\n/);
@@ -53,12 +71,15 @@ export class SoundService {
   }
 
   public checkForCustomSound(filepath: string): string {
-    const [, , , type, file] = filepath.split('/');
-    const customFilePath = 'dist/../data/customSnd/' + type + '/' + file;
+    const [, , , category, file] = filepath.split('/');
+    const customFilePath = '../data/customSnd/' + category + '/' + file;
+    console.log(customFilePath);
     try {
       fs.accessSync(customFilePath);
+      const deleting = false;
+      this.updateCustomSoundMap(category, filepath, new Audio(customFilePath), deleting);
       console.log(customFilePath);
-      return '../' + customFilePath;
+      return customFilePath;
     } catch (e) {
       return filepath;
     }
@@ -73,23 +94,29 @@ export class SoundService {
     });
 
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
-      this.editSoundMap(category, sound, clip);
+      const deleting = false;
+      this.editSoundMap(category, sound, clip, deleting);
       // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
     });
   }
 
-  public editSoundMap(category, sound, clip) {
+  public editSoundMap(category, sound, clip, deleting) {
     this.soundMap.get(category).set(sound, clip);
     const newsnd = this.soundMap.get(category).get(sound);
     document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="' + newsnd.src + '" type="audio/wav">';
 
+    const split = clip.src.split('/');
+    const file = split[split.length - 1];
+    const filepath = path.join(category, file);
+    this.updateCustomSoundMap(category, filepath, clip, deleting);
+
+    console.log(this.customSoundMap);
     // this.soundUpdated.next(undefined);
   }
 
   public deleteSound(tbd: string) {
     fs.unlink(tbd, function() { console.log('deleted'); });
   }
-
 
   public getAudioForAssetType(asset: AssetType) {
     const clipNames = AssetTypeToClips.get(asset);

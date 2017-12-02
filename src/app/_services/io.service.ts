@@ -6,6 +6,7 @@ import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { SoundService } from 'services/sound.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { Tile, TileType } from 'tile';
@@ -34,6 +35,7 @@ interface IMap {
   terrainPath: string;
   tileSet: Tileset;
   mapProjectOpened: Subject<JSZip>;
+  customSndLoaded: Subject<void>;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
   mapVersion: string;
@@ -67,6 +69,7 @@ export class IOService {
     mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
+    private soundService: SoundService,
     private spriteService: SpriteService,
   ) {
     this.map = mapService;
@@ -211,13 +214,15 @@ export class IOService {
     /*
      * Add snds to package.
      */
-    // const sounds = ['./peasant/acknowledge1.wav'];
     this.zip.remove('snd');
     this.zip.folder('snd');
-    const sounds = [];
-    for (const sndPath of sounds) {
-      this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
-    }
+    const customSoundMap = this.soundService.getSoundsForSave();
+    customSoundMap.forEach(async (filePathAndSound, dirName) => {
+      await fsx.emptyDir(dirName);
+      filePathAndSound.forEach((sound, fp) => {
+        this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, dirName, fp)));
+      });
+    });
 
     /*
      * Dump zip to disk.
@@ -246,6 +251,7 @@ export class IOService {
           fs.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
             if (err) console.error(err);
           });
+          this.map.customSndLoaded.next();
         });
       }
     });
