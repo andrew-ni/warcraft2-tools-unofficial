@@ -69,6 +69,9 @@ export class TestmapService {
   private delta: Coordinate = { x: 0, y: 0 };
   private dest: Coordinate = { x: 0, y: 0 };
   private movementDuration = 0;
+  private deathDuration = 0;
+
+  private dying: boolean = false;
 
   constructor(
     private spriteService: SpriteService,
@@ -235,7 +238,7 @@ export class TestmapService {
    * @param c Click coordinates.
    */
   public click(c: Coordinate) {
-    if (this.player) {
+    if (this.player && !this.dying) {
       const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
 
       if (this.stationaryInterval !== undefined) {
@@ -269,6 +272,7 @@ export class TestmapService {
    * @param s Name of asset to spawn.
    */
   public spawn(s: string) {
+    this.dying = false;
     if (this.player) { this.clearPlayer(); }
     this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
@@ -280,18 +284,12 @@ export class TestmapService {
   /** Plays the death animation. */
   public despawn() {
     if (this.player) {
+      this.dying = true;
+      this.movementDuration = 0;
       this.player.setAction('death');
-      let deathInterval: NodeJS.Timer;
-      let i = 0;
-      const deathStep = () => {
-        if (i === 3) { this.clearPlayer(); this.player = undefined; clearInterval(deathInterval); return; }
-        this.clearPlayer();
-        this.drawPlayer();
-        this.player.nextFrame();
-        i++;
-      };
-      deathInterval = setInterval(deathStep, AnimationService.ANIMATION_DELAY);
-      // this.clearPlayer();
+      this.deathDuration = 2 * 8;
+      this.player.resetFrame();
+
     }
   }
 
@@ -621,7 +619,7 @@ export class TestmapService {
 
       console.log('frame');
 
-      if (this.movementDuration > 0) {
+      if (this.movementDuration > 0 && !this.dying) {
         if (this.movementDuration % 32 === 0) {
           const source = { x: this.player.coord.x, y: this.player.coord.y };
           this.delta = { x: this.compare(source.x, this.dest.x), y: this.compare(source.y, this.dest.y) };
@@ -642,6 +640,18 @@ export class TestmapService {
         }
 
       }
+
+      if (this.deathDuration > 0) {
+        if (this.deathDuration % 8 === 0) this.player.nextFrame();
+        this.deathDuration--;
+        if (this.deathDuration === 0) {
+          this.clearPlayer();
+          this.player = undefined;
+          setTimeout(() => this.drawPlayer(), 1000 / 60);
+          return;
+        }
+      }
+
 
       const c: Coordinate = this.player.coord;
       const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
