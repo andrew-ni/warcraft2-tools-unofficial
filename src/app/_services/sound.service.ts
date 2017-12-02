@@ -8,14 +8,10 @@ import * as path from 'path';
 
 @Injectable()
 export class SoundService {
-<<<<<<< HEAD
-  public nameToAudio: Map<string, HTMLAudioElement>;
-  public soundMap: Map<string, Map<string, HTMLAudioElement>>;
+
   public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
-=======
   public nameToAudio: Map<string, HTMLAudioElement>;  // stores name of the clip to all audio clips
   public soundMap: Map<string, Map<string, HTMLAudioElement>>; // links audio to map of clip names to actual audio
->>>>>>> 2b19906bdc241cb0228601ca2ca91516aa43b004
 
   constructor() {
     this.nameToAudio = new Map();
@@ -44,7 +40,8 @@ export class SoundService {
     this.customSoundMap = new Map();
     const sndData = this.readSndDat().trim();
     const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
-    const lines = clips.split(/\r?\n/);
+    const allClips = songs + clips;
+    const lines = allClips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
