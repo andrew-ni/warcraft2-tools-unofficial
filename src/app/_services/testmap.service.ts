@@ -45,6 +45,7 @@ export class TestmapService {
     ['-1,-1', 'nw'],
     ['0,0', 'none']
   ]);
+  private turnDirection: string;
 
 
   private actionLayer: Action[][];
@@ -244,6 +245,11 @@ export class TestmapService {
       this.currentAction = action;
       console.log('click success: ', Action[this.currentAction]);
 
+      // Calculate turnDirection
+
+
+
+      // Bounding magic
       if (action !== undefined) {
         if (Math.floor(c.x / 32) < 5) {
           c.x = 5 * 32;
@@ -294,6 +300,7 @@ export class TestmapService {
   private moveTo(dest: Coordinate) {
     // Ignore other move commands when currently moving
     if (this.movementDuration === 0) {
+      console.log('moveTo called');
       this.dest = dest;
       const source = { x: this.player.coord.x, y: this.player.coord.y };
       this.delta = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
@@ -302,11 +309,13 @@ export class TestmapService {
 
       // Click directly on unit
       if (direction === 'none') {
+        console.log('clicked directly on unit');
         this.movementDuration = 0;
         return;
       }
-      this.moving = true;
+      // this.moving = true;
       this.player.setDirection(direction);
+      console.log('moving = true, setDir to ', direction, 'movementDur:', this.movementDuration);
     }
   }
 
@@ -359,7 +368,6 @@ export class TestmapService {
         break;
       }
       case Action.Grass: {
-        // this.actioning = true;
         return;
       }
       default: {
@@ -562,6 +570,8 @@ export class TestmapService {
 
       // Handles movement animations
       if (this.movementDuration > 0 && !this.dying) {
+        // console.log(this.movementDuration);
+        this.moving = true;
         if (this.movementDuration % 32 === 0) {
           const source = { x: this.player.coord.x, y: this.player.coord.y };
           this.delta = { x: this.compare(source.x, this.dest.x), y: this.compare(source.y, this.dest.y) };
@@ -572,6 +582,7 @@ export class TestmapService {
           //   return;
           // }
           this.player.setDirection(direction);
+          console.log('direction set to ', direction);
         }
         if (this.movementDuration % 5 === 0) this.player.nextFrame();
         this.player.coord.x += this.delta.x; // change pixels for drawPlayer
@@ -581,6 +592,7 @@ export class TestmapService {
         // Perform action after pathfinding is done
         if (this.movementDuration === 0) {
           this.moving = false;
+          // this.player.setDirection(this.turnDirection);
           this.performAction();
         }
       }
