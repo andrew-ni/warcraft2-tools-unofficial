@@ -77,6 +77,7 @@ export class IOService {
     private tilesetService: TilesetService,
   ) {
     this.map = mapService;
+    this.initPackage();
 
     /**
      * Event listener for when a map has been loaded from a file
