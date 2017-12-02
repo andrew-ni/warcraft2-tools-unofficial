@@ -69,6 +69,7 @@ export class TestmapService {
   private deathDuration = 0;
   private actionDuration = 0;
 
+  private moving = false;
   private dying = false;
   private actioning = false;
 
@@ -237,9 +238,11 @@ export class TestmapService {
    */
   public click(c: Coordinate) {
     // Accept clicks only when player is valid and not dying or taking an action
-    if (this.player && !this.dying && !this.actioning) {
+    console.log('click attempt: ', this.moving, this.actioning);
+    if (this.player && !this.moving && !this.dying && !this.actioning) {
       const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
       this.currentAction = action;
+      console.log('click success: ', Action[this.currentAction]);
 
       if (action !== undefined) {
         if (Math.floor(c.x / 32) < 5) {
@@ -302,6 +305,7 @@ export class TestmapService {
         this.movementDuration = 0;
         return;
       }
+      this.moving = true;
       this.player.setDirection(direction);
     }
   }
@@ -355,6 +359,7 @@ export class TestmapService {
         break;
       }
       case Action.Grass: {
+        // this.actioning = true;
         return;
       }
       default: {
@@ -575,6 +580,7 @@ export class TestmapService {
 
         // Perform action after pathfinding is done
         if (this.movementDuration === 0) {
+          this.moving = false;
           this.performAction();
         }
       }
