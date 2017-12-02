@@ -64,6 +64,7 @@ export class TestmapService {
   private moveInterval: NodeJS.Timer = undefined;
   private currentAction: Action = undefined;
   private frameInterval: NodeJS.Timer = undefined;
+  private stationaryInterval: NodeJS.Timer = undefined;
 
   constructor(
     private spriteService: SpriteService,
@@ -225,6 +226,14 @@ export class TestmapService {
    */
   public click(c: Coordinate) {
     const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
+
+    if (this.stationaryInterval !== undefined) {
+      this.currentAction = undefined;
+      clearInterval(this.stationaryInterval);
+      this.stationaryInterval = undefined;
+      this.player.setAction('walk', true);
+    }
+
     if (action !== undefined) {
       if (Math.floor(c.x / 32) < 5) {
         c.x = 5 * 32;
@@ -273,6 +282,8 @@ export class TestmapService {
    * @param dest Destination coordinates.
    */
   private moveStep(dest: Coordinate) {
+    console.log('movestep called');
+
     const source = { x: this.player.coord.x, y: this.player.coord.y };
     const delta: Coordinate = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
     const newLoc: Coordinate = { x: this.player.coord.x + delta.x * MapService.TERRAIN_SIZE, y: this.player.coord.y + delta.y * MapService.TERRAIN_SIZE };
@@ -304,7 +315,6 @@ export class TestmapService {
         clearInterval(animInterval);
         animInterval = undefined;
         animStepNum = 0;
-        console.log('animation stopped');
         return;
       }
 
@@ -325,6 +335,7 @@ export class TestmapService {
       case Action.Forest: {
         if (this.playerAsset === AssetType.Peasant) {
           console.log('chop wood for 3 cycles');
+          this.player.setAction('attack', true);
         }
 
         break;
@@ -332,24 +343,53 @@ export class TestmapService {
 
       case Action.EnemyArcher: {
         console.log('attack archer for 3 cycles');
+        this.player.setAction('attack', true);
 
         break;
       }
 
       case Action.EnemyKnight: {
         console.log('attack knight for 3 cycles');
+        this.player.setAction('attack', true);
 
         break;
       }
 
       case Action.EnemyRanger: {
         console.log('attack ranger for 3 cycles');
+        this.player.setAction('attack', true);
 
         break;
       }
+
+      case Action.Grass: {
+        return;
+      }
     }
 
-    this.currentAction = undefined;
+    let cycles = 0;
+
+    const stationaryAction = () => {
+      if (this.player.frameNum === 0) {
+        cycles++;
+      }
+
+      if (cycles === 4) {
+        clearInterval(this.stationaryInterval);
+        this.stationaryInterval = undefined;
+        this.player.setAction('walk', true);
+        this.clearPlayer();
+        this.drawPlayer();
+        this.currentAction = undefined;
+        return;
+      }
+
+      this.clearPlayer();
+      this.player.nextFrame();
+      this.drawPlayer();
+    };
+
+    this.stationaryInterval = setInterval(stationaryAction, AnimationService.ANIMATION_DELAY);
   }
 
   /**

@@ -74,11 +74,11 @@ export class AnimationContext {
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
    * @param _sprite The new sprite this AnimationContext should reflect.
-   * @param frameNum Frame number to initialize to. Default is 0.
+   * @param _frameNum Frame number to initialize to. Default is 0.
    */
   constructor(
     private _sprite: Sprite,
-    private frameNum: number = 0,
+    private _frameNum: number = 0,
   ) {
     this._action = this._sprite.actions[0];   // default to first action
     this._direction = this._action.directions[0]; // default to first direction
@@ -89,6 +89,7 @@ export class AnimationContext {
   get direction() { return this._direction; }
   get actionList() { return this.sprite.actions; }
   get directionList() { return this._action.directions; }
+  get frameNum() { return this._frameNum; }
   get coord() { return this._coord; }
   get gridCoord() { return { x: Math.floor(this._coord.x / 32), y: Math.floor(this._coord.y / 32) }; }
   set coord(c: Coordinate) { this._coord = c; }
@@ -99,10 +100,13 @@ export class AnimationContext {
    * @param a String or number, index of action within this Sprite to take on.
    */
   public setAction(a: string | number, preserve: boolean = false): void {
+    const oldDir = this.direction.name;
     this._action = this._sprite.actions[a];
 
     if (!preserve) {
       this.setDirection(0);
+    } else {
+      this.setDirection(oldDir);
     }
   }
 
@@ -116,19 +120,19 @@ export class AnimationContext {
 
   /** Get the current frame number. Index in animation sprite sheet. */
   public getCurFrame(): number {
-    return this._direction.frames[this.frameNum];
+    return this._direction.frames[this._frameNum];
   }
 
   /** Resets frame to first frame. */
   public resetFrame() {
-    this.frameNum = 0;
+    this._frameNum = 0;
   }
 
   /** Advance to next frame and return updated frame number. */
   public nextFrame(): number {
-    this.frameNum++;
-    if (this.frameNum >= this._direction.frames.length) {
-      this.frameNum = 0;
+    this._frameNum++;
+    if (this._frameNum >= this._direction.frames.length) {
+      this._frameNum = 0;
     }
 
     return this.getCurFrame();
@@ -136,9 +140,9 @@ export class AnimationContext {
 
   /** Go to previous frame and return updated frame number. */
   public prevFrame(): number {
-    this.frameNum--;
-    if (this.frameNum < 0) {
-      this.frameNum = this._direction.frames.length - 1;
+    this._frameNum--;
+    if (this._frameNum < 0) {
+      this._frameNum = this._direction.frames.length - 1;
     }
 
     return this.getCurFrame();
