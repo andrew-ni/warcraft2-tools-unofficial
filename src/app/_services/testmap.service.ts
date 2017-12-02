@@ -61,17 +61,16 @@ export class TestmapService {
 
   private backgroundImage: ImageBitmap;
 
-  private moveInterval: NodeJS.Timer = undefined;
   private currentAction: Action = undefined;
-  private frameInterval: NodeJS.Timer = undefined;
-  private stationaryInterval: NodeJS.Timer = undefined;
 
   private delta: Coordinate = { x: 0, y: 0 };
   private dest: Coordinate = { x: 0, y: 0 };
   private movementDuration = 0;
   private deathDuration = 0;
+  private actionDuration = 0;
 
   private dying = false;
+  private actioning = false;
 
   constructor(
     private spriteService: SpriteService,
@@ -123,7 +122,7 @@ export class TestmapService {
     this.drawPlayer();
   }
 
-  /** Adds Forest and Grass Action enums to action layer. */
+  /** Adds Forest and Grass Action enums to action layer. Unreachable areas are left undefined. */
   private addDefaultRegions() {
     let x, y;
     for (x = 5; x <= 12; x++) {
@@ -190,7 +189,6 @@ export class TestmapService {
         break;
       }
       default: {
-        // statements;
         break;
       }
     }
@@ -238,15 +236,10 @@ export class TestmapService {
    * @param c Click coordinates.
    */
   public click(c: Coordinate) {
-    if (this.player && !this.dying) {
+    // Accept clicks only when player is valid and not dying or taking an action
+    if (this.player && !this.dying && !this.actioning) {
       const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
-
-      if (this.stationaryInterval !== undefined) {
-        this.currentAction = undefined;
-        clearInterval(this.stationaryInterval);
-        this.stationaryInterval = undefined;
-        this.player.setAction('walk', true);
-      }
+      this.currentAction = action;
 
       if (action !== undefined) {
         if (Math.floor(c.x / 32) < 5) {
@@ -260,9 +253,7 @@ export class TestmapService {
         } else if (Math.floor(c.y / 32) > 13) {
           c.y = 13 * 32;
         }
-
         this.moveTo(c);
-        this.currentAction = action;
       }
     }
   }
@@ -316,67 +307,60 @@ export class TestmapService {
   }
 
   /**
-   * Decides what animation Actions to play (lumber, attack, death, etc).
+   * Decides what animation Actions to play (lumber, attack, death, etc). Called after pathfinding is done.
    */
   private performAction() {
+    const actionTime = 5 * 24;
     switch (this.currentAction) {
       case Action.Forest: {
         if (this.playerAsset === AssetType.Peasant) {
           console.log('chop wood for 3 cycles');
           this.player.setAction('attack', true);
+          this.actionDuration = actionTime;
+          this.actioning = true;
         }
-
         break;
       }
-
       case Action.EnemyArcher: {
         console.log('attack archer for 3 cycles');
         this.player.setAction('attack', true);
-
+        this.actionDuration = actionTime;
+        this.actioning = true;
         break;
       }
-
       case Action.EnemyKnight: {
         console.log('attack knight for 3 cycles');
         this.player.setAction('attack', true);
-
+        this.actionDuration = actionTime;
+        this.actioning = true;
         break;
       }
-
       case Action.EnemyRanger: {
         console.log('attack ranger for 3 cycles');
         this.player.setAction('attack', true);
-
+        this.actionDuration = actionTime;
+        this.actioning = true;
         break;
       }
-
+      case Action.BlackSmith: {
+        break;
+      }
+      case Action.LumberMill: {
+        break;
+      }
+      case Action.GoldMine: {
+        break;
+      }
+      case Action.Farm: {
+        break;
+      }
       case Action.Grass: {
         return;
       }
-
       default: {
         return;
       }
     }
-
-    let cycles = 0;
-
-    const stationaryAction = () => {
-      if (this.player.frameNum === 0) {
-        cycles++;
-      }
-
-      if (cycles === 4) {
-        clearInterval(this.stationaryInterval);
-        this.stationaryInterval = undefined;
-        this.player.setAction('walk', true);
-        this.currentAction = undefined;
-        return;
-      }
-      this.player.nextFrame();
-    };
-
-    this.stationaryInterval = setInterval(stationaryAction, AnimationService.ANIMATION_DELAY);
   }
 
   /**
@@ -533,16 +517,11 @@ export class TestmapService {
     const img = context.sprite.image;
 
     let slice = context.sprite.image.width / MapService.MAX_PLAYERS;
-
     if (context === this.goldmine) { slice = context.sprite.image.width; }
-
     let offset = 0;
-
     if (slice % MapService.TERRAIN_SIZE !== 0) {
       offset = (slice - MapService.TERRAIN_SIZE) / 2;
     }
-
-    console.log(offset);
 
     this.assetContext.drawImage(
       img,
@@ -569,13 +548,14 @@ export class TestmapService {
   }
 
   /**
-   * constantly polling, draws player when movementDuration is greater than zero (set in moveTo).
+   * Constantly redrawing player at 60 redraws per second.
+   * If movement, death, or actionDuration are > 0, appropriate animations are played.
    */
   private drawPlayer() {
     if (this.player) {
       this.clearPlayer();
-      console.log(this.movementDuration);
-      // Calculates pathfinding direction and modifies coordinates by pixels
+
+      // Handles movement animations
       if (this.movementDuration > 0 && !this.dying) {
         if (this.movementDuration % 32 === 0) {
           const source = { x: this.player.coord.x, y: this.player.coord.y };
@@ -599,7 +579,7 @@ export class TestmapService {
         }
       }
 
-      // Handles death animation
+      // Handles death animations
       if (this.deathDuration > 0) {
         if (this.deathDuration % 8 === 0) this.player.nextFrame();
         this.deathDuration--;
@@ -611,21 +591,32 @@ export class TestmapService {
         }
       }
 
+      // Handles action animations
+      if (this.actionDuration > 0) {
+        if (this.actionDuration % 8 === 0) this.player.nextFrame();
+        this.actionDuration--;
+        if (this.actionDuration === 0) {
+          this.player.setAction('walk', true);
+          this.currentAction = undefined;
+          this.actioning = false;
+          setTimeout(() => this.drawPlayer(), 1000 / 60);
+          return;
+        }
+      }
+
 
       const c: Coordinate = this.player.coord;
       const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
-
       let offset = 0;
+      if (slice % MapService.TERRAIN_SIZE !== 0) { offset = (slice - MapService.TERRAIN_SIZE) / 2; }
 
-      if (slice % MapService.TERRAIN_SIZE !== 0) {
-        offset = (slice - MapService.TERRAIN_SIZE) / 2;
-      }
-
+      // Always redraw on every timestep, as long as this.player exists
       this.playerContext.drawImage(
         this.player.sprite.image,
         0, slice * this.player.getCurFrame(), slice, slice,
         c.x - offset, c.y - offset, slice, slice);
     }
-    setTimeout(() => this.drawPlayer(), 1000 / 60);
+
+    setTimeout(() => this.drawPlayer(), 1000 / 60); // Calls this function at 60 fps (calls per second).
   }
 }
