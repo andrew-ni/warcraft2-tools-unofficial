@@ -225,30 +225,32 @@ export class TestmapService {
    * @param c Click coordinates.
    */
   public click(c: Coordinate) {
-    const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
+    if (this.player) {
+      const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
 
-    if (this.stationaryInterval !== undefined) {
-      this.currentAction = undefined;
-      clearInterval(this.stationaryInterval);
-      this.stationaryInterval = undefined;
-      this.player.setAction('walk', true);
-    }
-
-    if (action !== undefined) {
-      if (Math.floor(c.x / 32) < 5) {
-        c.x = 5 * 32;
-      } else if (Math.floor(c.x / 32) > 12) {
-        c.x = 12 * 32;
+      if (this.stationaryInterval !== undefined) {
+        this.currentAction = undefined;
+        clearInterval(this.stationaryInterval);
+        this.stationaryInterval = undefined;
+        this.player.setAction('walk', true);
       }
 
-      if (Math.floor(c.y / 32) < 3) {
-        c.y = 3 * 32;
-      } else if (Math.floor(c.y / 32) > 13) {
-        c.y = 13 * 32;
-      }
+      if (action !== undefined) {
+        if (Math.floor(c.x / 32) < 5) {
+          c.x = 5 * 32;
+        } else if (Math.floor(c.x / 32) > 12) {
+          c.x = 12 * 32;
+        }
 
-      this.moveTo(c);
-      this.currentAction = action;
+        if (Math.floor(c.y / 32) < 3) {
+          c.y = 3 * 32;
+        } else if (Math.floor(c.y / 32) > 13) {
+          c.y = 13 * 32;
+        }
+
+        this.moveTo(c);
+        this.currentAction = action;
+      }
     }
   }
 
@@ -262,6 +264,24 @@ export class TestmapService {
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
     this.drawPlayer();
+  }
+
+  /** Plays the death animation. */
+  public despawn() {
+    if (this.player) {
+      this.player.setAction('death');
+      let deathInterval: NodeJS.Timer;
+      let i = 0;
+      const deathStep = () => {
+        if (i === 3) { this.clearPlayer(); this.player = undefined; return; }
+        this.clearPlayer();
+        this.drawPlayer();
+        this.player.nextFrame();
+        i++;
+      };
+      deathInterval = setInterval(deathStep, AnimationService.ANIMATION_DELAY);
+      // this.clearPlayer();
+    }
   }
 
   /**
@@ -385,8 +405,8 @@ export class TestmapService {
       }
 
       this.clearPlayer();
-      this.player.nextFrame();
       this.drawPlayer();
+      this.player.nextFrame();
     };
 
     this.stationaryInterval = setInterval(stationaryAction, AnimationService.ANIMATION_DELAY);
@@ -567,16 +587,18 @@ export class TestmapService {
    * Clears player's asset from canvas.
    */
   private clearPlayer() {
-    const c: Coordinate = this.player.coord;
-    const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
+    if (this.player) {
+      const c: Coordinate = this.player.coord;
+      const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
 
-    let offset = 0;
+      let offset = 0;
 
-    if (slice % MapService.TERRAIN_SIZE !== 0) {
-      offset = (slice - MapService.TERRAIN_SIZE) / 2;
+      if (slice % MapService.TERRAIN_SIZE !== 0) {
+        offset = (slice - MapService.TERRAIN_SIZE) / 2;
+      }
+
+      this.playerContext.clearRect(c.x - offset, c.y - offset, slice, slice);
     }
-
-    this.playerContext.clearRect(c.x - offset, c.y - offset, slice, slice);
   }
 
   /**
