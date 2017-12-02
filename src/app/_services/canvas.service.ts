@@ -359,7 +359,12 @@ export class CanvasService {
    * Determines correct "slice" to draw from recolorized spritesheet based on owner.
    * @param reg Region containing assets to be drawn (default entire map)
    */
-  public drawAssets(reg: Region = { x: 0, y: 0, width: this.map.width, height: this.map.height }) {
+  public drawAssets(reg: Region) {
+    if (reg === undefined) {
+      this.clearAsset(this.assetContext);
+      return;
+    }
+
     if (reg.y < 0) reg.y = 0;
     if (reg.x < 0) reg.x = 0;
     if (reg.x + reg.width > this.map.width) reg.width = this.map.width - reg.x;
