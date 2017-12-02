@@ -273,7 +273,7 @@ export class TestmapService {
       let deathInterval: NodeJS.Timer;
       let i = 0;
       const deathStep = () => {
-        if (i === 3) { this.clearPlayer(); this.player = undefined; return; }
+        if (i === 3) { this.clearPlayer(); this.player = undefined; clearInterval(deathInterval); return; }
         this.clearPlayer();
         this.drawPlayer();
         this.player.nextFrame();
@@ -587,6 +587,7 @@ export class TestmapService {
    * Clears player's asset from canvas.
    */
   private clearPlayer() {
+    console.trace();
     if (this.player) {
       const c: Coordinate = this.player.coord;
       const slice = this.player.sprite.image.width / MapService.MAX_PLAYERS;
