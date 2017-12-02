@@ -284,9 +284,10 @@ export class TestmapService {
     if (direction === 'none') {   // we have finished pathfinding
       clearInterval(this.moveInterval);
       this.moveInterval = undefined;
-      console.log('Arrived at (' + this.player.gridCoord.x + ', ' + this.player.gridCoord.y + ')');
       clearInterval(this.frameInterval);
       this.frameInterval = undefined;
+
+      this.clearPlayer();
       this.player.resetFrame();
       this.drawPlayer();
       this.performAction();
