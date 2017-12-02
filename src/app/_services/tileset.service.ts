@@ -24,9 +24,6 @@ export class TilesetService {
   /** The pixel dimensions of a square tile in our map */
   public readonly TILE_SIZE = 32;
 
-  /** The magnification factor by which to visually magnify the canvas */
-  public MULTIPLIER = 3;
-
   constructor(
     private spriteService: SpriteService,
     private mapService: MapService,
@@ -40,6 +37,7 @@ export class TilesetService {
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas;
     this.context = ctx;
+    ctx.webkitImageSmoothingEnabled = false;
     this.spriteService.initializing.then(() => this.init());
   }
 
@@ -72,8 +70,8 @@ export class TilesetService {
    */
   private drawCanvas() {
     this.terrainSprite = this.spriteService.get(AssetType.Terrain);
-    this.canvas.width = this.terrainSprite.image.width * this.MULTIPLIER;
-    this.canvas.height = this.terrainSprite.image.height * this.MULTIPLIER;
+    this.canvas.width = this.terrainSprite.image.width;
+    this.canvas.height = this.terrainSprite.image.height;
     this.drawTerrainImg();
   }
 
@@ -100,9 +98,9 @@ export class TilesetService {
   public replaceSingleTile(img: ImageBitmap, clickPos: Coordinate) {
     const affectedReg: Region = {
       x: 0,
-      y: Math.floor(clickPos.y / (this.TILE_SIZE * this.MULTIPLIER)) * (this.TILE_SIZE * this.MULTIPLIER),
+      y: clickPos.y * this.TILE_SIZE,
       width: this.canvas.width,
-      height: this.TILE_SIZE * this.MULTIPLIER
+      height: this.TILE_SIZE,
     };
     this.drawImgOnCanvas(affectedReg, img);
   }

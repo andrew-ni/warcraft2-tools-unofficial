@@ -1,19 +1,26 @@
 #tilesetevents {
-  position: relative;
-  border: 5px pink;
-  left: 5%;
-  top: 2em;
+    position: relative;
+    border: 5px pink;
+    left: 5%;
+    top: 2em;
 }
 
 #tilesetCanvas {
-  position: absolute;
-  border: 5px red;
-  top: 0;
-  left: 0;
+    position: absolute;
+    border: 5px red;
+    top: 0;
+    left: 0;
+    image-rendering: pixelated;
 }
 
 .sidebox {
-  position: fixed;
-  left: 20%;
-  padding: 2em;
+    position: fixed;
+    left: 20%;
+    padding: 2em;
+}
+
+#tilesBox {
+    pointer-events: none;
+    position: absolute;
+    border: 1px solid white;
 }

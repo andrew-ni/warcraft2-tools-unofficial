@@ -31,7 +31,10 @@ export class TilesetComponent implements OnInit {
   private tilesetContext: CanvasRenderingContext2D;
 
   /** All possible multiplier options */
-  private multiplierOptions = [1, 2, 3];
+  private multiplierOptions = [1, 2, 3, 4, 5];
+
+  /** The magnification factor by which to visually magnify the canvas */
+  private multiplier = this.multiplierOptions[0];
 
   /** The value of the currently selected index on the terrain spritesheet */
   private currentIndex: number;
@@ -56,7 +59,7 @@ export class TilesetComponent implements OnInit {
   private setClickListeners() {
     let clickPos: Coordinate;
     this.tilesetCanvas.addEventListener('click', (event) => {
-      clickPos = { x: event.offsetX, y: event.offsetY };
+      clickPos = { x: 0, y: Math.floor(event.offsetY / (this.tilesetService.TILE_SIZE * this.multiplier)) };
       this.selectTile(clickPos);
 
       dialog.showOpenDialog(options, async (paths: string[]) => {
@@ -89,9 +92,8 @@ export class TilesetComponent implements OnInit {
   private async saveTileset() {
     const newCanvas = document.createElement('canvas');
     const context = newCanvas.getContext('2d');
-    newCanvas.width = this.tilesetCanvas.width / this.tilesetService.MULTIPLIER;
-    newCanvas.height = this.tilesetCanvas.height / this.tilesetService.MULTIPLIER;
-    context.scale(1 / this.tilesetService.MULTIPLIER, 1 / this.tilesetService.MULTIPLIER);
+    newCanvas.width = this.tilesetCanvas.width;
+    newCanvas.height = this.tilesetCanvas.height;
     context.drawImage(this.tilesetCanvas, 0, 0);
 
     const tilesetImgBitmap = await createImageBitmap(newCanvas);
@@ -103,26 +105,6 @@ export class TilesetComponent implements OnInit {
    * @param clickPos A Coordinate that contains the x and y click positions relative to the canvas
    */
   private selectTile(clickPos: Coordinate) {
-    this.currentIndex = Math.floor(clickPos.y / (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER));
-    const nd = document.getElementById('tilesBox');
-    nd.style.pointerEvents = 'none';
-    nd.style.position = 'absolute';
-    nd.style.border = 'white solid 1px';
-    nd.style.top = (this.currentIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
-    nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
-    nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
-  }
-
-  /**
-   * On changing the 'magnification factor', the tileset must be redrawn using the updated multiplier
-   * @param newValue The new value selected from the 'magnification factor' drop-down menu
-   */
-  private updateMultiplier(newValue) {
-    this.tilesetService.MULTIPLIER = newValue;
-    this.tilesetService.tilesetLoad();
-    const nd = document.getElementById('tilesBox');
-    nd.style.top = (this.currentIndex * this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
-    nd.style.height = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
-    nd.style.width = (this.tilesetService.TILE_SIZE * this.tilesetService.MULTIPLIER) + 'px';
+    this.currentIndex = clickPos.y;
   }
 }
