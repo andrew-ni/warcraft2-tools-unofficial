@@ -8,7 +8,7 @@ const { dialog } = require('electron').remote;
 
 const options = {
   filters: [
-    { name: 'Audio File (.wav)', extensions: ['wav'] }
+    { name: 'Audio File (.wav)', extensions: ['wav', 'mp3'] }
   ]
 };
 

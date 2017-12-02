@@ -39,7 +39,8 @@ export class SoundService {
     this.customSoundMap = new Map();
     const sndData = this.readSndDat().trim();
     const [, sampleRate, songCount, songs, clipCount, clips] = sndData.split(/#.*?\r?\n/);
-    const lines = clips.split(/\r?\n/);
+    const allClips = songs + clips;
+    const lines = allClips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
