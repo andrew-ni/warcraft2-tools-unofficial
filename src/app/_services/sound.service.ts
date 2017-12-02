@@ -8,14 +8,9 @@ import * as path from 'path';
 
 @Injectable()
 export class SoundService {
-<<<<<<< HEAD
-  public nameToAudio: Map<string, HTMLAudioElement>;
-  public soundMap: Map<string, Map<string, HTMLAudioElement>>;
-  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
-=======
+  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>; // stores map of custom clips for saving
   public nameToAudio: Map<string, HTMLAudioElement>;  // stores name of the clip to all audio clips
   public soundMap: Map<string, Map<string, HTMLAudioElement>>; // links audio to map of clip names to actual audio
->>>>>>> 2b19906bdc241cb0228601ca2ca91516aa43b004
 
   constructor() {
     this.nameToAudio = new Map();
