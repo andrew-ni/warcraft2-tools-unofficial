@@ -217,10 +217,9 @@ export class IOService {
     this.zip.remove('snd');
     this.zip.folder('snd');
     const customSoundMap = this.soundService.getSoundsForSave();
-    customSoundMap.forEach(async (filePathAndSound, dirName) => {
-      await fsx.emptyDir(dirName);
+    customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
-        this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, dirName, fp)));
+        this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, fp)));
       });
     });
 
@@ -237,22 +236,27 @@ export class IOService {
    * Extracts the sounds files from the zip and saves them to CUSTOMSND_DIR
    */
   private async extractCustomSnds() {
+    fsx.removeSync('data/customSnd');
+    fsx.emptyDirSync('data/customSnd');
     // empty customSnd folder on disk
     await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
 
     // foreach folder (populate list of folders)
     const snd = this.zip.folder('snd');
-    snd.forEach((dirName, dirFile) => {
+    snd.forEach(async (dirName, dirFile) => {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
         fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
+        const promises = new Array<Promise<void>>();
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
           // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
-          fs.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
-            if (err) console.error(err);
-          });
-          this.map.customSndLoaded.next();
+          promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
         });
+        await Promise.all(promises);
+
+        this.map.customSndLoaded.next();
+
+
       }
     });
   }

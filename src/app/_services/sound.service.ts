@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AssetType } from 'asset';
 import { MapService } from 'services/map.service';
-import { AssetTypeToClips } from 'sound';
 
 import * as fs from 'fs';
+import * as fsx from 'fs-extra';
 import * as path from 'path';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class SoundService {
     return this.customSoundMap;
   }
 
-  private updateCustomSoundMap(category, filepath, clip, deleting) {
+  public updateCustomSoundMap(category, filepath, clip, deleting) {
     if (deleting) {
       this.customSoundMap.get(category).delete(filepath);
     } else {
@@ -56,7 +56,6 @@ export class SoundService {
       }
       this.nameToAudio.set(lines[i], checkedAudio);
     }
-    console.log(this.soundMap);
   }
 
   /**
@@ -81,12 +80,10 @@ export class SoundService {
   public checkForCustomSound(filepath: string): string {
     const [, , , category, file] = filepath.split('/');
     const customFilePath = '../data/customSnd/' + category + '/' + file;
-    console.log(customFilePath);
     try {
-      fs.accessSync(customFilePath);
+      fs.accessSync('data/' + customFilePath);
       const deleting = false;
-      this.updateCustomSoundMap(category, filepath, new Audio(customFilePath), deleting);
-      console.log(customFilePath);
+      this.updateCustomSoundMap(category, path.join(category, file), new Audio(customFilePath), deleting);
       return customFilePath;
     } catch (e) {
       return filepath;
@@ -101,7 +98,12 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public copyFile(src, dest, category, sound, clip) {
+  public async copyFile(src, dest, category, sound, clip) {
+    try {
+      fs.accessSync(path.join('data/customSnd', category));
+    } catch (e) {
+      await fsx.emptyDir(path.join('data/customSnd', category));
+    }
     const readStream = fs.createReadStream(src);
 
     readStream.once('error', (err) => {
@@ -110,12 +112,13 @@ export class SoundService {
 
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       const deleting = false;
-      this.editSoundMap(category, sound, clip, deleting);
-      // document.getElementById('soundplayers').innerHTML = '<audio id="audio-player" controls="controls" src="../' + clip.src + '" type="audio/wav">';
+      this.editSoundMap(category, sound, clip);
+      const split = dest.split('/');
+      const file = split[split.length - 1];
+      const filepath = path.join(category, file);
+      this.updateCustomSoundMap(category, filepath, clip, deleting);
     });
   }
-
-
 
   /**
    * updates soundmap when audio is changed
@@ -123,15 +126,11 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public editSoundMap(category, sound, clip, deleting) {
+  public editSoundMap(category, sound, clip) {
     this.soundMap.get(category).set(sound, clip);
     const newsnd = this.soundMap.get(category).get(sound);
 
-    const split = clip.src.split('/');
-    const file = split[split.length - 1];
-    const filepath = path.join(category, file);
-    this.updateCustomSoundMap(category, filepath, clip, deleting);
-
+    console.log('custom: ');
     console.log(this.customSoundMap);
     // this.soundUpdated.next(undefined);
     const player = document.getElementById('audio-player') as HTMLAudioElement;
@@ -147,30 +146,11 @@ export class SoundService {
     fs.unlink(tbd, function() { console.log('deleted'); });
   }
 
-
-  // public getAudioForAssetType(asset: AssetType) {
-  //   const clipNames = AssetTypeToClips.get(asset);
-  //   const clipNameToAudio = new Map<string, HTMLAudioElement>();
-
-  //   for (const clipName of clipNames) {
-  //     const audio = this.nameToAudio.get(clipName);
-  //     clipNameToAudio.set(clipName, audio);
-  //   }
-
-  //   return clipNameToAudio;
-  // }
-
   /**
    * interface used for playing audio for animation
-   * @param asset type of asset
-   * @param action name of audio for desired action
+   * @param clipName clip name of audio for desired action
    */
-  public getAssetSound(asset: AssetType, action: string) {
-    const sounds: string[] = AssetTypeToClips.get(asset);
-    for (const sound of sounds) {
-      if (sound === action) {
-        return this.nameToAudio.get(sound);
-      }
-    }
+  public getAssetSound(clipName: string) {
+    return this.nameToAudio.get(clipName);
   }
 }

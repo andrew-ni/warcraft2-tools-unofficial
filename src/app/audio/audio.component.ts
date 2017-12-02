@@ -3,6 +3,10 @@ import { Menu } from 'electron';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
+
+import * as fsx from 'fs-extra';
+import * as path from 'path';
+
 const { dialog } = require('electron').remote;
 
 
@@ -36,15 +40,19 @@ export class AudioComponent implements OnInit {
 
   ngOnInit() {
     this.resetSoundContext();
-
+    fsx.removeSync('data/customSnd');
+    fsx.emptyDirSync('data/customSnd');
     // parse the soundclips.dat
     this.soundService.parseSndData();
     this.SongCategories = [...this.soundService.soundMap.keys()];
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
+        fsx.removeSync('data/customSnd');
+        fsx.emptyDirSync('data/customSnd');
+        const player = document.getElementById('audio-player') as HTMLAudioElement;
+        player.src = '';
         this.resetSoundContext();
-        this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
         this.selectedCategory = this.SongCategories[0];
       },
@@ -60,7 +68,6 @@ export class AudioComponent implements OnInit {
       error: err => console.error(err),
       complete: null
     });
-
   }
 
   resetSoundContext() {
@@ -80,8 +87,6 @@ export class AudioComponent implements OnInit {
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
-    console.log("show sound");
-
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
   }
 
@@ -119,9 +124,12 @@ export class AudioComponent implements OnInit {
     this.soundService.deleteSound('data/' + this.destPath);
     const name = this.destPath.split('customSnd')[1];
     const orig = new Audio('../data/snd' + name);
+    this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
+
     const deleting = true;
-    this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig, deleting);
+    const split = this.destPath.split('/');
+    const file = split[split.length - 1];
+    const filepath = path.join(this.selectedCategory, file);
+    this.soundService.updateCustomSoundMap(this.selectedCategory, filepath, undefined, deleting);
   }
-
-
 }
