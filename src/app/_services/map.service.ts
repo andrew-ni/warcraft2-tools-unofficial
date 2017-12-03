@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/Rx';
+import { ReplaySubject, Subject } from 'rxjs/Rx';
 
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';
+import * as JSZip from 'jszip';
 import { Player } from 'player';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -11,7 +12,7 @@ import { Tileset } from 'tileset';
 export class MapService {
 
   /** maximum num of players of map */
-  public readonly MAX_PLAYERS = 8;
+  public static readonly MAX_PLAYERS = 8;
 
   /** True if the map is in a valid state to save, False otherwise. */
   public canSave = false;
@@ -33,8 +34,6 @@ export class MapService {
 
   /** A list of assets. */
   public assets: Asset[] = [];
-
-
 
   /**
    * A matrix that tracks the location of assets in the map.
@@ -61,6 +60,11 @@ export class MapService {
   /** The tile set used to draw the map. */
   public tileSet: Tileset;
 
+  /** AI stuff. */
+  public difficulty: string[] = [];
+  public events: string[] = [];
+  public triggers: string[] = [];
+
   // Events
 
   /** @event mapResized When the dimension of the map have changed. */
@@ -68,6 +72,12 @@ export class MapService {
 
   /** @event mapLoaded When the assets and terrain have fully been parsed and initialized. */
   public mapLoaded = new ReplaySubject<void>(1);
+
+  /** @event mapProjectOpened When a map project has been open from the file system. */
+  public mapProjectOpened = new ReplaySubject<JSZip>(1);
+
+  /** @event mapProjectLoaded When a map project has been open from the file system. */
+  public mapProjectLoaded = new ReplaySubject<void>(1);
 
   /** @event tilesUpdated When any tile types/indices have changed. */
   public tilesUpdated = new ReplaySubject<Region>(1);
