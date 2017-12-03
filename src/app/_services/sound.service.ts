@@ -138,11 +138,10 @@ export class SoundService {
    */
   public editSoundMap(category, sound, clip) {
     this.soundMap.get(category).set(sound, clip);
-    const newsnd = this.soundMap.get(category).get(sound);
 
     // this.soundUpdated.next(undefined);
     const player = document.getElementById('audio-player') as HTMLAudioElement;
-    player.src = newsnd.src;
+    player.src = clip.src;
 
   }
 

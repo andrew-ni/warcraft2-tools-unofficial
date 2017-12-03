@@ -54,8 +54,7 @@ export class AudioComponent implements OnInit {
         this.soundService.parseSndData();
         fsx.removeSync('data/customSnd');
         fsx.emptyDirSync('data/customSnd');
-        const player = document.getElementById('audio-player') as HTMLAudioElement;
-        player.src = '';
+        this.resetSoundPlayer();
         this.resetSoundContext();
         this.SongCategories = [...this.soundService.soundMap.keys()];
         this.selectedCategory = this.SongCategories[0];
@@ -89,12 +88,21 @@ export class AudioComponent implements OnInit {
   }
 
   /**
+   * restarts the HTML sound player
+   */
+  resetSoundPlayer() {
+    const player = document.getElementById('audio-player') as HTMLAudioElement;
+    player.src = '';
+  }
+
+  /**
    * shows all sounds of selected category
    * @param category category of first drop down menu
    */
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
+    this.resetSoundPlayer();
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
   }
 
