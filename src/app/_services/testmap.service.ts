@@ -239,15 +239,11 @@ export class TestmapService {
    */
   public click(c: Coordinate) {
     // Accept clicks only when player is valid and not dying or taking an action
-    console.log('click attempt: ', this.moving, this.actioning);
+    // console.log('click attempt: ', this.moving, this.actioning);
     if (this.player && !this.moving && !this.dying && !this.actioning) {
       const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
       this.currentAction = action;
-      console.log('click success: ', Action[this.currentAction]);
-
-      // Calculate turnDirection
-
-
+      // console.log('click success: ', Action[this.currentAction]);
 
       // Bounding magic
       if (action !== undefined) {
@@ -300,7 +296,6 @@ export class TestmapService {
   private moveTo(dest: Coordinate) {
     // Ignore other move commands when currently moving
     if (this.movementDuration === 0) {
-      console.log('moveTo called');
       this.dest = dest;
       const source = { x: this.player.coord.x, y: this.player.coord.y };
       this.delta = { x: this.compare(source.x, dest.x), y: this.compare(source.y, dest.y) };
@@ -309,25 +304,49 @@ export class TestmapService {
 
       // Click directly on unit
       if (direction === 'none') {
-        console.log('clicked directly on unit');
         this.movementDuration = 0;
         return;
       }
       // this.moving = true;
       this.player.setDirection(direction);
-      console.log('moving = true, setDir to ', direction, 'movementDur:', this.movementDuration);
     }
   }
 
   /**
-   * Decides what animation Actions to play (lumber, attack, death, etc). Called after pathfinding is done.
+   * Decides where to turn and what animation Actions to play (lumber, attack, death, etc). Called after pathfinding is done.
    */
   private performAction() {
+    // Decide turn direction
+    const current = this.player.gridCoord;
+    let dir = 'n';
+
+    if (current.x === 5) {
+      // if (current.y !== 3 && current.y !== 13) {
+        dir = 'w';
+      // }
+    } else if (current.x === 12) {
+      // if (current.y !== 3 && current.y !== 13) {
+        dir = 'e';
+      // }
+    } else if (current.y === 3) {
+      dir = 'n';
+    } else if (current.y === 13) {
+      dir = 's';
+    }
+
+    // Corner cases
+    if (this.currentAction === Action.Forest) {
+      if (current.y === 3) dir = 'n';
+      else if (current.y === 13) dir = 's';
+    }
+
+    // Decide action
     const actionTime = 5 * 24;
     switch (this.currentAction) {
       case Action.Forest: {
         if (this.playerAsset === AssetType.Peasant) {
           console.log('chop wood for 3 cycles');
+          this.player.setDirection(dir);
           this.player.setAction('attack', true);
           this.actionDuration = actionTime;
           this.actioning = true;
@@ -337,12 +356,14 @@ export class TestmapService {
       case Action.EnemyArcher: {
         console.log('attack archer for 3 cycles');
         this.player.setAction('attack', true);
+        this.player.setDirection(dir);
         this.actionDuration = actionTime;
         this.actioning = true;
         break;
       }
       case Action.EnemyKnight: {
         console.log('attack knight for 3 cycles');
+        this.player.setDirection(dir);
         this.player.setAction('attack', true);
         this.actionDuration = actionTime;
         this.actioning = true;
@@ -350,25 +371,30 @@ export class TestmapService {
       }
       case Action.EnemyRanger: {
         console.log('attack ranger for 3 cycles');
+        this.player.setDirection(dir);
         this.player.setAction('attack', true);
         this.actionDuration = actionTime;
         this.actioning = true;
         break;
       }
       case Action.BlackSmith: {
+        this.player.setDirection(dir);
         break;
       }
       case Action.LumberMill: {
+        this.player.setDirection(dir);
         break;
       }
       case Action.GoldMine: {
+        this.player.setDirection(dir);
         break;
       }
       case Action.Farm: {
+        this.player.setDirection(dir);
         break;
       }
       case Action.Grass: {
-        return;
+        break;
       }
       default: {
         return;
@@ -570,19 +596,12 @@ export class TestmapService {
 
       // Handles movement animations
       if (this.movementDuration > 0 && !this.dying) {
-        // console.log(this.movementDuration);
         this.moving = true;
         if (this.movementDuration % 32 === 0) {
           const source = { x: this.player.coord.x, y: this.player.coord.y };
           this.delta = { x: this.compare(source.x, this.dest.x), y: this.compare(source.y, this.dest.y) };
           const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
-          // if (direction === 'none') { // done pathfinding
-          //   console.log('none');
-          //   this.movementDuration = 0;
-          //   return;
-          // }
           this.player.setDirection(direction);
-          console.log('direction set to ', direction);
         }
         if (this.movementDuration % 5 === 0) this.player.nextFrame();
         this.player.coord.x += this.delta.x; // change pixels for drawPlayer
@@ -592,7 +611,6 @@ export class TestmapService {
         // Perform action after pathfinding is done
         if (this.movementDuration === 0) {
           this.moving = false;
-          // this.player.setDirection(this.turnDirection);
           this.performAction();
         }
       }
