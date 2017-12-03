@@ -45,9 +45,7 @@ export class AudioComponent implements OnInit {
     this.resetSoundContext();
     fsx.removeSync('data/customSnd');
     fsx.emptyDirSync('data/customSnd');
-    // parse the soundclips.dat
     this.soundService.parseSndData();
-    this.SongCategories = [...this.soundService.soundMap.keys()];
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
