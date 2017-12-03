@@ -11,6 +11,7 @@ import { MapService } from 'services/map.service';
 interface IMap {
   mapProjectOpened: Subject<JSZip>;
   mapProjectLoaded: Subject<void>;
+  baseHref: string;
 }
 
 /**
@@ -36,10 +37,7 @@ export class FileService {
     mapService: MapService,
   ) {
     this.map = mapService;
-    const baseHref = document.getElementsByTagName('base')[0].href.substring(8); // Remove prefix 'file:///'
-    console.log(baseHref);
-    this.defaultPath = pathJoin(baseHref, 'data');
-    console.log(this.defaultPath);
+    this.defaultPath = pathJoin(this.map.baseHref, 'data');
 
 
     let resolve: () => void;

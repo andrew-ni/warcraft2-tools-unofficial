@@ -65,6 +65,9 @@ export class MapService {
   public events: string[] = [];
   public triggers: string[] = [];
 
+  /** The absolute path of index.html durring runtime. */
+  public readonly baseHref: string;
+
   // Events
 
   /** @event mapResized When the dimension of the map have changed. */
@@ -88,5 +91,7 @@ export class MapService {
   /** @event assetRemoved When any asset has ben removed. */
   public assetRemoved = new ReplaySubject<Region>(1);
 
-  constructor() { }
+  constructor() {
+    this.baseHref = document.getElementsByTagName('base')[0].href.substring('file:///'.length); // Remove prefix 'file:///'. I hope it is the same on all platforms.
+   }
 }

@@ -40,6 +40,7 @@ interface IMap {
   mapLoaded: Subject<void>;
   tilesUpdated: Subject<Region>;
   mapVersion: string;
+  baseHref: string;
 }
 
 
@@ -76,9 +77,8 @@ export class IOService {
     private spriteService: SpriteService,
     private tilesetService: TilesetService,
   ) {
-    const baseHref = document.getElementsByTagName('base')[0].href.substring(8); // Remove prefix 'file:///'
-    this.CUSTOMSND_DIR = path.join(baseHref, 'data', 'customSnd');
     this.map = mapService;
+    this.CUSTOMSND_DIR = path.join(this.map.baseHref, 'data', 'customSnd');
     this.initPackage();
 
     /**
