@@ -25,7 +25,7 @@ export class FileService {
   private img: JSZip;
   private snd: JSZip;
 
-  private readonly defaultPath = 'data/';
+  private readonly defaultPath: string;
 
   public initializing: Promise<void>;
 
@@ -36,6 +36,11 @@ export class FileService {
     mapService: MapService,
   ) {
     this.map = mapService;
+    const baseHref = document.getElementsByTagName('base')[0].href.substring(8); // Remove prefix 'file:///'
+    console.log(baseHref);
+    this.defaultPath = pathJoin(baseHref, 'data');
+    console.log(this.defaultPath);
+
 
     let resolve: () => void;
     this.initializing = new Promise<void>(res => resolve = res);
