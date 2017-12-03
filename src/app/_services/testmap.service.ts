@@ -63,6 +63,7 @@ export class TestmapService {
 
   private backgroundImage: ImageBitmap;
 
+  private currentPlayer: AssetType = undefined;
   private currentAction: Action = undefined;
   private currentSound: HTMLAudioElement = undefined;
 
@@ -283,7 +284,7 @@ export class TestmapService {
     this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
-
+    this.playerAsset = AssetType[s];
   }
 
   /** Plays the death animation. */
@@ -359,7 +360,7 @@ export class TestmapService {
           this.player.setAction('attack', true);
           this.actionDuration = actionTime;
           this.actioning = true;
-          this.currentSound = this.soundService.getAssetSound('harvest1');
+          // this.currentSound = this.soundService.getAssetSound('harvest1');
         }
         break;
       }
@@ -512,9 +513,47 @@ export class TestmapService {
       ['tick', ['tick']],
       ['tock', ['tock']],
     ]);
+
+    switch (this.playerAsset) {
+      case AssetType.Peasant: {
+        if (peasantMap.has(this.player.action.name)) {
+          this.currentSound = this.soundService.getAssetSound(peasantMap.get(this.player.action.name)[0]);
+        }
+        break;
+      }
+      case AssetType.Footman: {
+        break;
+      }
+      case AssetType.Archer: {
+        break;
+      }
+      case AssetType.Ranger: {
+        break;
+      }
+      case AssetType.GoldMine: {
+        break;
+      }
+      case AssetType.Farm: {
+        break;
+      }
+      case AssetType.LumberMill: {
+        break;
+      }
+      case AssetType.Blacksmith: {
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 
   private playSound() {
+    // todo: use action to map into sound mappings. Some need custom strings. Also choose random string from array.
+    // Walking and selected have different behavior (should be played right after clicking), but this function
+    // is called after pathfinding is done
+    console.log(this.player.action.name);
+    this.getAudio();
     this.currentSound.play();
   }
 
