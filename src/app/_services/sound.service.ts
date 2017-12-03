@@ -59,13 +59,12 @@ export class SoundService {
       const filepath = path.join('..', 'data', 'snd', type, file);
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
-      if (this.soundMap.has(type)) {
-        this.soundMap.get(type).set(lines[i], checkedAudio);
-      } else {
-        const fileToAudio: Map<string, HTMLAudioElement> = new Map;
-        fileToAudio.set(lines[i], checkedAudio);
-        this.soundMap.set(type, fileToAudio);
+
+      if (!this.soundMap.has(type)) {
+        this.soundMap.set(type, new Map<string, HTMLAudioElement>());
       }
+      this.soundMap.get(type).set(lines[i], checkedAudio);
+
       this.nameToAudio.set(lines[i], checkedAudio);
     }
   }
