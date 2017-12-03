@@ -53,7 +53,9 @@ export class SoundService {
     const lines = allClips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
-      const [, type, file] = lines[i + 1].split('/');
+      const split = lines[i + 1].split(path.sep);
+      const type = split[split.length - 2];
+      const file = split[split.length - 1];
       const filepath = path.join('..', 'data', 'snd', type, file);
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
@@ -88,7 +90,9 @@ export class SoundService {
    * @param filepath file path of current sound
    */
   public checkForCustomSound(filepath: string): string {
-    const [, , , category, file] = filepath.split('/');
+    const split = filepath.split(path.sep);
+    const category = split[split.length - 2];
+    const file = split[split.length - 1];
     const customFilePath = path.join('..', 'data', 'customSnd', category, file);
     try {
       fs.accessSync(path.join('data', customFilePath));
@@ -123,7 +127,7 @@ export class SoundService {
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       const deleting = false;
       this.editSoundMap(category, sound, clip);
-      const split = dest.split('/');
+      const split = dest.split(path.sep);
       const file = split[split.length - 1];
       this.updateCustomSoundMap(category, file, clip, deleting);
     });
