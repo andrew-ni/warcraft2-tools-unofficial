@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Rx';
 
 
+import { ipcRenderer } from 'electron';
 import { Coordinate, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
@@ -41,7 +42,11 @@ export class MapComponent implements OnInit {
     private terrainService: TerrainService,
     private assetsService: AssetsService,
     private mapService: MapService,
-  ) { }
+  ) {
+    ipcRenderer.on('map:loaded', () => {
+    document.getElementById('unitsBox').innerHTML = '';
+    });
+  }
 
   /**
    * Draws canvas for the first time
