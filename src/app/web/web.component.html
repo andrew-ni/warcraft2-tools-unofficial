@@ -1,4 +1,4 @@
-<div *ngIf="loggedIn"
+<div *ngIf="!loggedIn"
      id="login">
   <form class="ui form"
         [formGroup]="form">
@@ -22,12 +22,14 @@
 </div>
 
 
-<div class="ui vertically divided grid">
+<div *ngIf="loggedIn"
+     class="ui vertically divided grid">
 
   <div class="one column row">
     <div class="column">
       <div class="item">
-        <div class="ui right floated button">Export Map</div>
+        <div class="ui right floated button"
+             (click)="exportMap()">Export Map</div>
       </div>
     </div>
   </div>
@@ -38,8 +40,9 @@
       <div id="privatemaps"
            class="ui cards">
         <ng-container *ngFor="let mapData of maps">
-          <app-map-display *ngIf="mapData.is_private"
+          <app-map-display *ngIf="mapData.isPrivate"
                            [mapData]="mapData"
+                           (imported)="importMap($event)"
                            class="card"></app-map-display>
         </ng-container>
       </div>
@@ -47,17 +50,18 @@
   </div>
 
   <div class="one column row segments">
-      <div class="ui top attached label">Public Maps</div>
-      <div class="segment">
-        <div id="publicmaps"
-             class="ui cards">
-          <ng-container *ngFor="let mapData of maps">
-            <app-map-display *ngIf="!mapData.is_private"
-                             [mapData]="mapData"
-                             class="card"></app-map-display>
-          </ng-container>
-        </div>
+    <div class="ui top attached label">Public Maps</div>
+    <div class="segment">
+      <div id="publicmaps"
+           class="ui cards">
+        <ng-container *ngFor="let mapData of maps">
+          <app-map-display *ngIf="!mapData.isPrivate"
+                           [mapData]="mapData"
+                           (imported)="importMap($event)"
+                           class="card"></app-map-display>
+        </ng-container>
       </div>
     </div>
+  </div>
 
 </div>

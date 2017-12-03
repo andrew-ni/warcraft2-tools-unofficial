@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MapDisplay } from '../web.component';
 
 @Component({
@@ -8,6 +8,8 @@ import { MapDisplay } from '../web.component';
 })
 export class MapDisplayComponent implements OnInit {
   @Input() private mapData: MapDisplay;
+  @Output() imported = new EventEmitter<string>();
+
   constructor() { }
 
   ngOnInit() {

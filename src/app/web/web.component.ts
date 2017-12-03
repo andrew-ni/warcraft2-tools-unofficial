@@ -13,13 +13,16 @@ interface LoginResponse {
   status_message: string;
 }
 
-interface GetMapResponse {
-
+interface GetMapsResponse {
+  maps: { [index: string]: boolean }; // Returns an object instead of an array but we can work with it.
+  return_value: number;
+  status: number;
+  status_message: string;
 }
 
 export interface MapDisplay {
-  map_name: string;
-  is_private: boolean;
+  name: string;
+  isPrivate: boolean;
 }
 
 @Component({
@@ -30,17 +33,9 @@ export interface MapDisplay {
 export class WebComponent implements OnInit {
   private loggedIn = false;
   private userId: number;
+  private user: string;
   private form: FormGroup;
-  private maps = [
-    { map_name: 'map1', is_private: true },
-    { map_name: 'map1', is_private: true },
-    { map_name: 'map1', is_private: true },
-    { map_name: 'map1', is_private: true },
-    { map_name: 'map1', is_private: true },
-    { map_name: 'map2', is_private: false },
-    { map_name: 'map3', is_private: true },
-    { map_name: 'map4', is_private: false },
-  ];
+  private maps: MapDisplay[] = [];
 
   constructor(
     private http: HttpClient,
@@ -75,10 +70,12 @@ export class WebComponent implements OnInit {
             if (resp.return_value === 0 && resp.status === 200) {
               this.userId = resp.user_id;
               this.loggedIn = true;
-              this.exportMap();
+              this.user = params.get('name');
+              this.getMaps();
             } else {
               this.loggedIn = false;
               this.userId = undefined;
+              this.user = '';
             }
           },
           error: err => {
@@ -89,20 +86,49 @@ export class WebComponent implements OnInit {
         });
     }
   }
-  private async importMap() {
+
+
+  private async getMaps() {
+    if (!this.loggedIn) return;
+
     const params = new HttpParams()
-      .append('name', 'blhough')
-      .append('password', '123');
+      .append('name', this.user)
+      .append('info_request', 'MAP');
     // .append('name', this.form.value.username)
     // .append('password', this.form.value.password);
 
-    this.http.get('http://34.214.129.0/login/multi/index.php', { params })
+    this.http.get<GetMapsResponse>('http://34.214.129.0/login/multi/index.php', { params })
       .do(resp => console.log(resp))
       .subscribe({
         next: resp => {
-          const file = new File([resp as Buffer], Math.random().toString() + '.zip', { type: 'application/zip', });
-          this.ioService.readPackage(resp as Buffer, true);
-          console.log(resp);
+          this.maps = [];
+          for (const name in resp.maps) {
+            if (resp.maps.hasOwnProperty(name)) {
+              this.maps.push({ name, isPrivate: resp.maps[name] });
+            }
+          }
+        },
+        error: err => {
+          this.loggedIn = false;
+          this.userId = undefined;
+          console.error(err);
+        }
+      });
+
+  }
+
+  private async importMap(name: string) {
+    const params = new HttpParams()
+      .append('map', name);
+    // .append('name', this.form.value.username)
+    // .append('password', this.form.value.password);
+
+    this.http.get('http://34.213.125.24/dlc/map_download.php', { params })
+      .do(resp => console.log(resp))
+      .subscribe({
+        next: resp => {
+          // const file = new File([resp as Buffer], Math.random().toString() + '.zip', { type: 'application/zip', });
+          // this.ioService.readPackage(resp as Buffer, true);
         },
         error: err => {
           this.loggedIn = false;
@@ -114,19 +140,27 @@ export class WebComponent implements OnInit {
 
   private async exportMap(zip = true) {
     let file: File;
+    let url: string;
     if (zip) {
-      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip', });
+      url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
+      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip' });
+    } else {
+      url = 'http://34.214.129.0/dlc/tool_upload.php';
+      file = new File([this.serializeService.serializeMap()], Math.random().toString() + '.map', { type: 'text/plain' });
     }
     console.log(file);
 
     const formData = new FormData();
     formData.append('fileToUpload', file);
     formData.append('uploader', this.userId.toString());
-    formData.append('private', 'true');
+    formData.append('private', 'false');
 
-    this.http.post('http://34.214.129.0/dlc/tool_upload.php', formData)
+    this.http.post(url, formData)
       .subscribe({
-        next: resp => console.log(resp),
+        next: resp => {
+          console.log(resp);
+          this.getMaps();
+        },
         error: err => console.error(err),
       });
   }

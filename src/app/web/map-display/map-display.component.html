@@ -1,11 +1,9 @@
 <div class="content">
   <div class="header">
-    {{mapData.map_name}}
-  </div>
-  <div class="description">
-    Elliot requested permission to view your contact details
+    {{mapData.name}}
   </div>
 </div>
 <div class="extra content">
-    <div class="ui fluid button">Import</div>
+  <div class="ui fluid button"
+       (click)="imported.next(mapData.name)">Import</div>
 </div>

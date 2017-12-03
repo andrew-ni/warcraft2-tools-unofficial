@@ -1,30 +1,48 @@
 <div>
-    <button class="ui button" (click)="openTab('main')">Map Tool</button>
-    <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
-    <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
-    <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
-    <button class="ui button" (click)="openTab('ai')">AI Tool</button>
-    <button class="ui button" (click)="openTab('web')">Web Tool</button>
-    
+    <button class="ui button"
+            (click)="openTab('main')">Map Tool</button>
+    <button class="ui button"
+            (click)="openTab('animation')">Animation Tool</button>
+    <button class="ui button"
+            (click)="openTab('audio')">Audio Tool</button>
+    <button class="ui button"
+            (click)="openTab('tileset')">Tileset Tool</button>
+    <button class="ui button"
+            (click)="openTab('ai')">AI Tool</button>
+    <button class="ui button"
+            (click)="openTab('web')">Web Tool</button>
+
 
 </div>
-<div id="main" class="tab" style="display:none">
+<div id="main"
+     class="tab"
+     style="display:none">
     <app-sidebar></app-sidebar>
     <app-map></app-map>
 </div>
-<div id="animation" class="tab" style="display:none">
+<div id="animation"
+     class="tab"
+     style="display:none">
     <app-animation></app-animation>
 </div>
-<div id="audio" class="tab" style="display:none">
+<div id="audio"
+     class="tab"
+     style="display:none">
     <app-audio></app-audio>
 </div>
-<div id="tileset" class="tab" style="display:none">
+<div id="tileset"
+     class="tab"
+     style="display:none">
     <app-tileset></app-tileset>
 </div>
-<div id="ai" class="tab" style="display:none">
+<div id="ai"
+     class="tab"
+     style="display:none">
     <app-ai></app-ai>
 </div>
-<div id="web" class="tab" style="display:inline-block">
-    <app-web></app-web>>
+<div id="web"
+     class="tab"
+     style="display:inline-block">
+    <app-web></app-web>
 </div>
 <app-newmap></app-newmap>
