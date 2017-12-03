@@ -44,7 +44,7 @@ export class MapComponent implements OnInit {
     private mapService: MapService,
   ) {
     ipcRenderer.on('map:loaded', () => {
-    document.getElementById('unitsBox').innerHTML = '';
+      document.getElementById('unitsBox').innerHTML = '';
     });
   }
 
