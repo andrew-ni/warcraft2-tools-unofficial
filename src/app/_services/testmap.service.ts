@@ -268,7 +268,14 @@ export class TestmapService {
    * @param s Name of asset to spawn.
    */
   public spawn(s: string) {
+    this.movementDuration = 0;
+    this.deathDuration = 0;
+    this.actionDuration = 0;
+
+    this.moving = false;
     this.dying = false;
+    this.actioning = false;
+
     if (this.player) { this.clearPlayer(); }
     this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
