@@ -1,1 +1,26 @@
-tileset Works!
+<div class="sidebox">
+  <h2>Tileset Canvas:</h2>
+  <p>Click on individual tiles to replace them, then save custom tileset</p>
+
+  <label>Magnification Factor: </label>
+  <select class="ui dropdown"
+          [(ngModel)]="multiplier">
+    <option *ngFor="let i of multiplierOptions"
+            [value]="i">{{i}}</option>
+  </select>
+  <button class="ui button"
+          (click)="saveTileset()">Save</button>
+  <button class="ui button"
+          (click)="resetToDefaultTileset()">Default</button>
+
+</div>
+
+<div id="tilesetevents">
+  <canvas id='tilesetCanvas'
+          tabindex="1"
+          [style.width.px]="tilesetService.TILE_SIZE*multiplier"></canvas>
+  <div id="tilesBox"
+       [style.width.px]="tilesetService.TILE_SIZE * multiplier"
+       [style.height.px]="tilesetService.TILE_SIZE * multiplier"
+       [style.top.px]="currentIndex * tilesetService.TILE_SIZE * multiplier"></div>
+</div>

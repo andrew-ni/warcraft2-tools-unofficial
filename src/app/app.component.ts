@@ -28,8 +28,8 @@ export class AppComponent {
       x[i].style.display = 'none';
     }
     if (tabName === 'main') {
-      this.mapService.assetRemoved.next(undefined);
       this.mapService.assetsUpdated.next(undefined);
+      this.mapService.tilesUpdated.next(undefined);
       document.getElementById(tabName).style.display = 'flex';
     } else {
       if (tabName === 'animation') {
