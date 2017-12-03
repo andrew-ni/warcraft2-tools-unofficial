@@ -30,14 +30,14 @@ export class SoundService {
    * @param clip HTML audio object of the sound
    * @param deleting boolean value true if deleting from customSoundMap, or false if not
    */
-  public updateCustomSoundMap(category, filepath, clip, deleting) {
+  public updateCustomSoundMap(category, file, clip, deleting) {
     if (deleting) {
-      this.customSoundMap.get(category).delete(filepath);
+      this.customSoundMap.get(category).delete(file);
     } else {
       if (this.customSoundMap.get(category) === undefined) {
         this.customSoundMap.set(category, new Map());
       }
-      this.customSoundMap.get(category).set(filepath, clip);
+      this.customSoundMap.get(category).set(file, clip);
     }
   }
 
@@ -54,7 +54,7 @@ export class SoundService {
 
     for (let i = 0; i < lines.length; i += 2) {
       const [, type, file] = lines[i + 1].split('/');
-      const filepath = '../data/snd/' + type + '/' + file;
+      const filepath = path.join('..', 'data', 'snd', type, file);
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
       if (this.soundMap.has(type)) {
@@ -74,7 +74,7 @@ export class SoundService {
   public readSndDat(): string {
     let content: string;
 
-    content = fs.readFileSync('data/snd/SoundClips.dat', 'utf8');
+    content = fs.readFileSync(path.join('data', 'snd', 'SoundClips.dat'), 'utf8');
 
     if (content === undefined) {
       throw new Error('File not read');
@@ -89,11 +89,11 @@ export class SoundService {
    */
   public checkForCustomSound(filepath: string): string {
     const [, , , category, file] = filepath.split('/');
-    const customFilePath = '../data/customSnd/' + category + '/' + file;
+    const customFilePath = path.join('..', 'data', 'customSnd', category, file);
     try {
-      fs.accessSync('data/' + customFilePath);
+      fs.accessSync(path.join('data', customFilePath));
       const deleting = false;
-      this.updateCustomSoundMap(category, path.join(category, file), new Audio(customFilePath), deleting);
+      this.updateCustomSoundMap(category, file, new Audio(customFilePath), deleting);
       return customFilePath;
     } catch (e) {
       return filepath;
@@ -110,9 +110,9 @@ export class SoundService {
    */
   public async copyFile(src, dest, category, sound, clip) {
     try {
-      fs.accessSync(path.join('data/customSnd', category));
+      fs.accessSync(path.join('data', 'customSnd', category));
     } catch (e) {
-      await fsx.emptyDir(path.join('data/customSnd', category));
+      await fsx.emptyDir(path.join('data', 'customSnd', category));
     }
     const readStream = fs.createReadStream(src);
 
@@ -125,8 +125,7 @@ export class SoundService {
       this.editSoundMap(category, sound, clip);
       const split = dest.split('/');
       const file = split[split.length - 1];
-      const filepath = path.join(category, file);
-      this.updateCustomSoundMap(category, filepath, clip, deleting);
+      this.updateCustomSoundMap(category, file, clip, deleting);
     });
   }
 

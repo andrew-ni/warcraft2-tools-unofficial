@@ -43,15 +43,15 @@ export class AudioComponent implements OnInit {
    */
   ngOnInit() {
     this.resetSoundContext();
-    fsx.removeSync('data/customSnd');
-    fsx.emptyDirSync('data/customSnd');
+    fsx.removeSync(path.join('data', 'customSnd'));
+    fsx.emptyDirSync(path.join('data', 'customSnd'));
     this.soundService.parseSndData();
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
         this.soundService.parseSndData();
-        fsx.removeSync('data/customSnd');
-        fsx.emptyDirSync('data/customSnd');
+        fsx.removeSync(path.join('data', 'customSnd'));
+        fsx.emptyDirSync(path.join('data', 'customSnd'));
         this.resetSoundPlayer();
         this.resetSoundContext();
         console.log(this.selectedClip);
@@ -114,7 +114,7 @@ export class AudioComponent implements OnInit {
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
-    this.destPath = '../data/customSnd/' + this.selectedCategory + '/' + file;
+    this.destPath = path.join('..', 'data', 'customSnd', this.selectedCategory, file);
 
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = this.selectedClip.src;
@@ -127,7 +127,7 @@ export class AudioComponent implements OnInit {
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
       const newClip = new Audio(paths[0]);
-      this.soundService.copyFile(paths[0], 'data/' + this.destPath, this.selectedCategory, this.selectedClipName, newClip);
+      this.soundService.copyFile(paths[0], path.join('data', this.destPath), this.selectedCategory, this.selectedClipName, newClip);
     });
   }
 
@@ -135,15 +135,14 @@ export class AudioComponent implements OnInit {
    * reverts audio to default by deleting custom sound
    */
   revertAudio() {
-    this.soundService.deleteSound('data/' + this.destPath);
+    this.soundService.deleteSound(path.join('data', this.destPath));
     const name = this.destPath.split('customSnd')[1];
-    const orig = new Audio('../data/snd' + name);
+    const orig = new Audio(path.join('..', 'data', 'snd', name));
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
     const deleting = true;
     const split = this.destPath.split('/');
     const file = split[split.length - 1];
-    const filepath = path.join(this.selectedCategory, file);
-    this.soundService.updateCustomSoundMap(this.selectedCategory, filepath, undefined, deleting);
+    this.soundService.updateCustomSoundMap(this.selectedCategory, file, undefined, deleting);
   }
 }

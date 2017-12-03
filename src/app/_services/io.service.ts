@@ -219,7 +219,7 @@ export class IOService {
     const customSoundMap = this.soundService.getCustomSoundMap();
     customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
-        this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, fp)));
+        this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, dirName, fp)));
       });
     });
 
