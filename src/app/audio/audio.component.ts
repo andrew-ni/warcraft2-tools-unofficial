@@ -54,7 +54,6 @@ export class AudioComponent implements OnInit {
         fsx.emptyDirSync(path.join('data', 'customSnd'));
         this.resetSoundPlayer();
         this.resetSoundContext();
-        console.log(this.selectedClip);
         this.SongCategories = [...this.soundService.soundMap.keys()];
       },
       error: err => console.error(err),
@@ -112,7 +111,7 @@ export class AudioComponent implements OnInit {
   playSound(clipName) {
     this.selectedClipName = clipName;
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
-    const split = this.selectedClip.src.split(path.sep);
+    const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
     this.destPath = path.join('..', 'data', 'customSnd', this.selectedCategory, file);
 
@@ -141,7 +140,7 @@ export class AudioComponent implements OnInit {
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
     const deleting = true;
-    const split = this.destPath.split(path.sep);
+    const split = this.destPath.split('/');
     const file = split[split.length - 1];
     this.soundService.updateCustomSoundMap(this.selectedCategory, file, undefined, deleting);
   }

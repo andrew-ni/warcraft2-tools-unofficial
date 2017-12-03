@@ -123,11 +123,11 @@ export class SoundService {
     readStream.once('error', (err) => {
       console.log(err);
     });
-
+    console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       const deleting = false;
       this.editSoundMap(category, sound, clip);
-      const split = dest.split(path.sep);
+      const split = dest.split('/');
       const file = split[split.length - 1];
       this.updateCustomSoundMap(category, file, clip, deleting);
     });
