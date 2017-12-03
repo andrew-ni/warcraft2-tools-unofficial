@@ -16,10 +16,20 @@ export class SoundService {
     this.nameToAudio = new Map();
   }
 
-  public getSoundsForSave() {
+  /**
+   * getter function for customSoundMap variable
+   */
+  public getCustomSoundMap() {
     return this.customSoundMap;
   }
 
+  /**
+   *
+   * @param category category of the custom sound
+   * @param filepath file path of the sound starting from its category directory (ex. archer/acknowlede1.wav)
+   * @param clip HTML audio object of the sound
+   * @param deleting boolean value true if deleting from customSoundMap, or false if not
+   */
   public updateCustomSoundMap(category, filepath, clip, deleting) {
     if (deleting) {
       this.customSoundMap.get(category).delete(filepath);
@@ -32,8 +42,8 @@ export class SoundService {
   }
 
   /**
- * Reads the SoundClips dat file and populates the map's soundMap.
- */
+   * Reads the SoundClips dat file and populates the map's soundMap.
+   */
   public parseSndData() {
     this.soundMap = new Map();
     this.customSoundMap = new Map();
@@ -130,8 +140,6 @@ export class SoundService {
     this.soundMap.get(category).set(sound, clip);
     const newsnd = this.soundMap.get(category).get(sound);
 
-    console.log('custom: ');
-    console.log(this.customSoundMap);
     // this.soundUpdated.next(undefined);
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = newsnd.src;

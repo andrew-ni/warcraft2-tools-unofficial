@@ -38,6 +38,9 @@ export class AudioComponent implements OnInit {
   ) {
   }
 
+  /**
+   * initializes context, and subscribes to projectLoaded and soundLoaded events.
+   */
   ngOnInit() {
     this.resetSoundContext();
     fsx.removeSync('data/customSnd');
@@ -48,6 +51,7 @@ export class AudioComponent implements OnInit {
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
+        this.soundService.parseSndData();
         fsx.removeSync('data/customSnd');
         fsx.emptyDirSync('data/customSnd');
         const player = document.getElementById('audio-player') as HTMLAudioElement;
@@ -67,9 +71,13 @@ export class AudioComponent implements OnInit {
       },
       error: err => console.error(err),
       complete: null
+
     });
   }
 
+  /**
+   * reinitializes currently selected sound context
+   */
   resetSoundContext() {
     this.SongCategories = [];
     this.Sounds = [];
@@ -114,7 +122,6 @@ export class AudioComponent implements OnInit {
       const newClip = new Audio(paths[0]);
       this.soundService.copyFile(paths[0], 'data/' + this.destPath, this.selectedCategory, this.selectedClipName, newClip);
     });
-    console.log(this.soundService.soundMap);
   }
 
   /**

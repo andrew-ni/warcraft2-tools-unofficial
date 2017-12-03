@@ -216,7 +216,7 @@ export class IOService {
      */
     this.zip.remove('snd');
     this.zip.folder('snd');
-    const customSoundMap = this.soundService.getSoundsForSave();
+    const customSoundMap = this.soundService.getCustomSoundMap();
     customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
         this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, fp)));
@@ -247,16 +247,16 @@ export class IOService {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
         fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
-        const promises = new Array<Promise<void>>();
+        // TODO: trigger customSndLoaded after the last call of the foreach. awaiting promises.all causes problems.
+        // const promises = new Array<Promise<void>>();
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
           // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
-          promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
+          // promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
+          fsx.writeFileSync(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
+          this.map.customSndLoaded.next();
         });
-        await Promise.all(promises);
-
-        this.map.customSndLoaded.next();
-
-
+        // await Promise.all(promises);
+        // this.map.customSndLoaded.next();
       }
     });
   }
