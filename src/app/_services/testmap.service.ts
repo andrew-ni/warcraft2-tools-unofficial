@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import { join as pathJoin } from 'path';
 import { AnimationService } from 'services/animation.service';
 import { MapService } from 'services/map.service';
+import { SoundService } from 'services/sound.service';
 
 enum Action {
   Forest,
@@ -63,6 +64,7 @@ export class TestmapService {
   private backgroundImage: ImageBitmap;
 
   private currentAction: Action = undefined;
+  private currentSound: HTMLAudioElement = undefined;
 
   private delta: Coordinate = { x: 0, y: 0 };
   private dest: Coordinate = { x: 0, y: 0 };
@@ -76,6 +78,7 @@ export class TestmapService {
 
   constructor(
     private spriteService: SpriteService,
+    private soundService: SoundService,
   ) {
 
 
@@ -356,6 +359,7 @@ export class TestmapService {
           this.player.setAction('attack', true);
           this.actionDuration = actionTime;
           this.actioning = true;
+          this.currentSound = this.soundService.getAssetSound('harvest1');
         }
         break;
       }
@@ -508,7 +512,10 @@ export class TestmapService {
       ['tick', ['tick']],
       ['tock', ['tock']],
     ]);
+  }
 
+  private playSound() {
+    this.currentSound.play();
   }
 
   /**
@@ -635,7 +642,12 @@ export class TestmapService {
 
       // Handles action animations
       if (this.actionDuration > 0) {
-        if (this.actionDuration % 8 === 0) this.player.nextFrame();
+        if (this.actionDuration % 8 === 0) {
+          this.player.nextFrame();
+        }
+        if (this.actionDuration % 36 === 0) {
+          this.playSound();
+        }
         this.actionDuration--;
         if (this.actionDuration === 0) {
           this.player.setAction('walk', true);
