@@ -53,7 +53,7 @@ export class SoundService {
     const lines = allClips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
-      const split = lines[i + 1].split(path.sep);
+      const split = lines[i + 1].split('/');
       const type = split[split.length - 2];
       const file = split[split.length - 1];
       const filepath = path.join('..', 'data', 'snd', type, file);
@@ -112,11 +112,11 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public async copyFile(src, dest, category, sound, clip) {
+  public copyFile(src, dest, category, sound, clip) {
     try {
       fs.accessSync(path.join('data', 'customSnd', category));
     } catch (e) {
-      await fsx.emptyDir(path.join('data', 'customSnd', category));
+      fsx.emptyDirSync(path.join('data', 'customSnd', category));
     }
     const readStream = fs.createReadStream(src);
 
@@ -142,7 +142,6 @@ export class SoundService {
   public editSoundMap(category, sound, clip) {
     this.soundMap.get(category).set(sound, clip);
 
-    // this.soundUpdated.next(undefined);
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = clip.src;
 
