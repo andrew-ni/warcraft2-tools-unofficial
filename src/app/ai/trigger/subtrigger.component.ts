@@ -5,12 +5,29 @@ enum SubscriptFormat {
   TRIGGER_TYPE, TRIGGERABLE_BY, REPEATABLE, EVENT, RESOURCE_TYPE, ASSET_TYPE, COMPARISON, AMOUNT, X_MIN, X_MAX, Y_MIN, Y_MAX, DELTA, PLAYER_WIN, PLAYER,
 }
 
+/**
+ * initialize selected value of html input element based on value found in map service
+ * @param triggerIndex trigger index of triggerss array in map service
+ * @param subtriggerIndex subtrigger index of tokenized trigger from triggerss array
+ * @param mapService map sevice
+ */
 function getSelected(triggerIndex: number, subtriggerIndex: number, mapService: MapService) {
-  return (mapService.triggers[triggerIndex].split(' '))[subtriggerIndex];
+  return (mapService.triggerss[triggerIndex][0].split(' '))[subtriggerIndex];
 }
 
+/**
+ * change selected value of html input element based on user input
+ * @param triggerIndex trigger index of triggerss array in map service
+ * @param subtriggerIndex subtrigger index of tokenized trigger from triggerss array
+ * @param selected new value based on user input
+ * @param mapService map sevice
+ * @param subtriggerFormat subtrigger component type (only matters if it is trigger type or event so as to update view with new subtrigger components)
+ */
 function changeSelected(triggerIndex: number, subtriggerIndex: number, selected: string, mapService: MapService, subtriggerFormat: SubscriptFormat) {
-  const trigger = mapService.triggers[triggerIndex].split(' ');
+  mapService.uiaiti = triggerIndex;
+  mapService.uiaisl = document.getElementsByTagName("app-trigger-component")[triggerIndex].scrollLeft;
+
+  const trigger = mapService.triggerss[triggerIndex][0].split(' ');
   if (subtriggerFormat === SubscriptFormat.TRIGGER_TYPE) {
     const oldTriggerType = trigger[subtriggerIndex];
     if (oldTriggerType === '0') {
@@ -56,19 +73,21 @@ function changeSelected(triggerIndex: number, subtriggerIndex: number, selected:
   } else {
     trigger[subtriggerIndex] = selected;
   }
-  mapService.triggers[triggerIndex] = trigger.join(' ');
+  // mapService.triggerss[triggerIndex][0] = trigger.join(' ');  // <-- this doesn't work
+  mapService.triggerss[triggerIndex] = [trigger.join(' ')];  // <-- but this does work?  wtf?!
 }
 
 @Component({
   selector: 'app-st-trigger-type',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['trigger type', 'x'],
                                            ['resource', '0'],
                                            ['asset count', '1'],
                                            ['asset location', '2']]"
       [value]="subsubscript[1]">{{subsubscript[0]}}</option>
     </select>
+    <!--{{triggerIndex}}-->
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -90,7 +109,7 @@ export class StTriggerTypeComponent implements OnInit {
 @Component({
   selector: 'app-st-triggerable-by',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['triggerable by', 'x'],
                                            ['both', '0'],
                                            ['player', '1'],
@@ -118,7 +137,7 @@ export class StTriggerableByComponent implements OnInit {
 @Component({
   selector: 'app-st-repeatable',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['repeatable', 'x'],
                                            ['no', '0'],
                                            ['yes', '1']]"
@@ -132,7 +151,8 @@ export class StRepeatableComponent implements OnInit {
   triggerIndex: number;
   subtriggerIndex: number;
   mapService: MapService;
-  constructor() { }
+  scrollLeft: number;
+  constructor() { this.scrollLeft = 0; }
   ngOnInit() {
     this.selected = getSelected(this.triggerIndex, this.subtriggerIndex, this.mapService);
   }
@@ -145,7 +165,7 @@ export class StRepeatableComponent implements OnInit {
 @Component({
   selector: 'app-st-event',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['event', 'x'],
                                            ['end game', 'EndGame'],
                                            ['resource change', 'ResourceChange'],
@@ -174,7 +194,7 @@ export class StEventComponent implements OnInit {
 @Component({
   selector: 'app-st-resource-type',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['resource type', 'x'],
                                            ['Gold', 'Gold'],
                                            ['Lumber', 'Lumber'],
@@ -202,7 +222,7 @@ export class StResourceTypeComponent implements OnInit {
 @Component({
   selector: 'app-st-asset-type',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['asset type', 'x'],
                                            ['Peasants', 'Peasants'],
                                            ['Footmen', 'Footmen'],
@@ -230,7 +250,7 @@ export class StAssetTypeComponent implements OnInit {
 @Component({
   selector: 'app-st-comparison',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of [['comparison', 'x'],
                                            ['<', '<'],
                                            ['>', '>']]"
@@ -257,7 +277,7 @@ export class StComparisonComponent implements OnInit {
 @Component({
   selector: 'app-st-amount',
   template: `
-    <input type="number" min="0" placeholder="amount" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" min="0" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="amount" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -272,7 +292,7 @@ export class StAmountComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -283,6 +303,8 @@ export class StAmountComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.AMOUNT);
   }
 }
@@ -290,7 +312,7 @@ export class StAmountComponent implements OnInit {
 @Component({
   selector: 'app-st-x-min',
   template: `
-    <input type="number" min="0" placeholder="x min" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" min="0" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="x min" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -305,7 +327,7 @@ export class StXMinComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -316,6 +338,8 @@ export class StXMinComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.X_MIN);
   }
 }
@@ -323,7 +347,7 @@ export class StXMinComponent implements OnInit {
 @Component({
   selector: 'app-st-x-max',
   template: `
-    <input type="number" min="0" placeholder="x max" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" min="0" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="x max" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -338,7 +362,7 @@ export class StXMaxComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -349,6 +373,8 @@ export class StXMaxComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.X_MAX);
   }
 }
@@ -356,7 +382,7 @@ export class StXMaxComponent implements OnInit {
 @Component({
   selector: 'app-st-y-min',
   template: `
-    <input type="number" min="0" placeholder="y min" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" min="0" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="y min" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -371,7 +397,7 @@ export class StYMinComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -382,6 +408,8 @@ export class StYMinComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.Y_MIN);
   }
 }
@@ -389,7 +417,7 @@ export class StYMinComponent implements OnInit {
 @Component({
   selector: 'app-st-y-max',
   template: `
-    <input type="number" min="0" placeholder="y max" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" min="0" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="y max" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -404,7 +432,7 @@ export class StYMaxComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -415,6 +443,8 @@ export class StYMaxComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.Y_MAX);
   }
 }
@@ -422,7 +452,7 @@ export class StYMaxComponent implements OnInit {
 @Component({
   selector: 'app-st-delta',
   template: `
-    <input type="number" min="0" placeholder="delta" [ngModel]="getSelected()" (ngModelChange)="onChange($event)">
+    <input class="ui input" type="number" oninput="this.value = this.value.replace(/[e\.]/g, '');" placeholder="delta" [ngModel]="getSelected()" (ngModelChange)="onChange($event)" (blur)="onBlur()">
   `,
   styleUrls: ['./subtrigger.component.scss']
 })
@@ -437,7 +467,7 @@ export class StDeltaComponent implements OnInit {
   }
   getSelected() {
     if (this.selected === 'x') {
-      return NaN;
+      return 0;
     } else {
       return this.selected;
     }
@@ -448,6 +478,8 @@ export class StDeltaComponent implements OnInit {
     } else {
       this.selected = newValue.toString();
     }
+  }
+  onBlur() {
     changeSelected(this.triggerIndex, this.subtriggerIndex, this.selected, this.mapService, SubscriptFormat.DELTA);
   }
 }
@@ -455,7 +487,7 @@ export class StDeltaComponent implements OnInit {
 @Component({
   selector: 'app-st-player-win',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of getOptions()"
       [value]="subsubscript[1]">{{subsubscript[0]}}</option>
     </select>
@@ -492,7 +524,7 @@ export class StPlayerWinComponent implements OnInit, AfterContentChecked {
 @Component({
   selector: 'app-st-player',
   template: `
-    <select [ngModel]="selected" (ngModelChange)="onChange($event)">
+    <select class="ui dropdown" [ngModel]="selected" (ngModelChange)="onChange($event)">
       <option *ngFor="let subsubscript of getOptions()"
       [value]="subsubscript[1]">{{subsubscript[0]}}</option>
     </select>

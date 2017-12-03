@@ -3,29 +3,29 @@
   <form>
     <div class="ui divider"></div>
     Difficulty Scripts
-    <button class="newScript" (click)="newDifficulty()">new</button>
+    <button class="ui button newScript" (click)="newDifficulty()">new</button>
     <ul>
       <li *ngFor="let script of mapService.difficulty; let i = index">
         <div class="filename">{{script}}</div>
-        <button class="delScript" (click)="delDifficulty(i)">&times;</button>
+        <button class="ui button delScript" (click)="delDifficulty(i)">&times;</button>
       </li>
     </ul>
     <div class="ui divider"></div>
     Events Scripts
-    <button class="newScript" (click)="newEvent()">new</button>
+    <button class="ui button newScript" (click)="newEvent()">new</button>
     <ul>
       <li *ngFor="let script of mapService.events; let i = index">
         <div class="filename">{{script}}</div>
-        <button class="delScript" (click)="delEvent(i)">&times;</button>
+        <button class="ui button delScript" (click)="delEvent(i)">&times;</button>
       </li>
     </ul>
     <div class="ui divider"></div>
     Triggers
-    <button class="newScript" (click)="newTrigger()">new</button>
+    <button class="ui button newScript" (click)="newTrigger()">new</button>
     <ul>
-      <li *ngFor="let script of mapService.triggers; let i = index">
+      <li *ngFor="let script of mapService.triggerss; let i = index">
         <app-trigger-component [trigger]="script" [triggerIndex]="i"></app-trigger-component>
-        <button class="delScript" (click)="delTrigger(i)">&times;</button>
+        <button class="ui button delScript" (click)="delTrigger(i)">&times;</button>
       </li>
     </ul>
   </form>

@@ -8,10 +8,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class TriggerComponent implements OnInit {
   @Input() trigger: any;
   @Input() triggerIndex: number;
-  getSubscriptArray = TriggerComponent.getSubscriptArray;
-  static getSubscriptArray(script: string) {
-    return script.split(' ');
-  }
+  subscriptArray: string[];
   constructor() { }
-  ngOnInit() { }
+  ngOnInit() {
+    this.subscriptArray = this.trigger[0].split(' ');
+  }
 }

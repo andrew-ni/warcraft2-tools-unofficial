@@ -23,11 +23,17 @@ export class DynamicSubtriggerComponent implements OnInit {
     (<any>component.instance).triggerIndex = this.triggerIndex;
     (<any>component.instance).subtriggerIndex = this.subtriggerIndex;
     (<any>component.instance).mapService = this.mapService;
+    if ( this.triggerIndex === this.mapService.uiaiti ) {
+      document.getElementsByTagName("app-trigger-component")[this.triggerIndex].scrollLeft = this.mapService.uiaisl;
+    }
   }
 
+  /**
+   * get subtrigger component type based on trigger index and map sevice triggerss array
+   */
   getSubtriggerComponent() {
     let i = 0;
-    const subscriptStrings: string[] = this.mapService.triggers[this.triggerIndex].split(' ');
+    const subscriptStrings: string[] = this.mapService.triggerss[this.triggerIndex][0].split(' ');
     for (const j of [StTriggerTypeComponent, StTriggerableByComponent, StRepeatableComponent]) {
       if (this.subtriggerIndex === i) {
         return j;
