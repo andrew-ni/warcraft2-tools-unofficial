@@ -54,8 +54,8 @@ export class AudioComponent implements OnInit {
         fsx.emptyDirSync('data/customSnd');
         this.resetSoundPlayer();
         this.resetSoundContext();
+        console.log(this.selectedClip);
         this.SongCategories = [...this.soundService.soundMap.keys()];
-        this.selectedCategory = this.SongCategories[0];
       },
       error: err => console.error(err),
       complete: null
@@ -80,8 +80,8 @@ export class AudioComponent implements OnInit {
     this.Sounds = [];
     this.isSoundLoaded = false;
     this.selectedClip = undefined;
+    this.selectedClipName = undefined;
     this.selectedCategory = undefined;
-    this.selectedClip = undefined;
     this.destPath = undefined;
   }
 
@@ -100,6 +100,7 @@ export class AudioComponent implements OnInit {
   showSound(category) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
+    this.selectedClipName = undefined;
     this.resetSoundPlayer();
     this.Sounds = [...this.soundService.soundMap.get(category).keys()];
   }
