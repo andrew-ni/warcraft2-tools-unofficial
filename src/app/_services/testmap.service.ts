@@ -239,11 +239,11 @@ export class TestmapService {
    */
   public click(c: Coordinate) {
     // Accept clicks only when player is valid and not dying or taking an action
-    // console.log('click attempt: ', this.moving, this.actioning);
+    console.log('click attempt: ', this.moving, this.actioning);
     if (this.player && !this.moving && !this.dying && !this.actioning) {
       const action: Action = this.actionLayer[Math.floor(c.x / 32)][Math.floor(c.y / 32)];
       this.currentAction = action;
-      // console.log('click success: ', Action[this.currentAction]);
+      console.log('click success: ', Action[this.currentAction]);
 
       // Bounding magic
       if (action !== undefined) {
@@ -273,7 +273,6 @@ export class TestmapService {
     this.playerAsset = AssetType[s];
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
-    // this.drawPlayer();
 
   }
 
@@ -302,12 +301,16 @@ export class TestmapService {
       const direction: string = this.deltaToDirection.get(this.deltaToString(this.delta));
       this.movementDuration = Math.floor(Math.max(Math.abs(source.x - dest.x), Math.abs(source.y - dest.y)) / 32) * 32;
 
-      // Click directly on unit
-      if (direction === 'none') {
-        this.movementDuration = 0;
+      // "close click" detected = directly adjacent and within 32px
+      if (direction !== 'none' && this.movementDuration === 0) {
+        if (this.currentAction !== undefined) {
+          this.movementDuration = 32;
+        }
+      } else if (direction === 'none') { // Perform action on adjacent asset - works because bounding magic remaps click coord on top of player.
+        this.performAction();
         return;
       }
-      // this.moving = true;
+      console.log('dir:', direction, 'moveTo: delta:', this.delta.x, this.delta.y, 'movementDuration:', this.movementDuration);
       this.player.setDirection(direction);
     }
   }
@@ -321,13 +324,9 @@ export class TestmapService {
     let dir = 'n';
 
     if (current.x === 5) {
-      // if (current.y !== 3 && current.y !== 13) {
-        dir = 'w';
-      // }
+      dir = 'w';
     } else if (current.x === 12) {
-      // if (current.y !== 3 && current.y !== 13) {
-        dir = 'e';
-      // }
+      dir = 'e';
     } else if (current.y === 3) {
       dir = 'n';
     } else if (current.y === 13) {
