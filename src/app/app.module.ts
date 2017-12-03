@@ -12,6 +12,7 @@ import { FileService } from 'services/file.service';
 import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { SoundService } from 'services/sound.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { UserService } from 'services/user.service';
@@ -70,6 +71,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     IOService,
     MapService,
     SerializeService,
+    SoundService,
     SpriteService,
     TerrainService,
     TestmapService,
