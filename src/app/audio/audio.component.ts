@@ -123,8 +123,7 @@ export class AudioComponent implements OnInit {
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
-    this.destPath = path.join('..', SoundService.CUSTOMSND_DIR, this.selectedCategory, file);
-
+    this.destPath = path.join(this.selectedCategory, file);   // relative path to
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = this.selectedClip.src;
   }
@@ -136,7 +135,7 @@ export class AudioComponent implements OnInit {
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
       const newClip = new Audio(paths[0]);
-      this.soundService.copyFile(paths[0], path.join('data', this.destPath), this.selectedCategory, this.selectedClipName, newClip);
+      this.soundService.copyFile(paths[0], path.join(SoundService.CUSTOMSND_DIR, this.destPath), this.selectedCategory, this.selectedClipName, newClip);
     });
   }
 
@@ -144,9 +143,10 @@ export class AudioComponent implements OnInit {
    * reverts audio to default by deleting custom sound
    */
   revertAudio() {
-    this.soundService.deleteSound(path.join('data', this.destPath));
+    this.soundService.deleteSound(path.join(SoundService.CUSTOMSND_DIR, this.destPath));
     const name = this.destPath.split('customSnd')[1];
-    const orig = new Audio(path.join('..', 'data', 'snd', name));
+    const orig = new Audio(path.join(this.mapService.resourcePath, 'data', 'snd', this.destPath));
+    
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
     const split = this.destPath.split('/');

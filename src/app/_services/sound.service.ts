@@ -9,7 +9,7 @@ import * as path from 'path';
 @Injectable()
 export class SoundService {
   /** Custom sound directory for temporary storage of custom sounds. */
-  public static readonly CUSTOMSND_DIR = 'data/customSnd';
+  public static CUSTOMSND_DIR: string;
 
   /** stores map of custom clips for saving. */
   public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
@@ -20,7 +20,11 @@ export class SoundService {
   /** links audio to map of clip names to actual audio. */
   public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
-  constructor() {
+  constructor(private map: MapService) {
+    // SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
+    SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
+    console.log(SoundService.CUSTOMSND_DIR);
+
     this.nameToAudio = new Map();
   }
 
@@ -64,7 +68,7 @@ export class SoundService {
       const split = lines[i + 1].split('/');
       const type = split[split.length - 2];
       const file = split[split.length - 1];
-      const filepath = path.join('..', 'data', 'snd', type, file);
+      const filepath = path.join(this.map.resourcePath, 'data', 'snd', type, file);
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
 
@@ -83,7 +87,7 @@ export class SoundService {
   public readSndDat(): string {
     let content: string;
 
-    content = fs.readFileSync(path.join('data', 'snd', 'SoundClips.dat'), 'utf8');
+    content = fs.readFileSync(path.join(this.map.resourcePath, 'data', 'snd', 'SoundClips.dat'), 'utf8');
 
     if (content === undefined) {
       throw new Error('File not read');
@@ -100,10 +104,11 @@ export class SoundService {
     const split = filepath.split(path.sep);
     const category = split[split.length - 2];
     const file = split[split.length - 1];
-    const customFilePath = path.join('..', SoundService.CUSTOMSND_DIR, category, file);
+    const customFilePath = path.join(SoundService.CUSTOMSND_DIR, category, file);
     try {
-      fs.accessSync(path.join('data', customFilePath));
+      fs.accessSync(customFilePath);
       this.updateCustomSoundMap(category, file, new Audio(customFilePath), false);
+      // console.log(finalAudioPath);
       return customFilePath;
     } catch (e) {
       return filepath;
@@ -132,7 +137,7 @@ export class SoundService {
     console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
-      const split = dest.split('/');
+      const split = dest.split(path.sep);
       const file = split[split.length - 1];
       this.updateCustomSoundMap(category, file, clip, false);
     });
@@ -157,7 +162,7 @@ export class SoundService {
    * @param tbd custom audio to be deleted
    */
   public deleteSound(tbd: string) {
-    fs.unlink(tbd, function() { console.log('deleted'); });
+    fs.unlink(tbd, function () { console.log('deleted'); });
   }
 
   /**
