@@ -43,9 +43,9 @@ export class MapComponent implements OnInit {
     private assetsService: AssetsService,
     private mapService: MapService,
   ) {
-     /**
-     * Event listener for once the map is loaded. Clears any leftover selection boxes.
-     */
+    /**
+    * Event listener for once the map is loaded. Clears any leftover selection boxes.
+    */
     ipcRenderer.on('map:loaded', () => {
       document.getElementById('unitsBox').innerHTML = '';
     });
