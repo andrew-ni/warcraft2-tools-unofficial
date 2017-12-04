@@ -9,6 +9,7 @@ import { join as pathJoin } from 'path';
 import { AnimationService } from 'services/animation.service';
 import { MapService } from 'services/map.service';
 import { SoundService } from 'services/sound.service';
+import { setTimeout } from 'timers';
 
 enum Action {
   Forest,
@@ -520,6 +521,14 @@ export class TestmapService {
       case Action.GoldMine: {
         this.player.setDirection(dir);
         this.currentSound = this.soundService.getAssetSound(goldmineMap.get('selected')[0]);
+
+        // Activate goldmine for 3 seconds
+        this.goldmine.setAction('active');
+        this.drawAsset(this.goldmine);
+        setTimeout(() => {
+          this.goldmine.setAction('inactive');
+          this.drawAsset(this.goldmine);
+        }, 3000);
         break;
       }
       case Action.Farm: {
