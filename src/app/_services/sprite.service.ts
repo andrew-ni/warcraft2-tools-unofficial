@@ -256,8 +256,8 @@ export class SpriteService {
      * @param fileData The raw .dat file contents.
      * @returns The relative path and an array of frame names.
      */
-    const parseFileSections = (fileData: string) => {
-      const [, relativePath, , frameNames] = fileData.split(/#.*?\r?\n/);
+    const parseFileSections = (data: string) => {
+      const [, relativePath, , frameNames] = data.split(/#.*?\r?\n/);
 
       return {
         relativePath: relativePath.trim(),
