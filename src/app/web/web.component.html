@@ -40,7 +40,7 @@
       <div id="privatemaps"
            class="ui cards">
         <ng-container *ngFor="let mapData of maps">
-          <app-map-display *ngIf="mapData.isPrivate"
+          <app-map-display *ngIf="mapData.isPrivate === '1'"
                            [mapData]="mapData"
                            (imported)="importMap($event)"
                            class="card"></app-map-display>
@@ -55,7 +55,7 @@
       <div id="publicmaps"
            class="ui cards">
         <ng-container *ngFor="let mapData of maps">
-          <app-map-display *ngIf="!mapData.isPrivate"
+          <app-map-display *ngIf="mapData.isPrivate === '0'"
                            [mapData]="mapData"
                            (imported)="importMap($event)"
                            class="card"></app-map-display>
