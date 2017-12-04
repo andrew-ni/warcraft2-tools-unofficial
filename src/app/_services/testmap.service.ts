@@ -672,6 +672,7 @@ export class TestmapService {
         // Perform action after pathfinding is done
         if (this.movementDuration === 0) {
           this.moving = false;
+          this.player.resetFrame();
           this.performAction();
         }
       }
