@@ -94,6 +94,6 @@ export class MapService {
   public assetRemoved = new ReplaySubject<Region>(1);
 
   constructor() {
-    this.resourcePath = path.join(remote.getGlobal('resourcePath'), 'app');
+    this.resourcePath = remote.getGlobal('resourcePath');
   }
 }
