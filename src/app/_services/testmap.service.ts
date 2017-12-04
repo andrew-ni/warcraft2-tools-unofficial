@@ -412,6 +412,12 @@ export class TestmapService {
     }
   }
 
+  public annoy() {
+    if (this.player) {
+      this.soundService.getAssetSound(this.getRandomSound(this.playerSoundMap.get('annoy'))).play();
+    }
+  }
+
   /**
    * Sets intervals for moveStep and nextFrame.
    * @param dest Destination coordinates.
