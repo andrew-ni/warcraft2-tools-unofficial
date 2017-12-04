@@ -7,18 +7,18 @@ const url = require('url');
 
 let mainWindow: Electron.BrowserWindow;
 let devTools: boolean;
+let usePath: boolean;
 
-function start() {
-  // Keep a global reference of the window object, if you don't, the window will
-  // be closed automatically when the JavaScript object is garbage collected.
+
+
+async function createWindow(openDevTools: boolean) {
   const args = process.argv.slice(1);
   const serve = args.some(val => val === '--serve');
   devTools = args.some(val => val === '--dev');
-
+  usePath = !args.some(val => val === '--res');
   if (serve) require('electron-reload')(__dirname, {});
-}
 
-async function createWindow(openDevTools: boolean) {
+  global['resourcePath'] = usePath ? path.join(process.resourcesPath, 'app') : __dirname;
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
 
@@ -34,7 +34,7 @@ async function createWindow(openDevTools: boolean) {
   }));
 
   // Open the DevTools.
-  if (openDevTools) mainWindow.webContents.openDevTools();
+  if (openDevTools || true) mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -67,8 +67,6 @@ app.on('activate', function() {
   }
 });
 
-
-start();
 
 // save map file
 ipcMain.on('map:save', (event: Electron.IpcMessageEvent, data: string, filepath: string) => {
