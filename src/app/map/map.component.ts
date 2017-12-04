@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs/Rx';
 import { Coordinate, Region } from 'interfaces';
+import { Subscription } from 'rxjs/Rx';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { MapService } from 'services/map.service';
@@ -45,9 +45,7 @@ export class MapComponent implements OnInit {
     * Note: this cant use mapProjectLoaded (which would clear the selection faster) because on start a package is not loaded
     */
     this.mapService.tilesUpdated.do(() => console.log('Erasing Selection Boxes')).subscribe({
-      next: () => {
-        this.clearIndividualBoxes();
-      },
+      next: () => this.clearIndividualBoxes(),
       error: err => console.error(err),
     });
   }
@@ -89,9 +87,8 @@ export class MapComponent implements OnInit {
         for (const asset of this.userService.selectedAssets) {
           this.assetsService.removeAsset(asset);
         }
+        this.clearIndividualBoxes();
       }
-      this.clearIndividualBoxes();
-
     });
   }
 
