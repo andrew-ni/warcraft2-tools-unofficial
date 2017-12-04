@@ -22,6 +22,80 @@ enum Action {
   Grass,
 }
 
+// Existing: walk, attack, gold, lumber, death
+const peasantMap: Map<string, string[]> = new Map([
+  ['selected', ['peasant-selected1', 'peasant-selected2', 'peasant-selected3', 'peasant-selected4']],
+  ['walk', ['peasant-acknowledge1', 'peasant-acknowledge2', 'peasant-acknowledge3', 'peasant-acknowledge4']],
+  ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
+  ['lumber', ['harvest1', 'harvest2', 'harvest3', 'harvest4']],
+  ['death', ['unit-death']],
+  ['spawn', ['peasant-ready']],
+  ['workdone', ['peasant-work-completed']],
+  ['annoy', ['peasant-annoyed1', 'peasant-annoyed2', 'peasant-annoyed3', 'peasant-annoyed4', 'peasant-annoyed5', 'peasant-annoyed6', 'peasant-annoyed7']],
+  ['help', ['unit-help']],
+]);
+// Existing: walk, attack, death
+const footmanMap: Map<string, string[]> = new Map([
+  ['selected', ['basic-selected1', 'basic-selected2', 'basic-selected3', 'basic-selected4', 'basic-selected5', 'basic-selected6']],
+  ['walk', ['basic-acknowledge1', 'basic-acknowledge2', 'basic-acknowledge3', 'basic-acknowledge4']],
+  ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
+  ['death', ['unit-death']],
+  ['spawn', ['basic-ready']],
+  ['workdone', ['basic-work-completed']],
+  ['annoy', ['basic-annoyed1', 'basic-annoyed2', 'basic-annoyed3', 'basic-annoyed4', 'basic-annoyed5', 'basic-annoyed6', 'basic-annoyed7']],
+  ['help', ['unit-help']],
+]);
+// Existing: walk, attack, death
+const archerRangerMap: Map<string, string[]> = new Map([
+  ['selected', ['archer-selected1', 'archer-selected2', 'archer-selected3', 'archer-selected4']],
+  ['walk', ['archer-acknowledge1', 'archer-acknowledge2', 'archer-acknowledge3', 'archer-acknowledge4']],
+  ['attack', ['bowfire', 'bowhit']],
+  ['death', ['unit-death']],
+  ['spawn', ['archer-ready']],
+  ['annoy', ['archer-annoyed1', 'archer-annoyed2', 'archer-annoyed3']],
+  ['help', ['unit-help']],
+]);
+// Existing: inactive, active
+const goldmineMap: Map<string, string[]> = new Map([
+  ['selected', ['gold-mine-selected']],
+  ['place', ['place']],
+  ['death', ['building-death1', 'building-death2', 'building-death3']],
+  ['help', ['building-help']],
+  ['construct', ['construct']],
+]);
+// Existing: construct, inactive, place
+const lumbermillMap: Map<string, string[]> = new Map([
+  ['selected', ['lumber-mill-selected']],
+  ['place', ['place']],
+  ['death', ['building-death1', 'building-death2', 'building-death3']],
+  ['help', ['building-help']],
+  ['construct', ['construct']],
+]);
+// Existing: construct, inactive, place
+const farmMap: Map<string, string[]> = new Map([
+  ['selected', ['farm-selected']],
+  ['place', ['place']],
+  ['death', ['building-death1', 'building-death2', 'building-death3']],
+  ['help', ['building-help']],
+  ['construct', ['construct']],
+]);
+// Existing: construct, inactive, place
+const blacksmithMap: Map<string, string[]> = new Map([
+  ['selected', ['blacksmith-selected']],
+  ['place', ['place']],
+  ['death', ['building-death1', 'building-death2', 'building-death3']],
+  ['help', ['building-help']],
+  ['construct', ['construct']],
+]);
+const miscMap: Map<string, string[]> = new Map([
+  ['bowhit', ['bowhit']],
+  ['cannonfire', ['cannonfire']],
+  ['cannonhit', ['cannonhit']],
+  ['burning', ['burning']],
+  ['tick', ['tick']],
+  ['tock', ['tock']],
+]);
+
 @Injectable()
 export class TestmapService {
   public static readonly BACKGROUND_PATH = './data/testmap.png';
@@ -60,6 +134,7 @@ export class TestmapService {
   private enemyRanger: AnimationContext;
   private player: AnimationContext;
   private playerAsset: AssetType;
+  private playerSoundMap: Map<string, string[]>;
 
   private backgroundImage: ImageBitmap;
 
@@ -264,7 +339,13 @@ export class TestmapService {
         }
         this.moveTo(c);
       }
+
+      this.soundService.getAssetSound(this.getRandomSound(this.playerSoundMap.get('walk'))).play();
     }
+  }
+
+  private getRandomSound(input: string[]): string {
+    return input[Math.floor(Math.random() * (input.length))];
   }
 
   /**
@@ -285,6 +366,28 @@ export class TestmapService {
     this.player = new AnimationContext(this.spriteService.get(AssetType[s]));
     this.player.gridCoord = { x: 7, y: 7 };
     this.playerAsset = AssetType[s];
+
+    /**
+     * Set default soundmap for player
+     */
+    switch (this.playerAsset) {
+      case AssetType.Peasant: {
+        this.playerSoundMap = peasantMap;
+        break;
+      }
+      case AssetType.Footman: {
+        this.playerSoundMap = footmanMap;
+        break;
+      }
+      case AssetType.Archer: {
+        this.playerSoundMap = archerRangerMap;
+        break;
+      }
+      case AssetType.Ranger: {
+        this.playerSoundMap = archerRangerMap;
+        break;
+      }
+    }
   }
 
   /** Plays the death animation. */
@@ -440,112 +543,7 @@ export class TestmapService {
    * @param optional Optional string from click handlers. Needed to trigger action-less animations (e.g. 'selected').
    */
   private getAudio(optional?: string) {
-    // Existing: walk, attack, gold, lumber, death
-    const peasantMap: Map<string, string[]> = new Map([
-      ['selected', ['peasant-selected1', 'peasant-selected2', 'peasant-selected3', 'peasant-selected4']],
-      ['walk', ['peasant-acknowledge1', 'peasant-acknowledge2', 'peasant-acknowledge3', 'peasant-acknowledge4']],
-      ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
-      ['lumber', ['harvest1', 'harvest2', 'harvest3', 'harvest4']],
-      ['death', ['unit-death']],
-      ['spawn', ['peasant-ready']],
-      ['workdone', ['peasant-work-completed']],
-      ['annoy', ['peasant-annoyed1', 'peasant-annoyed2', 'peasant-annoyed3', 'peasant-annoyed4', 'peasant-annoyed5', 'peasant-annoyed6', 'peasant-annoyed7']],
-      ['help', ['unit-help']],
-    ]);
-    // Existing: walk, attack, death
-    const footmanMap: Map<string, string[]> = new Map([
-      ['selected', ['basic-selected1', 'basic-selected2', 'basic-selected3', 'basic-selected4', 'basic-selected5', 'basic-selected6']],
-      ['walk', ['basic-acknowledge1', 'basic-acknowledge2', 'basic-acknowledge3', 'basic-acknowledge4']],
-      ['attack', ['melee-hit1', 'melee-hit2', 'melee-hit3']],
-      ['death', ['unit-death']],
-      ['spawn', ['basic-ready']],
-      ['workdone', ['basic-work-completed']],
-      ['annoy', ['basic-annoyed1', 'basic-annoyed2', 'basic-annoyed3', 'basic-annoyed4', 'basic-annoyed5', 'basic-annoyed6', 'basic-annoyed7']],
-      ['help', ['unit-help']],
-    ]);
-    // Existing: walk, attack, death
-    const archerRangerMap: Map<string, string[]> = new Map([
-      ['selected', ['archer-selected1', 'archer-selected2', 'archer-selected3', 'archer-selected4']],
-      ['walk', ['archer-acknowledge1', 'archer-acknowledge2', 'archer-acknowledge3', 'archer-acknowledge4']],
-      ['attack', ['bowfire', 'bowhit']],
-      ['death', ['unit-death']],
-      ['spawn', ['archer-ready']],
-      ['annoy', ['archer-annoyed1', 'archer-annoyed2', 'archer-annoyed3']],
-      ['help', ['unit-help']],
-    ]);
-    // Existing: inactive, active
-    const goldmineMap: Map<string, string[]> = new Map([
-      ['selected', ['gold-mine-selected']],
-      ['place', ['place']],
-      ['death', ['building-death1', 'building-death2', 'building-death3']],
-      ['help', ['building-help']],
-      ['construct', ['construct']],
-    ]);
-    // Existing: construct, inactive, place
-    const lumbermillMap: Map<string, string[]> = new Map([
-      ['selected', ['lumber-mill-selected']],
-      ['place', ['place']],
-      ['death', ['building-death1', 'building-death2', 'building-death3']],
-      ['help', ['building-help']],
-      ['construct', ['construct']],
-    ]);
-    // Existing: construct, inactive, place
-    const farmMap: Map<string, string[]> = new Map([
-      ['selected', ['farm-selected']],
-      ['place', ['place']],
-      ['death', ['building-death1', 'building-death2', 'building-death3']],
-      ['help', ['building-help']],
-      ['construct', ['construct']],
-    ]);
-    // Existing: construct, inactive, place
-    const blacksmithMap: Map<string, string[]> = new Map([
-      ['selected', ['blacksmith-selected']],
-      ['place', ['place']],
-      ['death', ['building-death1', 'building-death2', 'building-death3']],
-      ['help', ['building-help']],
-      ['construct', ['construct']],
-    ]);
-    const miscMap: Map<string, string[]> = new Map([
-      ['bowhit', ['bowhit']],
-      ['cannonfire', ['cannonfire']],
-      ['cannonhit', ['cannonhit']],
-      ['burning', ['burning']],
-      ['tick', ['tick']],
-      ['tock', ['tock']],
-    ]);
-
-    switch (this.playerAsset) {
-      case AssetType.Peasant: {
-        if (peasantMap.has(this.player.action.name)) {
-          this.currentSound = this.soundService.getAssetSound(peasantMap.get(this.player.action.name)[0]);
-        }
-        break;
-      }
-      case AssetType.Footman: {
-        break;
-      }
-      case AssetType.Archer: {
-        break;
-      }
-      case AssetType.Ranger: {
-        break;
-      }
-      case AssetType.GoldMine: {
-        break;
-      }
-      case AssetType.Farm: {
-        break;
-      }
-      case AssetType.LumberMill: {
-        break;
-      }
-      case AssetType.Blacksmith: {
-        break;
-      }
-      default: {
-        break;
-      }
-    }
+    this.currentSound = this.soundService.getAssetSound(this.playerSoundMap.get(this.player.action.name)[0]);
   }
 
   private playSound() {
