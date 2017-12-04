@@ -68,7 +68,7 @@ export class SpriteService {
     }
 
     /** Initialize the colorMap with Colors.png */
-    this.colorMap = await this.HTMLImageToImageData(await this.loadImage('../data/img/Colors.png')); // exluding '..' may cause some windows machines to not load colors.png
+    this.colorMap = await this.HTMLImageToImageData(await this.loadImage('data/img/Colors.png'));
 
     return Promise.all(prefetches);
   }
