@@ -1,19 +1,12 @@
 <div class="ui container">
   <h5>Terrain</h5>
-  
-  <div class="ui grid">
-    <div class="three wide column"
-         *ngFor="let button of brushSizeButtons">
-      <img [src]="button.imgSrc"
-           (click)="userService.selectedBrush = button.tileType">
-    </div>
-  </div>
 
   <div class="ui grid">
     <div class="three wide column"
          *ngFor="let button of terrainButtons | slice:0:4">
       <img [src]="button.imgSrc"
-           (click)="userService.terrainToBeDrawn = button.tileType">
+           (click)="changeTerrain($event, button)"
+           id = "{{button.name}}">
     </div>
   </div>
 
@@ -21,7 +14,8 @@
     <div class="three wide column"
          *ngFor="let button of terrainButtons | slice:4">
       <img [src]="button.imgSrc"
-           (click)="userService.terrainToBeDrawn = button.tileType">
+           (click)="changeTerrain($event, button)"
+           id = "{{button.name}}">
     </div>
 
   </div>

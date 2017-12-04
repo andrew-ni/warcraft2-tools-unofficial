@@ -9,36 +9,12 @@ interface TerrainButton {
   tileType: TileType;
 }
 
-interface BrushSizeButton {
-  name: string;
-  imgSrc: string;
-  tileType: TileType;
-}
-
 @Component({
   selector: 'app-terrain',
   templateUrl: './terrain.component.html',
   styleUrls: ['./terrain.component.scss']
 })
 export class TerrainComponent implements OnInit {
-
-  brushSizeButtons: BrushSizeButton[] = [
-    {
-      name: '1x1',
-      imgSrc: './assets/frontend_icons/small_brush.png',
-      tileType: 1,
-    },
-    {
-      name: '3x3',
-      imgSrc: './assets/frontend_icons/medium_brush.png',
-      tileType: 3,
-    },
-    {
-      name: '5x5',
-      imgSrc: './assets/frontend_icons/large_brush.png',
-      tileType: 5,
-    },
-  ];
 
   terrainButtons: TerrainButton[] = [
     {
@@ -88,5 +64,96 @@ export class TerrainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+  }
+
+  changeTerrain(newValue, button) {
+    this.assetChange(this.userService.assetToBeDrawn, 1);
+    this.tileChange(this.userService.terrainToBeDrawn, 1);
+    this.userService.terrainToBeDrawn = button.tileType;
+    document.getElementById('Cursor').setAttribute('style','opacity:1');  
+    document.getElementById('buttonSize' + this.userService.selectedBrush).setAttribute('style','opacity:0.5');
+    for (let temp of this.terrainButtons) {
+      document.getElementById (temp.name).setAttribute('style','opacity:1');
+    }
+    document.getElementById (button.name).setAttribute('style','opacity:0.5');
+  }
+
+  tileChange(num, num2) {
+    switch (num) {
+      case 0:
+        document.getElementById('Light Dirt').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 1:
+        document.getElementById('Dark Dirt').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 2:
+        document.getElementById('Forest').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 3:
+        document.getElementById('Light Grass').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 4:
+        document.getElementById('Dark Grass').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 5:
+        document.getElementById('Shallow Water').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 6:
+        document.getElementById('Deep Water').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 7:
+        document.getElementById('Rock').setAttribute('style', 'opacity:  ' + num2);
+        break;
+    }
+  }
+
+  assetChange(num, num2) {
+    switch (num) {
+      case 0:
+        document.getElementById('Archer').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 1:
+        document.getElementById('Footman').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 2:
+        document.getElementById('Peasant').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 3:
+        document.getElementById('Ranger').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 4:
+        document.getElementById('Barracks').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 5:
+        document.getElementById('Blacksmith').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 6:
+        document.getElementById('Farm').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 7:
+        document.getElementById('CannonTower').setAttribute('style', 'opacity:  ' + num2);
+        break;
+      case 8:
+        document.getElementById('Castle').setAttribute('style', 'opacity:  ' + num2);
+        break;
+      case 9:
+        document.getElementById('GoldMine').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 10:
+        document.getElementById('GuardTower').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 11:
+        document.getElementById('Keep').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 12:
+        document.getElementById('LumberMill').setAttribute('style', 'opacity: ' + num2);
+        break;
+      case 13:
+        document.getElementById('ScoutTower').setAttribute('style', 'opacity: '  + num2);
+        break;
+      case 14:
+        document.getElementById('TownHall').setAttribute('style', 'opacity: '  + num2);
+        break;
+    }
   }
 }

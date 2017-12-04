@@ -1,51 +1,54 @@
 <div class="ui container"
-     id="properties">
-    <h5>Map Properties</h5>
-    <div class="ui form">
-        <div class="inline field">
-            <label>Name:</label>
-            <input type = "text"
-                [(ngModel)]="mapService.name"
-                (ngModelChange)="onChangeName($event)">
-        </div>
-        <div class="inline field">
-            <img class="ui mini spaced image"
-                 src=":../../assets/frontend_icons/gold_icon_4x.png">
-            <input *ngIf="mapService.players[0]"
-                    type="number"
-                    [ngModel]="mapService.players[0].gold"
-                    (ngModelChange)="onChangeGold($event)">
-            <input *ngIf="!mapService.players[0]"
-                    type="number"
-                    disabled>
-        </div>
-        <div class="inline field">
-            <img class="ui mini spaced image"
-                 src=":../../assets/frontend_icons/lumber_icon_4x.png">
-            <input *ngIf="mapService.players[0]"
-                    type="number"
-                    [ngModel]="mapService.players[0].lumber"
-                    (ngModelChange)="onChangeLumber($event)">
-            <input *ngIf="!mapService.players[0]"
-                    type="number"
-                    disabled>
-        </div>
-    </div>
+id="properties">
+<h5>Map Properties</h5>
+<div class="ui form">
+   <div class="inline field">
+       <label>Name:</label>
+       <input type = "text"
+           [(ngModel)]="mapService.name"
+           (ngModelChange)="onChangeName($event)">
+   </div>
+   <div class="inline field">
+       <img class="ui mini spaced image"
+            src=":../../assets/frontend_icons/gold_icon_4x.png">
+       <input *ngIf="mapService.players[0]"
+               type="number"
+               [ngModel]="mapService.players[0].gold"
+               (ngModelChange)="onChangeGold($event)">
+       <input *ngIf="!mapService.players[0]"
+               type="number"
+               disabled>
+   </div>
+   <div class="inline field">
+       <img class="ui mini spaced image"
+            src=":../../assets/frontend_icons/lumber_icon_4x.png">
+       <input *ngIf="mapService.players[0]"
+               type="number"
+               [ngModel]="mapService.players[0].lumber"
+               (ngModelChange)="onChangeLumber($event)">
+       <input *ngIf="!mapService.players[0]"
+               type="number"
+               disabled>
+   </div>
 </div>
+</div>
+
+<div class="ui divider"></div>
+<div class="ui container">
+<h5>Tools</h5>
+<div class="ui grid">
+   <div class="three wide column"
+       *ngFor="let button of toolButtons">
+       <img [src]="button.imgSrc" 
+           (click) = "onChangeTools($event, button.name, button.tileType)"
+           id = "{{button.name}}">
+   </div>
+</div>
+</div>
+
 
 
 <div class="ui divider"></div>
 <app-terrain class="section"></app-terrain>
 <div class="ui divider"></div>
 <app-assets class="section"></app-assets>
-
-<div class="ui divider"></div>
-<div class="ui container">
-    <h5>Cursors</h5>
-    <div class="ui grid">
-        <div class="three wide column"
-             *ngFor="let button of cursorButtons">
-            <img [src]="button.imgSrc">
-        </div>
-    </div>
-</div>

@@ -2,13 +2,10 @@
   <h5>Units</h5>
   <div class="ui grid">
     <div class="three wide column"
-         *ngFor="let button of cursorButtons">
-            <img [src]="button.imgSrc" (click) = "userService.selectedAssets = []">
-    </div>
-    <div class="three wide column"
          *ngFor="let button of unitButtons">
       <img [src]="button.imgSrc"
-           (click)="userService.assetToBeDrawn = button.unitType">
+           (click)="changeUnits($event, button)"
+           id = '{{button.name}}'>
     </div>
   </div>
 </div>
