@@ -148,6 +148,7 @@ export class TestmapService {
   private deathDuration = 0;
   private actionDuration = 0;
 
+  private playSpawnSound = false;  // don't play sound on first spawn
   private moving = false;
   private dying = false;
   private actioning = false;
@@ -388,6 +389,14 @@ export class TestmapService {
         break;
       }
     }
+
+    if (this.playSpawnSound) {
+      this.soundService.getAssetSound(this.playerSoundMap.get('spawn')[0]).play();
+    } else {
+      this.playSpawnSound = true;
+    }
+
+    console.log('spawned');
   }
 
   /** Plays the death animation. */
@@ -494,18 +503,22 @@ export class TestmapService {
       }
       case Action.BlackSmith: {
         this.player.setDirection(dir);
+        this.currentSound = this.soundService.getAssetSound(blacksmithMap.get('selected')[0]);
         break;
       }
       case Action.LumberMill: {
         this.player.setDirection(dir);
+        this.currentSound = this.soundService.getAssetSound(lumbermillMap.get('selected')[0]);
         break;
       }
       case Action.GoldMine: {
         this.player.setDirection(dir);
+        this.currentSound = this.soundService.getAssetSound(goldmineMap.get('selected')[0]);
         break;
       }
       case Action.Farm: {
         this.player.setDirection(dir);
+        this.currentSound = this.soundService.getAssetSound(farmMap.get('selected')[0]);
         break;
       }
       case Action.Grass: {
@@ -539,21 +552,12 @@ export class TestmapService {
     return '' + c.x + ',' + c.y;
   }
 
-  /**
-   * Plays audio for current animation using string mappings to audio service.
-   * @param optional Optional string from click handlers. Needed to trigger action-less animations (e.g. 'selected').
-   */
-  private getAudio(optional?: string) {
-    this.currentSound = this.soundService.getAssetSound(this.playerSoundMap.get(this.player.action.name)[0]);
-  }
 
   private playSound() {
     // todo: use action to map into sound mappings. Some need custom strings. Also choose random string from array.
     // Walking and selected have different behavior (should be played right after clicking), but this function
     // is called after pathfinding is done
-    console.log(this.player.action.name);
-    this.getAudio();
-    this.currentSound.play();
+    this.soundService.getAssetSound(this.playerSoundMap.get(this.player.action.name)[0]).play();
   }
 
   /**
@@ -694,6 +698,11 @@ export class TestmapService {
           setTimeout(() => this.drawPlayer(), 1000 / 60);
           return;
         }
+      }
+
+      if (this.currentSound) {
+        this.currentSound.play();
+        this.currentSound = undefined;
       }
 
 
