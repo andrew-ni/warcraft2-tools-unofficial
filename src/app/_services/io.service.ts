@@ -51,9 +51,6 @@ interface IMap {
  */
 @Injectable()
 export class IOService {
-  /** Custom sound directory for temporary storage of custom sounds. */
-  public static readonly CUSTOMSND_DIR = 'data/customSnd';
-
   /** Package file path, for save map default save location. */
   private openedFilePath: string;
 
@@ -238,7 +235,7 @@ export class IOService {
     const customSoundMap = this.soundService.getCustomSoundMap();
     customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
-        this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, dirName, fp)));
+        this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(SoundService.CUSTOMSND_DIR, dirName, fp)));
       });
     });
 
@@ -258,20 +255,20 @@ export class IOService {
     fsx.removeSync('data/customSnd');
     fsx.emptyDirSync('data/customSnd');
     // empty customSnd folder on disk
-    await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
+    await fsx.emptyDir(SoundService.CUSTOMSND_DIR);    // create empty custom sound dir
 
     // foreach folder (populate list of folders)
     const snd = this.zip.folder('snd');
     snd.forEach(async (dirName, dirFile) => {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
-        fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
+        fs.mkdirSync(path.join(SoundService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
         // TODO: trigger customSndLoaded after the last call of the foreach. awaiting promises.all causes problems.
         // const promises = new Array<Promise<void>>();
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
           // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
           // promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
-          fsx.writeFileSync(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
+          fsx.writeFileSync(path.join(SoundService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
           this.map.customSndLoaded.next();
         });
         // await Promise.all(promises);

@@ -8,9 +8,17 @@ import * as path from 'path';
 
 @Injectable()
 export class SoundService {
-  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>; // stores map of custom clips for saving
-  public nameToAudio: Map<string, HTMLAudioElement>;  // stores name of the clip to all audio clips
-  public soundMap: Map<string, Map<string, HTMLAudioElement>>; // links audio to map of clip names to actual audio
+  /** Custom sound directory for temporary storage of custom sounds. */
+  public static readonly CUSTOMSND_DIR = 'data/customSnd';
+
+  /** stores map of custom clips for saving. */
+  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
+
+  /** stores name of the clip to all audio clips. */
+  public nameToAudio: Map<string, HTMLAudioElement>;
+
+  /** links audio to map of clip names to actual audio. */
+  public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
   constructor() {
     this.nameToAudio = new Map();
@@ -92,7 +100,7 @@ export class SoundService {
     const split = filepath.split(path.sep);
     const category = split[split.length - 2];
     const file = split[split.length - 1];
-    const customFilePath = path.join('..', 'data', 'customSnd', category, file);
+    const customFilePath = path.join('..', SoundService.CUSTOMSND_DIR, category, file);
     try {
       fs.accessSync(path.join('data', customFilePath));
       this.updateCustomSoundMap(category, file, new Audio(customFilePath), false);
@@ -112,9 +120,9 @@ export class SoundService {
    */
   public copyFile(src: string, dest: string, category: string, sound: string, clip: HTMLAudioElement) {
     try {
-      fs.accessSync(path.join('data', 'customSnd', category));
+      fs.accessSync(path.join(SoundService.CUSTOMSND_DIR, category));
     } catch (e) {
-      fsx.emptyDirSync(path.join('data', 'customSnd', category));
+      fsx.emptyDirSync(path.join(SoundService.CUSTOMSND_DIR, category));
     }
     const readStream = fs.createReadStream(src);
 

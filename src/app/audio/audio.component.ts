@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Menu } from 'electron';
-import { IOService } from 'services/io.service';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
@@ -45,13 +44,13 @@ export class AudioComponent implements OnInit {
    */
   ngOnInit() {
     this.resetSoundContext();
-    fsx.emptyDirSync(IOService.CUSTOMSND_DIR);
+    fsx.emptyDir(SoundService.CUSTOMSND_DIR);
     this.soundService.parseSndData();
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
-      next: () => {
+      next: async () => {
         this.soundService.parseSndData();
-        fsx.emptyDirSync(IOService.CUSTOMSND_DIR);
+        await fsx.emptyDir(SoundService.CUSTOMSND_DIR);
         this.resetSoundPlayer();
         this.resetSoundContext();
 
@@ -124,7 +123,7 @@ export class AudioComponent implements OnInit {
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
-    this.destPath = path.join('..', IOService.CUSTOMSND_DIR, this.selectedCategory, file);
+    this.destPath = path.join('..', SoundService.CUSTOMSND_DIR, this.selectedCategory, file);
 
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = this.selectedClip.src;
