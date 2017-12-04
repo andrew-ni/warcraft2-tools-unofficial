@@ -26,11 +26,12 @@ export class AudioComponent implements OnInit {
   SongCategories = [];
   Sounds: string[] = [];
   isSoundLoaded: Boolean = false;
+  packageLoaded: Boolean = false;
+  packageLoadedCount = 0;
   selectedClip: HTMLAudioElement;
   selectedCategory: string;
   selectedClipName: string;
   destPath: string;
-
 
   constructor(
     private soundService: SoundService,
@@ -43,25 +44,34 @@ export class AudioComponent implements OnInit {
    */
   ngOnInit() {
     this.resetSoundContext();
-    fsx.removeSync(path.join('data', 'customSnd'));
     fsx.emptyDirSync(path.join('data', 'customSnd'));
     this.soundService.parseSndData();
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
-      next: async () => {
+      next: () => {
         this.soundService.parseSndData();
-        fsx.removeSync(path.join('data', 'customSnd'));
         fsx.emptyDirSync(path.join('data', 'customSnd'));
         this.resetSoundPlayer();
         this.resetSoundContext();
-        this.SongCategories = [...this.soundService.soundMap.keys()];
+
+        // upon app starting, mapProjectLoaded is triggered before a custom package is loaded in,
+        // and user shouldn't be allowed to edit sounds without loading a package first.
+        if (this.packageLoadedCount > 0) {
+          this.packageLoaded = true;
+        }
+        this.packageLoadedCount++;
+        if (this.packageLoaded) {
+          this.SongCategories = [...this.soundService.soundMap.keys()];
+        } else {
+          this.SongCategories = [];
+        }
       },
       error: err => console.error(err),
       complete: null
     });
 
     this.mapService.customSndLoaded.do(() => console.log('customSndLoaded')).subscribe({
-      next: async () => {
+      next: () => {
         this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
       },
