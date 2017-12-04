@@ -1,11 +1,11 @@
-<div>
+<div id="tabs">
     <button class="ui button" (click)="openTab('main')">Map Tool</button>
     <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
     <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
     <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
     <button class="ui button" (click)="openTab('ai')">AI Tool</button>
-
 </div>
+<div class="spacer">&nbsp;</div>
 <div id="main" class="tab" style="display:flex">
     <app-sidebar></app-sidebar>
     <app-map></app-map>
