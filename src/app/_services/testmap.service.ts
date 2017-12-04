@@ -343,7 +343,15 @@ export class TestmapService {
         this.moveTo(c);
       }
 
-      this.soundService.getAssetSound(this.getRandomSound(this.playerSoundMap.get('walk'))).play();
+      // Play selected sound if self-clicked, or walk sound if moving.
+      if (action === Action.Grass) {
+        if (Math.floor(c.x / 32) === this.player.gridCoord.x && Math.floor(c.y / 32) === this.player.gridCoord.y) {
+          this.soundService.getAssetSound(this.getRandomSound(this.playerSoundMap.get('selected'))).play();
+
+        } else {
+          this.soundService.getAssetSound(this.getRandomSound(this.playerSoundMap.get('walk'))).play();
+        }
+      }
     }
   }
 
