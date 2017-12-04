@@ -40,7 +40,7 @@ interface IMap {
   mapLoaded: Subject<void>;
   tilesUpdated: Subject<Region>;
   mapVersion: string;
-  baseHref: string;
+  resourcePath: string;
 }
 
 
@@ -78,7 +78,7 @@ export class IOService {
     private tilesetService: TilesetService,
   ) {
     this.map = mapService;
-    this.CUSTOMSND_DIR = path.join(this.map.baseHref, 'data', 'customSnd');
+    this.CUSTOMSND_DIR = path.join(this.map.resourcePath, 'data', 'customSnd');
     this.initPackage();
 
     /**

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { remote } from 'electron';
 import { ReplaySubject, Subject } from 'rxjs/Rx';
 
 import { Asset } from 'asset';
@@ -65,8 +66,8 @@ export class MapService {
   public events: string[] = [];
   public triggers: string[] = [];
 
-  /** The absolute path of index.html durring runtime. */
-  public readonly baseHref: string;
+  /** The absolute path of index.html during runtime. */
+  public readonly resourcePath: string;
 
   // Events
 
@@ -92,6 +93,6 @@ export class MapService {
   public assetRemoved = new ReplaySubject<Region>(1);
 
   constructor() {
-    this.baseHref = document.getElementsByTagName('base')[0].href.substring('file:///'.length); // Remove prefix 'file:///'. I hope it is the same on all platforms.
-   }
+    this.resourcePath = remote.getGlobal('resourcePath');
+  }
 }

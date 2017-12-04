@@ -19,6 +19,8 @@ function start() {
 }
 
 async function createWindow(openDevTools: boolean) {
+  global['resourcePath'] = process.resourcesPath;
+  console.log(process.resourcesPath);
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
 

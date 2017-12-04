@@ -11,7 +11,7 @@ import { MapService } from 'services/map.service';
 interface IMap {
   mapProjectOpened: Subject<JSZip>;
   mapProjectLoaded: Subject<void>;
-  baseHref: string;
+  resourcePath: string;
 }
 
 /**
@@ -37,7 +37,7 @@ export class FileService {
     mapService: MapService,
   ) {
     this.map = mapService;
-    this.defaultPath = pathJoin(this.map.baseHref, 'data');
+    this.defaultPath = pathJoin(this.map.resourcePath, 'data');
 
 
     let resolve: () => void;
