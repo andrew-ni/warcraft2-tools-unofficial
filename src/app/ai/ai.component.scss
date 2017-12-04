@@ -1,6 +1,6 @@
 #ai {
   background-color: #ffffff;
-  min-width: 1000px;
+  // min-width: 100px;
   padding-left: 20px;
   padding-right: 20px;
   text-align: left;
@@ -24,15 +24,13 @@ ul {
 .filename {
   float: left;
   width: 400px;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 app-trigger-component {
   float: left;
-  display: flex;
-  flex-direction: row;
+  display: block;
   width: 90%;
-  overflow-x: auto;
 }
 
 .delScript {
