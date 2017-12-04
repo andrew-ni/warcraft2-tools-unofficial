@@ -136,7 +136,7 @@ export class SoundService {
     console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
-      const split = dest.split('/');
+      const split = dest.split(path.sep);
       const file = split[split.length - 1];
       this.updateCustomSoundMap(category, file, clip, false);
     });
