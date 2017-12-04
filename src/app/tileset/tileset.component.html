@@ -13,6 +13,7 @@
   <button class="ui button"
           (click)="resetToDefaultTileset()">Default</button>
 
+
 </div>
 
 <div id="tilesetevents">
@@ -22,5 +23,6 @@
   <div id="tilesBox"
        [style.width.px]="tilesetService.TILE_SIZE * multiplier"
        [style.height.px]="tilesetService.TILE_SIZE * multiplier"
-       [style.top.px]="currentIndex * tilesetService.TILE_SIZE * multiplier"></div>
+       [style.top.px]="currentIndex * tilesetService.TILE_SIZE * multiplier">
+  </div>
 </div>
