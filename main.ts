@@ -18,7 +18,7 @@ async function createWindow(openDevTools: boolean) {
   usePath = !args.some(val => val === '--res');
   if (serve) require('electron-reload')(__dirname, {});
 
-  global['resourcePath'] = usePath ? path.join(process.resourcesPath, 'app') : '.';
+  global['resourcePath'] = usePath ? path.join(process.resourcesPath, 'app') : __dirname;
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
 
