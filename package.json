@@ -5,7 +5,7 @@
     "start": "npm-run-all --parallel webpack:watch electron:serve",
     "webpack": "webpack --display-error-details",
     "webpack:watch": "webpack --watch",
-    "electron": "tsc main.ts --target es5 --outDir dist --lib DOM,ES2016,esnext.asynciterable --moduleResolution Node && node copy.js && copyfiles package.json dist && cd dist && npm install --prod && cd ..",
+    "electron": "tsc main.ts --target es5 --outDir dist --lib DOM,ES2016,esnext.asynciterable --moduleResolution Node && node copy.js && copyfiles package.json dist && copyfiles -f src/styles.scss dist &&  cd dist && npm install --prod && cd ..",
     "electron:serve": "npm run electron && electron ./dist --serve --dev --res",
     "build": "webpack --display-error-details && npm run electron",
     "build:prod": "cross-env NODE_ENV=production npm run build",
