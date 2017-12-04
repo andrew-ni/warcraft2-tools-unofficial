@@ -21,7 +21,8 @@ export class SoundService {
   public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
   constructor(private map: MapService) {
-    SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
+    // SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
+    SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'customSnd');
     console.log(SoundService.CUSTOMSND_DIR);
 
     this.nameToAudio = new Map();
