@@ -79,6 +79,9 @@ export class MapService {
   /** @event mapProjectLoaded When a map project has been open from the file system. */
   public mapProjectLoaded = new ReplaySubject<void>(1);
 
+  /** @event customSndLoaded When the custom sounds from a package have been copied over. */
+  public customSndLoaded = new ReplaySubject<void>(1);
+
   /** @event tilesUpdated When any tile types/indices have changed. */
   public tilesUpdated = new ReplaySubject<Region>(1);
 
