@@ -51,7 +51,7 @@ interface IMap {
 @Injectable()
 export class IOService {
   /** Custom sound directory for temporary storage of custom sounds. */
-  public readonly CUSTOMSND_DIR: string;
+  public static CUSTOMSND_DIR: string;
 
   /** Package file path, for save map default save location. */
   private openedFilePath: string;
@@ -78,7 +78,7 @@ export class IOService {
     private tilesetService: TilesetService,
   ) {
     this.map = mapService;
-    this.CUSTOMSND_DIR = path.join(this.map.resourcePath, 'data', 'customSnd');
+    IOService.CUSTOMSND_DIR = path.join(this.map.resourcePath, 'data', 'customSnd');
     this.initPackage();
 
     /**
@@ -237,7 +237,7 @@ export class IOService {
     this.zip.folder('snd');
     const sounds = [];
     for (const sndPath of sounds) {
-      this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(this.CUSTOMSND_DIR, sndPath)));
+      this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
     }
 
     /*
@@ -254,17 +254,17 @@ export class IOService {
    */
   private async extractCustomSnds() {
     // empty customSnd folder on disk
-    await fsx.emptyDir(this.CUSTOMSND_DIR);    // create empty custom sound dir
+    await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
 
     // foreach folder (populate list of folders)
     const snd = this.zip.folder('snd');
     snd.forEach((dirName, dirFile) => {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
-        fs.mkdirSync(path.join(this.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
+        fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
-          // console.log(path.join(this.CUSTOMSND_DIR, dirName, name));
-          fs.writeFile(path.join(this.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
+          // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
+          fs.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
             if (err) console.error(err);
           });
         });
