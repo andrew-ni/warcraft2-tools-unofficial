@@ -142,6 +142,7 @@ export class TestmapService {
   private currentPlayer: AssetType = undefined;
   private currentAction: Action = undefined;
   private currentSound: HTMLAudioElement = undefined;
+  private currentWalkAction: string = undefined;
 
   private delta: Coordinate = { x: 0, y: 0 };
   private dest: Coordinate = { x: 0, y: 0 };
@@ -480,6 +481,7 @@ export class TestmapService {
           this.player.setAction('attack', true);
           this.actionDuration = actionTime;
           this.actioning = true;
+          this.currentWalkAction = 'lumber';
           // this.currentSound = this.soundService.getAssetSound('harvest1');
         }
         break;
@@ -521,6 +523,8 @@ export class TestmapService {
       case Action.GoldMine: {
         this.player.setDirection(dir);
         this.currentSound = this.soundService.getAssetSound(goldmineMap.get('selected')[0]);
+        this.currentWalkAction = 'gold';
+        this.actionDuration = 1;
 
         // Activate goldmine for 3 seconds
         this.goldmine.setAction('active');
@@ -708,7 +712,13 @@ export class TestmapService {
         }
         this.actionDuration--;
         if (this.actionDuration === 0) {
-          this.player.setAction('walk', true);
+          if (this.currentWalkAction) {
+            console.log('changed walk action');
+            this.player.setAction(this.currentWalkAction, true);
+            this.currentWalkAction = undefined;
+          } else {
+            this.player.setAction('walk', true);
+          }
           this.currentAction = undefined;
           this.actioning = false;
           setTimeout(() => this.drawPlayer(), 1000 / 60);
