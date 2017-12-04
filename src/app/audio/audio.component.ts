@@ -96,7 +96,7 @@ export class AudioComponent implements OnInit {
    * shows all sounds of selected category
    * @param category category of first drop down menu
    */
-  showSound(category) {
+  showSound(category: string) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
     this.selectedClipName = undefined;
@@ -108,7 +108,7 @@ export class AudioComponent implements OnInit {
    * sets audio player to play source of name in second drop down menu
    * @param clipName clip to be played
    */
-  playSound(clipName) {
+  playSound(clipName: string) {
     this.selectedClipName = clipName;
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
@@ -139,9 +139,8 @@ export class AudioComponent implements OnInit {
     const orig = new Audio(path.join('..', 'data', 'snd', name));
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
-    const deleting = true;
     const split = this.destPath.split('/');
     const file = split[split.length - 1];
-    this.soundService.updateCustomSoundMap(this.selectedCategory, file, undefined, deleting);
+    this.soundService.updateCustomSoundMap(this.selectedCategory, file, undefined, true);
   }
 }

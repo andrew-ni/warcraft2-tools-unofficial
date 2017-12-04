@@ -30,7 +30,7 @@ export class SoundService {
    * @param clip HTML audio object of the sound
    * @param deleting boolean value true if deleting from customSoundMap, or false if not
    */
-  public updateCustomSoundMap(category, file, clip, deleting) {
+  public updateCustomSoundMap(category: string, file: string, clip: HTMLAudioElement, deleting: boolean) {
     if (deleting) {
       this.customSoundMap.get(category).delete(file);
     } else {
@@ -95,8 +95,7 @@ export class SoundService {
     const customFilePath = path.join('..', 'data', 'customSnd', category, file);
     try {
       fs.accessSync(path.join('data', customFilePath));
-      const deleting = false;
-      this.updateCustomSoundMap(category, file, new Audio(customFilePath), deleting);
+      this.updateCustomSoundMap(category, file, new Audio(customFilePath), false);
       return customFilePath;
     } catch (e) {
       return filepath;
@@ -111,7 +110,7 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public copyFile(src, dest, category, sound, clip) {
+  public copyFile(src: string, dest: string, category: string, sound: string, clip: HTMLAudioElement) {
     try {
       fs.accessSync(path.join('data', 'customSnd', category));
     } catch (e) {
@@ -124,11 +123,10 @@ export class SoundService {
     });
     console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
-      const deleting = false;
       this.editSoundMap(category, sound, clip);
       const split = dest.split('/');
       const file = split[split.length - 1];
-      this.updateCustomSoundMap(category, file, clip, deleting);
+      this.updateCustomSoundMap(category, file, clip, false);
     });
   }
 
@@ -138,7 +136,7 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public editSoundMap(category, sound, clip) {
+  public editSoundMap(category: string, sound: string, clip: HTMLAudioElement) {
     this.soundMap.get(category).set(sound, clip);
 
     const player = document.getElementById('audio-player') as HTMLAudioElement;
