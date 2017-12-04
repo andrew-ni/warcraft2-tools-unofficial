@@ -5,6 +5,7 @@ import { ReplaySubject, Subject } from 'rxjs/Rx';
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import * as JSZip from 'jszip';
+import * as path from 'path';
 import { Player } from 'player';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
@@ -93,6 +94,6 @@ export class MapService {
   public assetRemoved = new ReplaySubject<Region>(1);
 
   constructor() {
-    this.resourcePath = remote.getGlobal('resourcePath');
+    this.resourcePath = path.join(remote.getGlobal('resourcePath'), 'app');
   }
 }
