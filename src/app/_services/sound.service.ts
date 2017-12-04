@@ -22,7 +22,7 @@ export class SoundService {
 
   constructor(private map: MapService) {
     // SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
-    SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'customSnd');
+    SoundService.CUSTOMSND_DIR = path.join(map.resourcePath, 'data', 'customSnd');
     console.log(SoundService.CUSTOMSND_DIR);
 
     this.nameToAudio = new Map();
@@ -106,8 +106,9 @@ export class SoundService {
     const file = split[split.length - 1];
     const customFilePath = path.join(SoundService.CUSTOMSND_DIR, category, file);
     try {
-      fs.accessSync(path.join(this.map.resourcePath, 'data', customFilePath));
+      fs.accessSync(customFilePath);
       this.updateCustomSoundMap(category, file, new Audio(customFilePath), false);
+      // console.log(finalAudioPath);
       return customFilePath;
     } catch (e) {
       return filepath;
