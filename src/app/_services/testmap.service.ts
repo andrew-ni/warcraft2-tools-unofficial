@@ -396,9 +396,10 @@ export class TestmapService {
       this.dying = true;
       this.movementDuration = 0;
       this.player.setAction('death');
+      this.soundService.getAssetSound(this.playerSoundMap.get('death')[0]).play();
+
       this.deathDuration = 2 * 8;
       this.player.resetFrame();
-
     }
   }
 
