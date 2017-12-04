@@ -26,11 +26,12 @@ export class AudioComponent implements OnInit {
   SongCategories = [];
   Sounds: string[] = [];
   isSoundLoaded: Boolean = false;
+  packageLoaded: Boolean = false;
+  packageLoadedCount = 0;
   selectedClip: HTMLAudioElement;
   selectedCategory: string;
   selectedClipName: string;
   destPath: string;
-
 
   constructor(
     private soundService: SoundService,
@@ -43,26 +44,34 @@ export class AudioComponent implements OnInit {
    */
   ngOnInit() {
     this.resetSoundContext();
-    fsx.removeSync('data/customSnd');
-    fsx.emptyDirSync('data/customSnd');
+    fsx.emptyDir(SoundService.CUSTOMSND_DIR);
     this.soundService.parseSndData();
 
     this.mapService.mapProjectLoaded.do(() => console.log('mapProjectLoaded')).subscribe({
       next: async () => {
         this.soundService.parseSndData();
-        fsx.removeSync('data/customSnd');
-        fsx.emptyDirSync('data/customSnd');
+        await fsx.emptyDir(SoundService.CUSTOMSND_DIR);
         this.resetSoundPlayer();
         this.resetSoundContext();
-        console.log(this.selectedClip);
-        this.SongCategories = [...this.soundService.soundMap.keys()];
+
+        // upon app starting, mapProjectLoaded is triggered before a custom package is loaded in,
+        // and user shouldn't be allowed to edit sounds without loading a package first.
+        if (this.packageLoadedCount > 0) {
+          this.packageLoaded = true;
+        }
+        this.packageLoadedCount++;
+        if (this.packageLoaded) {
+          this.SongCategories = [...this.soundService.soundMap.keys()];
+        } else {
+          this.SongCategories = [];
+        }
       },
       error: err => console.error(err),
       complete: null
     });
 
     this.mapService.customSndLoaded.do(() => console.log('customSndLoaded')).subscribe({
-      next: async () => {
+      next: () => {
         this.soundService.parseSndData();
         this.SongCategories = [...this.soundService.soundMap.keys()];
       },
@@ -97,7 +106,7 @@ export class AudioComponent implements OnInit {
    * shows all sounds of selected category
    * @param category category of first drop down menu
    */
-  showSound(category) {
+  showSound(category: string) {
     this.isSoundLoaded = true;
     this.selectedCategory = category;
     this.selectedClipName = undefined;
@@ -109,12 +118,12 @@ export class AudioComponent implements OnInit {
    * sets audio player to play source of name in second drop down menu
    * @param clipName clip to be played
    */
-  playSound(clipName) {
+  playSound(clipName: string) {
     this.selectedClipName = clipName;
     this.selectedClip = this.soundService.soundMap.get(this.selectedCategory).get(clipName);
     const split = this.selectedClip.src.split('/');
     const file = split[split.length - 1];
-    this.destPath = '../data/customSnd/' + this.selectedCategory + '/' + file;
+    this.destPath = path.join('..', SoundService.CUSTOMSND_DIR, this.selectedCategory, file);
 
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = this.selectedClip.src;
@@ -127,7 +136,7 @@ export class AudioComponent implements OnInit {
     dialog.showOpenDialog(options, (paths: string[]) => {
       if (paths === undefined) return;
       const newClip = new Audio(paths[0]);
-      this.soundService.copyFile(paths[0], 'data/' + this.destPath, this.selectedCategory, this.selectedClipName, newClip);
+      this.soundService.copyFile(paths[0], path.join('data', this.destPath), this.selectedCategory, this.selectedClipName, newClip);
     });
   }
 
@@ -135,15 +144,13 @@ export class AudioComponent implements OnInit {
    * reverts audio to default by deleting custom sound
    */
   revertAudio() {
-    this.soundService.deleteSound('data/' + this.destPath);
+    this.soundService.deleteSound(path.join('data', this.destPath));
     const name = this.destPath.split('customSnd')[1];
-    const orig = new Audio('../data/snd' + name);
+    const orig = new Audio(path.join('..', 'data', 'snd', name));
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
-    const deleting = true;
     const split = this.destPath.split('/');
     const file = split[split.length - 1];
-    const filepath = path.join(this.selectedCategory, file);
-    this.soundService.updateCustomSoundMap(this.selectedCategory, filepath, undefined, deleting);
+    this.soundService.updateCustomSoundMap(this.selectedCategory, file, undefined, true);
   }
 }

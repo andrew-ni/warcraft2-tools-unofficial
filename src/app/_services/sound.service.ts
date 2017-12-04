@@ -8,9 +8,17 @@ import * as path from 'path';
 
 @Injectable()
 export class SoundService {
-  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>; // stores map of custom clips for saving
-  public nameToAudio: Map<string, HTMLAudioElement>;  // stores name of the clip to all audio clips
-  public soundMap: Map<string, Map<string, HTMLAudioElement>>; // links audio to map of clip names to actual audio
+  /** Custom sound directory for temporary storage of custom sounds. */
+  public static readonly CUSTOMSND_DIR = 'data/customSnd';
+
+  /** stores map of custom clips for saving. */
+  public customSoundMap: Map<string, Map<string, HTMLAudioElement>>;
+
+  /** stores name of the clip to all audio clips. */
+  public nameToAudio: Map<string, HTMLAudioElement>;
+
+  /** links audio to map of clip names to actual audio. */
+  public soundMap: Map<string, Map<string, HTMLAudioElement>>;
 
   constructor() {
     this.nameToAudio = new Map();
@@ -30,14 +38,14 @@ export class SoundService {
    * @param clip HTML audio object of the sound
    * @param deleting boolean value true if deleting from customSoundMap, or false if not
    */
-  public updateCustomSoundMap(category, filepath, clip, deleting) {
+  public updateCustomSoundMap(category: string, file: string, clip: HTMLAudioElement, deleting: boolean) {
     if (deleting) {
-      this.customSoundMap.get(category).delete(filepath);
+      this.customSoundMap.get(category).delete(file);
     } else {
       if (this.customSoundMap.get(category) === undefined) {
         this.customSoundMap.set(category, new Map());
       }
-      this.customSoundMap.get(category).set(filepath, clip);
+      this.customSoundMap.get(category).set(file, clip);
     }
   }
 
@@ -53,17 +61,18 @@ export class SoundService {
     const lines = allClips.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i += 2) {
-      const [, type, file] = lines[i + 1].split('/');
-      const filepath = '../data/snd/' + type + '/' + file;
+      const split = lines[i + 1].split('/');
+      const type = split[split.length - 2];
+      const file = split[split.length - 1];
+      const filepath = path.join('..', 'data', 'snd', type, file);
       const checkedPath = this.checkForCustomSound(filepath);
       const checkedAudio = new Audio(checkedPath);
-      if (this.soundMap.has(type)) {
-        this.soundMap.get(type).set(lines[i], checkedAudio);
-      } else {
-        const fileToAudio: Map<string, HTMLAudioElement> = new Map;
-        fileToAudio.set(lines[i], checkedAudio);
-        this.soundMap.set(type, fileToAudio);
+
+      if (!this.soundMap.has(type)) {
+        this.soundMap.set(type, new Map<string, HTMLAudioElement>());
       }
+      this.soundMap.get(type).set(lines[i], checkedAudio);
+
       this.nameToAudio.set(lines[i], checkedAudio);
     }
   }
@@ -74,7 +83,7 @@ export class SoundService {
   public readSndDat(): string {
     let content: string;
 
-    content = fs.readFileSync('data/snd/SoundClips.dat', 'utf8');
+    content = fs.readFileSync(path.join('data', 'snd', 'SoundClips.dat'), 'utf8');
 
     if (content === undefined) {
       throw new Error('File not read');
@@ -88,12 +97,13 @@ export class SoundService {
    * @param filepath file path of current sound
    */
   public checkForCustomSound(filepath: string): string {
-    const [, , , category, file] = filepath.split('/');
-    const customFilePath = '../data/customSnd/' + category + '/' + file;
+    const split = filepath.split(path.sep);
+    const category = split[split.length - 2];
+    const file = split[split.length - 1];
+    const customFilePath = path.join('..', SoundService.CUSTOMSND_DIR, category, file);
     try {
-      fs.accessSync('data/' + customFilePath);
-      const deleting = false;
-      this.updateCustomSoundMap(category, path.join(category, file), new Audio(customFilePath), deleting);
+      fs.accessSync(path.join('data', customFilePath));
+      this.updateCustomSoundMap(category, file, new Audio(customFilePath), false);
       return customFilePath;
     } catch (e) {
       return filepath;
@@ -108,25 +118,23 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public async copyFile(src, dest, category, sound, clip) {
+  public copyFile(src: string, dest: string, category: string, sound: string, clip: HTMLAudioElement) {
     try {
-      fs.accessSync(path.join('data/customSnd', category));
+      fs.accessSync(path.join(SoundService.CUSTOMSND_DIR, category));
     } catch (e) {
-      await fsx.emptyDir(path.join('data/customSnd', category));
+      fsx.emptyDirSync(path.join(SoundService.CUSTOMSND_DIR, category));
     }
     const readStream = fs.createReadStream(src);
 
     readStream.once('error', (err) => {
       console.log(err);
     });
-
+    console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
-      const deleting = false;
       this.editSoundMap(category, sound, clip);
       const split = dest.split('/');
       const file = split[split.length - 1];
-      const filepath = path.join(category, file);
-      this.updateCustomSoundMap(category, filepath, clip, deleting);
+      this.updateCustomSoundMap(category, file, clip, false);
     });
   }
 
@@ -136,10 +144,9 @@ export class SoundService {
    * @param sound clip name
    * @param clip audio clip
    */
-  public editSoundMap(category, sound, clip) {
+  public editSoundMap(category: string, sound: string, clip: HTMLAudioElement) {
     this.soundMap.get(category).set(sound, clip);
 
-    // this.soundUpdated.next(undefined);
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = clip.src;
 

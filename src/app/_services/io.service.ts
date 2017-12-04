@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Asset, AssetType } from 'asset';
 import { ipcRenderer } from 'electron';
-import { Dimension } from 'interfaces';
+import * as fs from 'fs';
+import { Dimension, Region } from 'interfaces';
 import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
@@ -9,10 +10,11 @@ import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
+import { TilesetService } from 'services/tileset.service';
+import { Sprite } from 'sprite';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
-import * as fs from 'fs';
 import * as fsx from 'fs-extra';
 import * as JSZip from 'jszip';
 import * as path from 'path';
@@ -38,6 +40,7 @@ interface IMap {
   customSndLoaded: Subject<void>;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
+  tilesUpdated: Subject<Region>;
   mapVersion: string;
 }
 
@@ -48,14 +51,14 @@ interface IMap {
  */
 @Injectable()
 export class IOService {
-  /** Custom sound directory for temporary storage of custom sounds. */
-  public static readonly CUSTOMSND_DIR = 'data/customSnd';
-
   /** Package file path, for save map default save location. */
   private openedFilePath: string;
 
   /** IMap interface for access to map information. */
   private map: IMap;
+  public readonly TERRAIN_PNG_HEIGHT = 32;
+  public readonly TERRAIN_PNG_WIDTH = 32;
+
 
   /** JSZip object representing current state of package. */
   private zip: JSZip;
@@ -71,6 +74,7 @@ export class IOService {
     private serializeService: SerializeService,
     private soundService: SoundService,
     private spriteService: SpriteService,
+    private tilesetService: TilesetService,
   ) {
     this.map = mapService;
     this.initPackage();
@@ -97,6 +101,17 @@ export class IOService {
     ipcRenderer.on('terrain:loaded', (_, terrainData: string) => {
       this.serializeService.parseTileSet(terrainData);
       this.map.mapLoaded.next();
+    });
+
+    /**
+     * Event listener for changing tileset to a chosen .png image.
+     */
+    ipcRenderer.on('menu:file:loadtilesetimg', async (event: Electron.IpcMessageEvent, filepath) => {
+      const chosenTilesetImg = await this.spriteService.loadImage(filepath);
+      const imageBitmap = await createImageBitmap(chosenTilesetImg);
+      this.spriteService.get(AssetType.Terrain).setCustomImage(imageBitmap);
+      this.map.tilesUpdated.next({ y: 0, x: 0, height: this.map.height, width: this.map.width });
+      this.tilesetService.tilesetLoad();
     });
   }
 
@@ -220,7 +235,7 @@ export class IOService {
     const customSoundMap = this.soundService.getCustomSoundMap();
     customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
-        this.zip.folder('snd').file(fp, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, fp)));
+        this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(SoundService.CUSTOMSND_DIR, dirName, fp)));
       });
     });
 
@@ -240,20 +255,20 @@ export class IOService {
     fsx.removeSync('data/customSnd');
     fsx.emptyDirSync('data/customSnd');
     // empty customSnd folder on disk
-    await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
+    await fsx.emptyDir(SoundService.CUSTOMSND_DIR);    // create empty custom sound dir
 
     // foreach folder (populate list of folders)
     const snd = this.zip.folder('snd');
     snd.forEach(async (dirName, dirFile) => {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
-        fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
+        fs.mkdirSync(path.join(SoundService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
         // TODO: trigger customSndLoaded after the last call of the foreach. awaiting promises.all causes problems.
         // const promises = new Array<Promise<void>>();
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
           // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
           // promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
-          fsx.writeFileSync(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
+          fsx.writeFileSync(path.join(SoundService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
           this.map.customSndLoaded.next();
         });
         // await Promise.all(promises);

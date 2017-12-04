@@ -15,6 +15,7 @@ import { SerializeService } from 'services/serialize.service';
 import { SoundService } from 'services/sound.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
+import { TilesetService } from 'services/tileset.service';
 import { UserService } from 'services/user.service';
 
 import { TestmapService } from 'services/testmap.service';
@@ -75,6 +76,7 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     SpriteService,
     TerrainService,
     TestmapService,
+    TilesetService,
     UserService,
   ],
   bootstrap: [AppComponent]
