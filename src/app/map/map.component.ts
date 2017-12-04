@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Coordinate, Region } from 'interfaces';
 import { Subscription } from 'rxjs/Rx';
+
+import { Coordinate, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
 import { MapService } from 'services/map.service';
