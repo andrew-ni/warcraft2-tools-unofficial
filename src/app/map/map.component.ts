@@ -45,9 +45,13 @@ export class MapComponent implements OnInit {
   ) {
     /**
     * Event listener for once the map is loaded. Clears any leftover selection boxes.
+    * Note: this cant use mapProjectLoaded (which would clear the selection faster) because on start a package is not loaded
     */
-    ipcRenderer.on('map:loaded', () => {
-      document.getElementById('unitsBox').innerHTML = '';
+    this.mapService.tilesUpdated.do(() => console.log('Erasing Selection Boxes')).subscribe({
+      next: () => {
+        this.clearIndividualBoxes();
+      },
+      error: err => console.error(err),
     });
   }
 
@@ -88,10 +92,9 @@ export class MapComponent implements OnInit {
         for (const asset of this.userService.selectedAssets) {
           this.assetsService.removeAsset(asset);
         }
-        document.getElementById('unitsBox').innerHTML = '';
       }
-      this.userService.selectedAssets = [];
-      this.userService.selectedRegions = [];
+      this.clearIndividualBoxes();
+
     });
   }
 
@@ -111,6 +114,11 @@ export class MapComponent implements OnInit {
       nd.style.height = (asset.height * CanvasService.TERRAIN_SIZE) + 'px';
       nd.style.width = (asset.width * CanvasService.TERRAIN_SIZE) + 'px';
     }
+  }
+
+  private clearIndividualBoxes() {
+    this.userService.clearSelections();
+    document.getElementById('unitsBox').innerHTML = '';
   }
 
   /**
@@ -208,13 +216,12 @@ export class MapComponent implements OnInit {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        // the line below needs to stay as is to allow multiple drags to combine selections
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
         // otherwise could be tile/asset draw
       } else {
-        document.getElementById('unitsBox').innerHTML = '';
-        // this.userService.selectedAssets = [];
-        // this.userService.selectedRegions = [];
+        this.clearIndividualBoxes();
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
         if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
