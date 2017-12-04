@@ -7,6 +7,7 @@ import { Player } from 'player';
 import { Subject } from 'rxjs/Rx';
 import { MapService } from 'services/map.service';
 import { SerializeService } from 'services/serialize.service';
+import { SoundService } from 'services/sound.service';
 import { SpriteService } from 'services/sprite.service';
 import { TerrainService } from 'services/terrain.service';
 import { TilesetService } from 'services/tileset.service';
@@ -36,6 +37,7 @@ interface IMap {
   terrainPath: string;
   tileSet: Tileset;
   mapProjectOpened: Subject<JSZip>;
+  customSndLoaded: Subject<void>;
   mapResized: Subject<Dimension>;
   mapLoaded: Subject<void>;
   tilesUpdated: Subject<Region>;
@@ -52,7 +54,7 @@ interface IMap {
 export class IOService {
   /** Custom sound directory for temporary storage of custom sounds. */
   public static CUSTOMSND_DIR: string;
-
+                           
   /** Package file path, for save map default save location. */
   private openedFilePath: string;
 
@@ -74,6 +76,7 @@ export class IOService {
     mapService: MapService,
     private terrainService: TerrainService,
     private serializeService: SerializeService,
+    private soundService: SoundService,
     private spriteService: SpriteService,
     private tilesetService: TilesetService,
   ) {
@@ -232,13 +235,14 @@ export class IOService {
     /*
      * Add snds to package.
      */
-    // const sounds = ['./peasant/acknowledge1.wav'];
     this.zip.remove('snd');
     this.zip.folder('snd');
-    const sounds = [];
-    for (const sndPath of sounds) {
-      this.zip.folder('snd').file(sndPath, fsx.readFile(path.join(IOService.CUSTOMSND_DIR, sndPath)));
-    }
+    const customSoundMap = this.soundService.getCustomSoundMap();
+    customSoundMap.forEach((filePathAndSound, dirName) => {
+      filePathAndSound.forEach((sound, fp) => {
+        this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(SoundService.CUSTOMSND_DIR, dirName, fp)));
+      });
+    });
 
     /*
      * Dump zip to disk.
@@ -253,21 +257,27 @@ export class IOService {
    * Extracts the sounds files from the zip and saves them to CUSTOMSND_DIR
    */
   private async extractCustomSnds() {
+    fsx.removeSync('data/customSnd');
+    fsx.emptyDirSync('data/customSnd');
     // empty customSnd folder on disk
-    await fsx.emptyDir(IOService.CUSTOMSND_DIR);    // create empty custom sound dir
+    await fsx.emptyDir(SoundService.CUSTOMSND_DIR);    // create empty custom sound dir
 
     // foreach folder (populate list of folders)
     const snd = this.zip.folder('snd');
-    snd.forEach((dirName, dirFile) => {
+    snd.forEach(async (dirName, dirFile) => {
       if (dirFile.dir) {   // TODO  see if we can get this from file var
-        fs.mkdirSync(path.join(IOService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
+        fs.mkdirSync(path.join(SoundService.CUSTOMSND_DIR, dirName));   // make folder, sync to ensure completion
 
+        // TODO: trigger customSndLoaded after the last call of the foreach. awaiting promises.all causes problems.
+        // const promises = new Array<Promise<void>>();
         snd.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
           // console.log(path.join(IOService.CUSTOMSND_DIR, dirName, name));
-          fs.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'), err => {
-            if (err) console.error(err);
-          });
+          // promises.push(fsx.writeFile(path.join(IOService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer')));
+          fsx.writeFileSync(path.join(SoundService.CUSTOMSND_DIR, dirName, name), await file.async('nodebuffer'));
+          this.map.customSndLoaded.next();
         });
+        // await Promise.all(promises);
+        // this.map.customSndLoaded.next();
       }
     });
   }
