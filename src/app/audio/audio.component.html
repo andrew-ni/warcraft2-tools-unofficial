@@ -1,1 +1,18 @@
-Audio Works!
+<div class="ui container"
+     id="audio">
+  <h5 align="center">Customize Audio</h5>
+    <div class = "audio">
+    <select id = 'category'  class="ui dropdown" [(ngModel)] = 'selectedCategory' (ngModelChange)='showSound($event)'>
+      <option *ngFor="let i of SongCategories"
+              [value]="i">{{i}}</option>
+    </select>
+    <br/>
+    <select [(ngModel)]= 'selectedClipName' *ngIf = "isSoundLoaded" class="ui dropdown" (ngModelChange)='playSound($event)'>
+      <option *ngFor="let i of Sounds"
+              [value]="i">{{i}}</option>
+    </select>
+    <button class="ui button" *ngIf = "selectedClipName !== undefined " (click) = 'changeAudio()'>Change</button>
+    <button class="ui button" *ngIf = "selectedClipName !== undefined" (click) = 'revertAudio()'>Revert</button>
+    </div>
+    <audio id = "audio-player" controls="controls" ></audio>
+</div>
