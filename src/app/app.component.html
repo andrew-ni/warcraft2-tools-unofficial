@@ -1,18 +1,13 @@
 <div id="tabs">
-    <button class="ui button"
-            (click)="openTab('main')">Map Tool</button>
-    <button class="ui button"
-            (click)="openTab('animation')">Animation Tool</button>
-    <button class="ui button"
-            (click)="openTab('audio')">Audio Tool</button>
-    <button class="ui button"
-            (click)="openTab('tileset')">Tileset Tool</button>
-    <button class="ui button"
-            (click)="openTab('ai')">AI Tool</button>
+<div class="five ui top attached buttons">
+        <button class="ui button" (click)="openTab('main')">Map Tool</button>
+        <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
+        <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
+        <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
+        <button class="ui button" (click)="openTab('ai')">AI Tool</button>
 </div>
-<!-- <div class="spacer">&nbsp;</div> -->
+</div>
 <div id='content'>
-    <div id='content2'>
         <div id="main"
              class="tab"
              style="display:flex">
@@ -39,6 +34,5 @@
              style="display:none">
             <app-ai></app-ai>
         </div>
-    </div>
 </div>
 <app-newmap></app-newmap>
