@@ -146,7 +146,7 @@ export class AudioComponent implements OnInit {
     this.soundService.deleteSound(path.join(SoundService.CUSTOMSND_DIR, this.destPath));
     const name = this.destPath.split('customSnd')[1];
     const orig = new Audio(path.join(this.mapService.resourcePath, 'data', 'snd', this.destPath));
-    
+
     this.soundService.editSoundMap(this.selectedCategory, this.selectedClipName, orig);
 
     const split = this.destPath.split('/');
