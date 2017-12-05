@@ -14,7 +14,8 @@
       "cwd": "${workspaceRoot}",
       "runtimeArgs": [
         "--serve",
-        "--dev"
+        "--dev",
+        "--res"
       ]
     }
   ]

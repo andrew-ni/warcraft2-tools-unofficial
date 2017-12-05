@@ -1,15 +1,20 @@
 import { Injectable } from '@angular/core';
+import { remote } from 'electron';
 import { ReplaySubject, Subject } from 'rxjs/Rx';
 
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import * as JSZip from 'jszip';
+import * as path from 'path';
 import { Player } from 'player';
 import { Tile, TileType } from 'tile';
 import { Tileset } from 'tileset';
 
 @Injectable()
 export class MapService {
+
+  /** Sprite edge length in pixels */
+  public static readonly TERRAIN_SIZE = 32;
 
   /** maximum num of players of map */
   public static readonly MAX_PLAYERS = 8;
@@ -65,6 +70,9 @@ export class MapService {
   public events: string[] = [];
   public triggers: string[] = [];
 
+  /** The absolute path of index.html during runtime. */
+  public readonly resourcePath: string;
+
   // Events
 
   /** @event mapResized When the dimension of the map have changed. */
@@ -91,5 +99,7 @@ export class MapService {
   /** @event assetRemoved When any asset has ben removed. */
   public assetRemoved = new ReplaySubject<Region>(1);
 
-  constructor() { }
+  constructor() {
+    this.resourcePath = remote.getGlobal('resourcePath');
+  }
 }
