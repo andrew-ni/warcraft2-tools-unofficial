@@ -1,0 +1,20 @@
+:host {
+    margin: 20px;
+    display: flex;
+    align-items: center;
+}
+
+#login {
+    flex: 1;
+    width: 100%;
+    padding: 10px;
+    form {
+        max-width: 450px;
+        margin: 0 auto;
+    }
+}
+
+
+.card{
+    float: left !important;   
+   }

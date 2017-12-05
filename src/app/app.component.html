@@ -1,44 +1,57 @@
 <div id="tabs">
-<div class="six ui top attached buttons">
-        <button class="ui button" (click)="openTab('main')">Map Tool</button>
-        <button class="ui button" (click)="openTab('testmap')">Test Map</button>
-        <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
-        <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
-        <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
-        <button class="ui button" (click)="openTab('ai')">AI Tool</button>
-</div>
+    <div class="seven ui top attached buttons">
+        <button class="ui button"
+                (click)="openTab('main')">Map Tool</button>
+        <button class="ui button"
+                (click)="openTab('testmap')">Test Map</button>
+        <button class="ui button"
+                (click)="openTab('animation')">Animation Tool</button>
+        <button class="ui button"
+                (click)="openTab('audio')">Audio Tool</button>
+        <button class="ui button"
+                (click)="openTab('tileset')">Tileset Tool</button>
+        <button class="ui button"
+                (click)="openTab('ai')">AI Tool</button>
+        <button class="ui button"
+                (click)="openTab('web')">Repo</button>
+    </div>
 </div>
 <div id='content'>
-        <div id="main"
-             class="tab"
-             style="display:flex">
-            <app-sidebar></app-sidebar>
-            <app-map></app-map>
-        </div>
-        <div id="testmap"
-             class="tab"
-             style="display:none">
-            <app-testmap></app-testmap>
-        </div>
-        <div id="animation"
-             class="tab"
-             style="display:none">
-            <app-animation></app-animation>
-        </div>
-        <div id="audio"
-             class="tab"
-             style="display:none">
-            <app-audio></app-audio>
-        </div>
-        <div id="tileset"
-             class="tab"
-             style="display:none">
-            <app-tileset></app-tileset>
-        </div>
-        <div id="ai"
-             class="tab"
-             style="display:none">
-            <app-ai></app-ai>
-        </div>
+    <div id="main"
+         class="tab"
+         style="display:flex">
+        <app-sidebar></app-sidebar>
+        <app-map></app-map>
+    </div>
+    <div id="testmap"
+         class="tab"
+         style="display:none">
+        <app-testmap></app-testmap>
+    </div>
+    <div id="animation"
+         class="tab"
+         style="display:none">
+        <app-animation></app-animation>
+    </div>
+    <div id="audio"
+         class="tab"
+         style="display:none">
+        <app-audio></app-audio>
+    </div>
+    <div id="tileset"
+         class="tab"
+         style="display:none">
+        <app-tileset></app-tileset>
+    </div>
+    <div id="ai"
+         class="tab"
+         style="display:none">
+        <app-ai></app-ai>
+    </div>
+    <div id="web"
+         class="tab"
+         style="display:none">
+        <app-web></app-web>
+    </div>
 </div>
 <app-newmap></app-newmap>

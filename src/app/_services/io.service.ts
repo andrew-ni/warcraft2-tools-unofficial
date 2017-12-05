@@ -132,26 +132,30 @@ export class IOService {
     fs.readFile(filePath, async (err, data) => {
       if (err) { console.error(err); return; }
 
-      this.zip = new JSZip();
-
-      if (path.parse(filePath).ext === '.zip') {  // check if package
-        await this.zip.loadAsync(data);
-        const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
-        const mapData: string = await mapFile.async('text');
-        this.mapFileName = await mapFile.name;    // save filename for later saving
-
-        this.extractCustomSnds();
-
-        this.serializeService.initMapFromFile(mapData, filePath);
-      } else {
-        this.serializeService.initMapFromFile(data.toString('utf8'), filePath);
-      }
-
-      this.zip.folder('img');
-      this.zip.folder('snd');
-      this.zip.folder('scripts');
-      this.map.mapProjectOpened.next(this.zip);
+      this.readPackage(data, path.parse(filePath).ext === '.zip');
     });
+  }
+
+  public async readPackage(data: Buffer, isZip: boolean) {
+    this.zip = new JSZip();
+
+    if (isZip) {  // check if package
+      await this.zip.loadAsync(data);
+      const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
+      const mapData: string = await mapFile.async('text');
+      this.mapFileName = await mapFile.name;    // save filename for later saving
+
+      this.extractCustomSnds();
+
+      this.serializeService.initMapFromFile(mapData);
+    } else {
+      this.serializeService.initMapFromFile(data.toString('utf8'));
+    }
+
+    this.zip.folder('img');
+    this.zip.folder('snd');
+    this.zip.folder('scripts');
+    this.map.mapProjectOpened.next(this.zip);
   }
 
   private saveMap(filePath?: string) {
@@ -182,39 +186,12 @@ export class IOService {
     fs.writeFileSync(this.openedFilePath, response);
   }
 
-  /**
-   * Packages everything into a zip file and saves it out.
-   * @param filePath The absolute path to save the map zip.
-   */
-  private async savePackage(filePath?: string) {
-    if (filePath) {
-      this.openedFilePath = filePath;    // update our save location
-    }
-
+  public async buildPackage() {
     const response: string = this.serializeService.serializeMap();
 
-    if (response === undefined) {
-      console.warn('save-map rejected because Map returned null');
-      // TODO: add save-failed message
-
-      return; // don't make ipc call
-    }
-
-
-    /**
-     * Use save as if the map is created by the editor
-     */
-    if (this.openedFilePath === undefined) {
-      this.openedFilePath = dialog.showSaveDialog(savePackageOptions);
-    }
-    if (this.openedFilePath === undefined) {
-      return;
-    }
-    console.log('saving...');
-
     /*
-     * Insert the map configuration.
-     */
+    * Insert the map configuration.
+    */
     this.zip.file(this.mapFileName, response);    // overwrite file with new response
 
     /*
@@ -241,10 +218,34 @@ export class IOService {
       });
     });
 
+    return this.zip.generateAsync({ type: 'nodebuffer' });
+  }
+
+  /**
+   * Packages everything into a zip file and saves it out.
+   * @param filePath The absolute path to save the map zip.
+   */
+  public async savePackage(filePath?: string) {
+    if (filePath) {
+      this.openedFilePath = filePath;    // update our save location
+    }
+
+
+    /**
+     * Use save as if the map is created by the editor
+     */
+    if (this.openedFilePath === undefined) {
+      this.openedFilePath = dialog.showSaveDialog(savePackageOptions);
+    }
+    if (this.openedFilePath === undefined) {
+      return;
+    }
+    console.log('saving...');
+
+    const file = await this.buildPackage();
     /*
      * Dump zip to disk.
      */
-    const file = await this.zip.generateAsync({ type: 'nodebuffer' });
     fs.writeFile(this.openedFilePath, file, err => {
       if (err) console.error(err);
     });

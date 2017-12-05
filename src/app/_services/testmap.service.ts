@@ -490,7 +490,6 @@ export class TestmapService {
           this.actionDuration = actionTime;
           this.actioning = true;
           this.currentWalkAction = 'lumber';
-          // this.currentSound = this.soundService.getAssetSound('harvest1');
         }
         break;
       }
@@ -584,7 +583,11 @@ export class TestmapService {
     // todo: use action to map into sound mappings. Some need custom strings. Also choose random string from array.
     // Walking and selected have different behavior (should be played right after clicking), but this function
     // is called after pathfinding is done
-    this.soundService.getAssetSound(this.playerSoundMap.get(this.player.action.name)[0]).play();
+    if (this.playerAsset === AssetType.Peasant && this.currentAction === Action.Forest) {   // holy crap this is so shitty
+      this.soundService.getAssetSound('harvest1').play();
+    } else {
+      this.soundService.getAssetSound(this.playerSoundMap.get(this.player.action.name)[0]).play();
+    }
   }
 
   /**

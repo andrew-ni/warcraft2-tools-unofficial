@@ -1,58 +1,66 @@
 <div id="newMapModal" class="modal">
   
     <!-- Modal content -->
-    <div class="newmap">
-      <span class="close" (click)="fun_close();">&times;</span>
-      <h2 align="center">New Map</h2>
-      <div style = "width:26.18%; height:100%; float:left;">
-          <h3>Map Name: </h3> <br><br>
-          <h3>Map Description:</h3> <br><br><br><br><br>
-          <h3>Map Dimensions:</h3> <br><br>
-          <h3>Resources Cap:</h3> <br><br>
-          <h3>Number of Players:</h3> <br><br>
-          <h3>Starting Resources:</h3>
-          <div *ngFor="let n of currentPlayers">
-              <h4 align="right">Player {{n.id}}:</h4>
-          </div>
-          <!-- <h4 align="right">Player 2:</h4>
-          <h4 align="right">Player 3:</h4>
-          <h4 align="right">Player 4:</h4>
-          <h4 align="right">Player 5:</h4>
-          <h4 align="right">Player 6:</h4>
-          <h4 align="right">Player 7:</h4>
-          <h4 align="right">Player 8:</h4>           -->
-      </div>
-      <div style = "width:70%; height:100%; float:right;">
-      <input type="text" id="NameField" name="mapName" style="width:50%; margin-top:5px;"><br><br>
-      <input type="text" id="DescField" name="mapDesc" style="width:50%; height: 60px;margin-top:8px;"> <br><br>
-      <input type="text" id="WidthField" name="width" style="width:40px; margin-top:5px;"> x
-      <input type="text" id="HeightField" name="height" style="width:40px;"> <br><br>
-      <img src = ":../../assets/frontend_icons/gold_icon.png">
-      <input type="text" id="GoldCapField" name="goldCap" style="width:100px; margin-top:5px;"> 
-      <img src = ":../../assets/frontend_icons/lumber_icon.png">
-      <input type="text" id="LumberCapField" name="lumberCap" style="width:100px;"> <br><br>
-      
-      <select id="NumPlayersField" name = "numPlayersName">
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-      </select><br><br><br><br>
-      
-      <div style = "float:left; margin-top: 8px">
-          <div *ngFor="let n of currentPlayers; let i = index">
+<div class="newmap">
+    <span class="close" (click)="fun_close();">&times;</span>
+    <h2 align="center">New Map</h2>
+<div class='ui two column grid'>
+
+        <div class='column'><h3>Map Name: </h3></div>
+        <div class='column'><input type="text" id="NameField" name="mapName" style="width:50%; margin-top:5px;"> </div>
+
+        <div class='column'><h3>Map Description:</h3></div>
+        <div class='column'><input type="text" id="DescField" name="mapDesc" style="width:50%; height: 60px;margin-top:8px;"> </div>
+
+        <div class='column'><h3>Map Dimensions:</h3> </div>
+        <div class='column'>
+            <input type="text" id="WidthField" name="width" style="width:40px; margin-top:5px;"> x 
+            <input type="text" id="HeightField" name="height" style="width:40px;"> 
+        </div>
+
+        <div class='column'><h3>Resources Cap:</h3> </div>
+        <div class='column'>
             <img src = ":../../assets/frontend_icons/gold_icon.png">
-            <input type="number" [(ngModel)]="currentPlayers[i].gold" style="width:100px;;">
+            <input type="text" id="GoldCapField" name="goldCap" style="width:100px; margin-top:5px;"><br>
             <img src = ":../../assets/frontend_icons/lumber_icon.png">
-            <input type="number" [(ngModel)]="currentPlayers[i].lumber" style="width:100px;;">
-            <br><br>
-          </div>
-      </div> 
-      <button id="CreateMapButton" align="right">Create Map</button>
-      </div>
+            <input type="text" id="LumberCapField" name="lumberCap" style="width:100px;">
+         </div>
+        
+        <div class='column'><h3>Number of Players:</h3> </div>
+        <div class='column'>
+            <select id="NumPlayersField" name = "numPlayersName">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </div>
+        <div class='row'>
+            <div class='two wide column'><h3>Starting Resources:</h3></div>
+        </div>
+        <div *ngFor="let n of currentPlayers; let i = index">
+            <div class='column'>
+                <h4>Player {{n.id}}:</h4>
+            </div>
+
+            <div class='column'>
+                <!-- <div *ngFor="let n of currentPlayers; let i = index"> -->
+                    <img src = ":../../assets/frontend_icons/gold_icon.png">
+                    <input type="number" [(ngModel)]="currentPlayers[i].gold" style="width:100px;"><br>
+                    <img src = ":../../assets/frontend_icons/lumber_icon.png">
+                    <input type="number" [(ngModel)]="currentPlayers[i].lumber" style="width:100px;">
+                <!-- </div> -->
+            </div> 
+        </div>
     </div>
-  
+    
+    <div class='column'>
+        <br><br>
+        <button id="CreateMapButton" align="right">Create Map</button>
+    </div>
 </div>
+</div>
+  
