@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { window } from 'rxjs/operator/window';
 import { MapService } from 'services/map.service';
 import { AnimationComponent } from './animation/animation.component';
 
@@ -35,7 +36,7 @@ export class AppComponent {
       if (tabName === 'animation') {
         this.animation.focus();
       }
-      document.getElementById(tabName).style.display = 'inline-block';
+      document.getElementById(tabName).style.display = 'block';
     }
   }
 }

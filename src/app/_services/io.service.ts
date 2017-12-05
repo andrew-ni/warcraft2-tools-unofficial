@@ -42,6 +42,7 @@ interface IMap {
   mapLoaded: Subject<void>;
   tilesUpdated: Subject<Region>;
   mapVersion: string;
+  resourcePath: string;
 }
 
 
@@ -235,6 +236,7 @@ export class IOService {
     const customSoundMap = this.soundService.getCustomSoundMap();
     customSoundMap.forEach((filePathAndSound, dirName) => {
       filePathAndSound.forEach((sound, fp) => {
+        console.log((path.join(SoundService.CUSTOMSND_DIR, dirName, fp)));
         this.zip.folder('snd').folder(dirName).file(fp, fsx.readFile(path.join(SoundService.CUSTOMSND_DIR, dirName, fp)));
       });
     });
@@ -252,8 +254,8 @@ export class IOService {
    * Extracts the sounds files from the zip and saves them to CUSTOMSND_DIR
    */
   private async extractCustomSnds() {
-    fsx.removeSync('data/customSnd');
-    fsx.emptyDirSync('data/customSnd');
+    fsx.removeSync(SoundService.CUSTOMSND_DIR);
+    fsx.emptyDirSync(SoundService.CUSTOMSND_DIR);
     // empty customSnd folder on disk
     await fsx.emptyDir(SoundService.CUSTOMSND_DIR);    // create empty custom sound dir
 

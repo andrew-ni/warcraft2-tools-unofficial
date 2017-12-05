@@ -11,6 +11,7 @@ import { MapService } from 'services/map.service';
 interface IMap {
   mapProjectOpened: Subject<JSZip>;
   mapProjectLoaded: Subject<void>;
+  resourcePath: string;
 }
 
 /**
@@ -25,7 +26,7 @@ export class FileService {
   private img: JSZip;
   private snd: JSZip;
 
-  private readonly defaultPath = 'data/';
+  private readonly defaultPath: string;
 
   public initializing: Promise<void>;
 
@@ -36,6 +37,8 @@ export class FileService {
     mapService: MapService,
   ) {
     this.map = mapService;
+    this.defaultPath = pathJoin(this.map.resourcePath, 'data');
+
 
     let resolve: () => void;
     this.initializing = new Promise<void>(res => resolve = res);
