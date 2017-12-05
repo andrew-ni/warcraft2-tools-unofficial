@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Rx';
 
-
 import { Coordinate, Region } from 'interfaces';
 import { AssetsService } from 'services/assets.service';
 import { CanvasService } from 'services/canvas.service';
@@ -41,7 +40,16 @@ export class MapComponent implements OnInit {
     private terrainService: TerrainService,
     private assetsService: AssetsService,
     private mapService: MapService,
-  ) { }
+  ) {
+    /**
+    * Event listener for once the map is loaded. Clears any leftover selection boxes.
+    * Note: this cant use mapProjectLoaded (which would clear the selection faster) because on start a package is not loaded
+    */
+    this.mapService.tilesUpdated.do(() => console.log('Erasing Selection Boxes')).subscribe({
+      next: () => this.clearIndividualBoxes(),
+      error: err => console.error(err),
+    });
+  }
 
   /**
    * Draws canvas for the first time
@@ -80,10 +88,8 @@ export class MapComponent implements OnInit {
         for (const asset of this.userService.selectedAssets) {
           this.assetsService.removeAsset(asset);
         }
-        document.getElementById('unitsBox').innerHTML = '';
+        this.clearIndividualBoxes();
       }
-      this.userService.selectedAssets = [];
-      this.userService.selectedRegions = [];
     });
   }
 
@@ -103,6 +109,11 @@ export class MapComponent implements OnInit {
       nd.style.height = (asset.height * MapService.TERRAIN_SIZE) + 'px';
       nd.style.width = (asset.width * MapService.TERRAIN_SIZE) + 'px';
     }
+  }
+
+  private clearIndividualBoxes() {
+    this.userService.clearSelections();
+    document.getElementById('unitsBox').innerHTML = '';
   }
 
   /**
@@ -198,15 +209,14 @@ export class MapComponent implements OnInit {
       // draw selection box if on that tool
       if (this.userService.state === State.selectionTool) {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
+        // the line below needs to stay as is to allow multiple drags to combine selections
         this.beginMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
         this.beginMouse.y = Math.floor(event.offsetY / MapService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
         // otherwise could be tile/asset draw
       } else {
-        document.getElementById('unitsBox').innerHTML = '';
-        // this.userService.selectedAssets = [];
-        // this.userService.selectedRegions = [];
+        this.clearIndividualBoxes();
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
         if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
