@@ -96,8 +96,7 @@ export class MapComponent implements OnInit {
   /**
    * Draws a white box around each of the selected assets
   */
-  private drawIndividualBoxes() {
-    console.log(this.userService.selectedAssets);
+  public drawIndividualBoxes() {
     for (const asset of this.userService.selectedAssets) {
       const nd = document.createElement('div');
       document.getElementById('unitsBox').appendChild(nd);
@@ -198,6 +197,7 @@ export class MapComponent implements OnInit {
       this.eventHandler.removeEventListener('mousemove', placeMapElementAtCursor, false);
       this.eventHandler.removeEventListener('mousemove', pan, false);
       this.eventHandler.removeEventListener('mousemove', drawBox, false);
+      this.isSelection = false;
     };
 
     /**
@@ -207,7 +207,7 @@ export class MapComponent implements OnInit {
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       // draw selection box if on that tool
-      if (this.userService.state === State.selectionTool) {
+      if (this.userService.state === State.selectionTool && event.button === 0) {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         // the line below needs to stay as is to allow multiple drags to combine selections
         this.beginMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
@@ -219,9 +219,9 @@ export class MapComponent implements OnInit {
         this.clearIndividualBoxes();
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         if (event.button === 0) { placeMapElementAtCursor(event); this.eventHandler.addEventListener('mousemove', placeMapElementAtCursor, false); }
-        if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
-
       }
+      if (event.button === 2) { this.eventHandler.addEventListener('mousemove', pan, false); }
+
     });
 
     /** On mouseup, remove listeners */
@@ -243,7 +243,7 @@ export class MapComponent implements OnInit {
         this.drawIndividualBoxes();
       }
 
-      this.isSelection = false;
+      // this.isSelection = false;
       removeListeners();
       // console.log('asset',this.userService.selectedAssets,'reg',this.userService.selectedRegions);
       this.eventHandler.removeEventListener('mouseleave', function() { }, false);

@@ -95,7 +95,6 @@ export class UserService {
    */
   set selectedPlayer(id) {
     this._selectedPlayer = id;
-    console.log('player number = ', id);
   }
 
   /**

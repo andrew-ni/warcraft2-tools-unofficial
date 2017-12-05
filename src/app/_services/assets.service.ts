@@ -137,6 +137,19 @@ export class AssetsService {
     return assets;
   }
 
+  /**
+   * removes assets whose owners exceed num of players on map
+   */
+  public removePlayerInvalidAsset() {
+
+    for (let i = this.map.assets.length - 1; i >= 0; i--) {
+      if (this.map.assets[i].owner > this.map.players.length - 1) {
+        this.removeAsset(this.map.assets[i]);
+      }
+    }
+
+    document.getElementById('unitsBox').innerHTML = '';
+  }
 
 
   /**
@@ -145,7 +158,7 @@ export class AssetsService {
    */
   public removeAsset(toBeRemoved: Asset): void {
     this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
-    console.log('removed asset ', toBeRemoved);
+    // console.log('removed asset ', toBeRemoved);
     for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
       for (let xpos = toBeRemoved.x; xpos < toBeRemoved.x + toBeRemoved.width; xpos++) {
         this.map.assetLayer[ypos][xpos] = undefined;
