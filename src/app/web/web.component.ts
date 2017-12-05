@@ -36,6 +36,7 @@ export class WebComponent implements OnInit {
   private user: string;
   private form: FormGroup;
   private maps: MapDisplay[] = [];
+  private exportName = '';
 
   constructor(
     private http: HttpClient,
@@ -51,15 +52,13 @@ export class WebComponent implements OnInit {
   }
 
   private login() {
-    if (this.form.valid || true) {
+    if (this.form.valid) {
       console.log(this.form.value.username);
       console.log(this.form.value.password);
 
       const params = new HttpParams()
-        .append('name', 'blhough')
-        .append('password', '123');
-      // .append('name', this.form.value.username)
-      // .append('password', this.form.value.password);
+      .append('name', this.form.value.username)
+      .append('password', this.form.value.password);
 
       this.http.get<LoginResponse>('http://34.214.129.0/login/multi/index.php', { params })
         .do(resp => console.log(resp))
@@ -143,10 +142,10 @@ export class WebComponent implements OnInit {
     let url: string;
     if (zip) {
       url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
-      file = new File([await this.ioService.buildPackage()], Math.random().toString() + '.zip', { type: 'application/zip' });
+      file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
     } else {
       url = 'http://34.214.129.0/dlc/tool_upload.php';
-      file = new File([this.serializeService.serializeMap()], Math.random().toString() + '.map', { type: 'text/plain' });
+      file = new File([this.serializeService.serializeMap()], this.exportName + '.map', { type: 'text/plain' });
     }
     console.log(file);
 

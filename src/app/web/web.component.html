@@ -17,7 +17,7 @@
     </div>
     <button class="ui button fluid large"
             (click)="login()"
-            [disabled]="!form.valid && false">Login</button>
+            [disabled]="!form.valid">Login</button>
   </form>
 </div>
 
@@ -27,9 +27,15 @@
 
   <div class="one column row">
     <div class="column">
-      <div class="item">
-        <div class="ui right floated button"
-             (click)="exportMap()">Export Map</div>
+      <div class="ui form">
+        <div class="inline field">
+          <input type="text"
+                 placeholder="Map name"
+                 class="floated right"
+                 [(ngModel)]="exportName">
+          <div class="ui right floated button"
+               (click)="exportMap()">Export Map</div>
+        </div>
       </div>
     </div>
   </div>
