@@ -1,12 +1,10 @@
 #tilesetevents {
     position: relative;
-    border: 5px pink;
-    left: 5%;
+    left: 2em;
     top: 2em;
 }
 
 #tilesetCanvas {
-    position: absolute;
     border: 5px red;
     top: 0;
     left: 0;
@@ -15,8 +13,9 @@
 
 .sidebox {
     position: fixed;
-    left: 20%;
+    left: 200px;
     padding: 2em;
+    z-index: 1;
 }
 
 #tilesBox {

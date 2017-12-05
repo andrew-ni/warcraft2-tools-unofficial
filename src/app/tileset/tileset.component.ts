@@ -37,7 +37,7 @@ export class TilesetComponent implements OnInit {
   private multiplier = this.multiplierOptions[0];
 
   /** The value of the currently selected index on the terrain spritesheet */
-  private currentIndex: number;
+  private currentIndex = 0;
 
   constructor(
     private tilesetService: TilesetService,

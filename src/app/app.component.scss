@@ -21,9 +21,15 @@
 }
 
 #tabs {
-    position: fixed;
+    position: auto;
     z-index: 1;
     background-color: lightblue;
+}
+
+#content{
+    float: 1;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .spacer {
