@@ -68,7 +68,11 @@ export class MapService {
   /** AI stuff. */
   public difficulty: string[] = [];
   public events: string[] = [];
-  public triggers: string[] = [];
+  public triggerss: string[][] = [];  // i give up, fml
+
+  /** UI stuff for AI stuff (because I am too lazy to put it in User Service) */
+  public uiaiti: number = -1;  // ui ai triggerIndex
+  public uiaisl: number = -1; // ui ai scrollLeft
 
   /** The absolute path of index.html during runtime. */
   public readonly resourcePath: string;

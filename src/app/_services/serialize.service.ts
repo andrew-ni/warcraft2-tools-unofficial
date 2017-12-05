@@ -33,7 +33,7 @@ interface IMap {
   tileSet: Tileset;
   difficulty: string[];
   events: string[];
-  triggers: string[];
+  triggerss: string[][];
   mapResized: Subject<Dimension>;
   assetsUpdated: Subject<Region>;
 }
@@ -138,10 +138,10 @@ export class SerializeService {
       lines.push(script);
     }
     lines.push(SerializeService.AI_TRIGGER_COUNT);
-    lines.push(String(this.map.triggers.length));
+    lines.push(String(this.map.triggerss.length));
     lines.push(SerializeService.AI_TRIGGERS);
-    for (const script of this.map.triggers) {
-      lines.push(script);
+    for (const script of this.map.triggerss) {
+      lines.push(script[0]);
     }
 
     return lines.join('\n');  // join all lines with newline
@@ -167,7 +167,7 @@ export class SerializeService {
     this.map.tileSet = undefined;
     this.map.difficulty = [];
     this.map.events = [];
-    this.map.triggers = [];
+    this.map.triggerss = [];
     this.parseMapData(mapData);
     console.log('init Map');
 
@@ -191,7 +191,12 @@ export class SerializeService {
     this.initAssetLayer();
     this.parseAssets(assets ? assets.trim() : undefined);
     this.map.players = this.parsePlayers(players.trim(), this.map.assets);
-    [this.map.difficulty, this.map.events, this.map.triggers] = this.parseAI(aiDifficulty ? aiDifficulty.trim() : undefined, aiEvents ? aiEvents.trim() : undefined, aiTriggers ? aiTriggers.trim() : undefined);
+
+    let triggers: string[] = [];
+    [this.map.difficulty, this.map.events, triggers] = this.parseAI(aiDifficulty ? aiDifficulty.trim() : undefined, aiEvents ? aiEvents.trim() : undefined, aiTriggers ? aiTriggers.trim() : undefined);
+    for (const trigger of triggers) {
+      this.map.triggerss.push([trigger]);
+    }
 
     // if execution has reached this point, that means all parsing was completed successfully
     this.map.canSave = true;
