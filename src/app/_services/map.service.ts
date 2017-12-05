@@ -106,6 +106,5 @@ export class MapService {
 
   constructor() {
     this.resourcePath = remote.getGlobal('resourcePath');
-    enableProdMode();
   }
 }
