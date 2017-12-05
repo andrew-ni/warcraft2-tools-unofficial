@@ -207,7 +207,7 @@ export class MapComponent implements OnInit {
     this.eventHandler.addEventListener('mousedown', (event) => {
       clickPos = { x: event.offsetX, y: event.offsetY };
       // draw selection box if on that tool
-      if (this.userService.state === State.selectionTool && event.button === 0 ) {
+      if (this.userService.state === State.selectionTool && event.button === 0) {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
         // the line below needs to stay as is to allow multiple drags to combine selections
         this.beginMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);

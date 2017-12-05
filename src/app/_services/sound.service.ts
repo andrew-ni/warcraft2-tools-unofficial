@@ -163,7 +163,7 @@ export class SoundService {
    * @param tbd custom audio to be deleted
    */
   public deleteSound(tbd: string) {
-    fs.unlink(tbd, function () { console.log('deleted'); });
+    fs.unlink(tbd, function() { console.log('deleted'); });
   }
 
   /**
