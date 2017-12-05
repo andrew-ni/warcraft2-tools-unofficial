@@ -1,0 +1,25 @@
+#tilesetevents {
+    position: relative;
+    left: 2em;
+    top: 2em;
+}
+
+#tilesetCanvas {
+    border: 5px red;
+    top: 0;
+    left: 0;
+    image-rendering: pixelated;
+}
+
+.sidebox {
+    position: fixed;
+    left: 200px;
+    padding: 2em;
+    z-index: 1;
+}
+
+#tilesBox {
+    pointer-events: none;
+    position: absolute;
+    border: 1px solid white;
+}

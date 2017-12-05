@@ -141,7 +141,7 @@ export class SpriteService {
    * @param path The path of the png file to load.
    * @returns An HTMLImageElement Promise that will resolve when the image is loaded from the filesystem.
    */
-  private async loadImage(path: string) {
+  public async loadImage(path: string) {
     const tempImage = new Image();
     const imageLoaded = new Promise<HTMLImageElement>((resolve) => {
       tempImage.onload = async () => {
@@ -157,7 +157,7 @@ export class SpriteService {
    * @param image The image to convert to bitmap format
    * @returns An ImageBitmap Promise that will resolve once the conversion is complete.
    */
-  private HTMLImageToBitmap(image: HTMLImageElement) {
+  public HTMLImageToBitmap(image: HTMLImageElement) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
@@ -256,8 +256,8 @@ export class SpriteService {
      * @param fileData The raw .dat file contents.
      * @returns The relative path and an array of frame names.
      */
-    const parseFileSections = (fileData: string) => {
-      const [, relativePath, , frameNames] = fileData.split(/#.*?\r?\n/);
+    const parseFileSections = (data: string) => {
+      const [, relativePath, , frameNames] = data.split(/#.*?\r?\n/);
 
       return {
         relativePath: relativePath.trim(),
