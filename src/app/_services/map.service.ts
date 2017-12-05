@@ -13,6 +13,9 @@ import { Tileset } from 'tileset';
 @Injectable()
 export class MapService {
 
+  /** Sprite edge length in pixels */
+  public static readonly TERRAIN_SIZE = 32;
+
   /** maximum num of players of map */
   public static readonly MAX_PLAYERS = 8;
 

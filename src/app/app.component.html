@@ -1,6 +1,7 @@
 <div id="tabs">
-<div class="five ui top attached buttons">
+<div class="six ui top attached buttons">
         <button class="ui button" (click)="openTab('main')">Map Tool</button>
+        <button class="ui button" (click)="openTab('testmap')">Test Map</button>
         <button class="ui button" (click)="openTab('animation')">Animation Tool</button>
         <button class="ui button" (click)="openTab('audio')">Audio Tool</button>
         <button class="ui button" (click)="openTab('tileset')">Tileset Tool</button>
@@ -13,6 +14,11 @@
              style="display:flex">
             <app-sidebar></app-sidebar>
             <app-map></app-map>
+        </div>
+        <div id="testmap"
+             class="tab"
+             style="display:none">
+            <app-testmap></app-testmap>
         </div>
         <div id="animation"
              class="tab"
