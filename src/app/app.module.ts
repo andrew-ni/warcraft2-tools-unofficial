@@ -1,7 +1,7 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
 
 // Services
@@ -37,6 +37,8 @@ import { TerrainComponent } from './sidebar/terrain/terrain.component';
 import { TestmapComponent } from './testmap/testmap.component';
 import { TilesetComponent } from './tileset/tileset.component';
 import { UploadmapComponent } from './uploadmap/uploadmap.component';
+import { MapDisplayComponent } from './web/map-display/map-display.component';
+import { WebComponent } from './web/web.component';
 
 @NgModule({
   declarations: [
@@ -52,10 +54,13 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
     TilesetComponent,
     AnimationComponent,
     AudioComponent,
+    WebComponent,
+    MapDisplayComponent,
     AiComponent,
+    TestmapComponent,
     TriggerComponent,
     DynamicSubtriggerComponent,
-    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent, TestmapComponent,
+    StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,
   ],
   entryComponents: [
     StAmountComponent, StAssetTypeComponent, StComparisonComponent, StDeltaComponent, StEventComponent, StPlayerComponent, StPlayerWinComponent, StRepeatableComponent, StResourceTypeComponent, StTriggerableByComponent, StTriggerTypeComponent, StXMaxComponent, StXMinComponent, StYMaxComponent, StYMinComponent,
@@ -63,6 +68,8 @@ import { UploadmapComponent } from './uploadmap/uploadmap.component';
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [
     AnimationService,
