@@ -98,10 +98,10 @@ export class MapComponent implements OnInit {
       nd.style.pointerEvents = 'none';
       nd.style.position = 'absolute';
       nd.style.border = 'white solid 1px';
-      nd.style.top = (asset.y * CanvasService.TERRAIN_SIZE) + 'px';
-      nd.style.left = (asset.x * CanvasService.TERRAIN_SIZE) + 'px';
-      nd.style.height = (asset.height * CanvasService.TERRAIN_SIZE) + 'px';
-      nd.style.width = (asset.width * CanvasService.TERRAIN_SIZE) + 'px';
+      nd.style.top = (asset.y * MapService.TERRAIN_SIZE) + 'px';
+      nd.style.left = (asset.x * MapService.TERRAIN_SIZE) + 'px';
+      nd.style.height = (asset.height * MapService.TERRAIN_SIZE) + 'px';
+      nd.style.width = (asset.width * MapService.TERRAIN_SIZE) + 'px';
     }
   }
 
@@ -149,8 +149,8 @@ export class MapComponent implements OnInit {
 
     // Regions sent on click are exactly 1x1. Subsequent functions should expand / modify this Region before drawing.
     const placeMapElementAtCursor = (event: MouseEvent) => {
-      const x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
-      const y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+      const x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
+      const y = Math.floor(event.offsetY / MapService.TERRAIN_SIZE);
       this.userService.applySelectedType(
         (tileType) => this.terrainService.updateTiles(tileType, { y, x, width: 1, height: 1 }),
         (assetType) => this.assetsService.placeAsset(this.userService.selectedPlayer, assetType, { x, y }),
@@ -198,8 +198,8 @@ export class MapComponent implements OnInit {
       // draw selection box if on that tool
       if (this.userService.state === State.selectionTool) {
         this.eventHandler.addEventListener('mouseleave', removeListeners, false); // cancels current action if mouse leaves canvas
-        this.beginMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
-        this.beginMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        this.beginMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
+        this.beginMouse.y = Math.floor(event.offsetY / MapService.TERRAIN_SIZE);
         document.getElementById('unitsBox').innerHTML = '';
         this.eventHandler.addEventListener('mousemove', drawBox, false);
         // otherwise could be tile/asset draw
@@ -219,8 +219,8 @@ export class MapComponent implements OnInit {
 
       // calculate the selection are and draw the individual selection boxes
       if (this.userService.state === State.selectionTool) {
-        this.endMouse.x = Math.floor(event.offsetX / CanvasService.TERRAIN_SIZE);
-        this.endMouse.y = Math.floor(event.offsetY / CanvasService.TERRAIN_SIZE);
+        this.endMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
+        this.endMouse.y = Math.floor(event.offsetY / MapService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
 
         // if selection area is 0, then it was a click

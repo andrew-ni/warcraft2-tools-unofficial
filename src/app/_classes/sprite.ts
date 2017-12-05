@@ -1,3 +1,4 @@
+import { Coordinate } from 'interfaces';
 
 /**
  * Sprite contains all information about an Asset parsed from their `.dat`
@@ -67,14 +68,17 @@ export class AnimationContext {
   /** The direction of this current animation. */
   private _direction: AnimationDirection;
 
+  /** Location of asset that owns this animation context. Only used by testmap. */
+  private _coord: Coordinate = { x: 0, y: 0 };
+
   /**
    * Constructs a new AnimationContext. Useful for changing Sprites.
    * @param _sprite The new sprite this AnimationContext should reflect.
-   * @param frameNum Frame number to initialize to. Default is 0.
+   * @param _frameNum Frame number to initialize to. Default is 0.
    */
   constructor(
     private _sprite: Sprite,
-    private frameNum: number = 0,
+    private _frameNum: number = 0,
   ) {
     this._action = this._sprite.actions[0];   // default to first action
     this._direction = this._action.directions[0]; // default to first direction
@@ -85,18 +89,29 @@ export class AnimationContext {
   get direction() { return this._direction; }
   get actionList() { return this.sprite.actions; }
   get directionList() { return this._action.directions; }
+  get frameNum() { return this._frameNum; }
+  get coord() { return this._coord; }
+  get gridCoord() { return { x: Math.floor(this._coord.x / 32), y: Math.floor(this._coord.y / 32) }; }
+  set coord(c: Coordinate) { this._coord = c; }
+  set gridCoord(c: Coordinate) { this._coord = { x: c.x * 32, y: c.y * 32 }; console.log(this._coord); }
 
   /**
    * Set the action to the index specified.
    * @param a String or number, index of action within this Sprite to take on.
    */
-  public setAction(a: string | number): void {
+  public setAction(a: string | number, preserve: boolean = false): void {
+    const oldDir = this.direction.name;
     this._action = this._sprite.actions[a];
-    this.setDirection(0);
+
+    if (!preserve) {
+      this.setDirection(0);
+    } else {
+      this.setDirection(oldDir);
+    }
   }
 
   /**
-   * Set the driection to the index specified.
+   * Set the direction to the index specified.
    * @param d String or number, index of direction within this action to take on.
    */
   public setDirection(d: string | number): void {
@@ -105,14 +120,19 @@ export class AnimationContext {
 
   /** Get the current frame number. Index in animation sprite sheet. */
   public getCurFrame(): number {
-    return this._direction.frames[this.frameNum];
+    return this._direction.frames[this._frameNum];
+  }
+
+  /** Resets frame to first frame. */
+  public resetFrame() {
+    this._frameNum = 0;
   }
 
   /** Advance to next frame and return updated frame number. */
   public nextFrame(): number {
-    this.frameNum++;
-    if (this.frameNum >= this._direction.frames.length) {
-      this.frameNum = 0;
+    this._frameNum++;
+    if (this._frameNum >= this._direction.frames.length) {
+      this._frameNum = 0;
     }
 
     return this.getCurFrame();
@@ -120,9 +140,9 @@ export class AnimationContext {
 
   /** Go to previous frame and return updated frame number. */
   public prevFrame(): number {
-    this.frameNum--;
-    if (this.frameNum < 0) {
-      this.frameNum = this._direction.frames.length - 1;
+    this._frameNum--;
+    if (this._frameNum < 0) {
+      this._frameNum = this._direction.frames.length - 1;
     }
 
     return this.getCurFrame();
