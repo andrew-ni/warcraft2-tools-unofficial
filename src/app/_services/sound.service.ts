@@ -151,6 +151,7 @@ export class SoundService {
    */
   public editSoundMap(category: string, sound: string, clip: HTMLAudioElement) {
     this.soundMap.get(category).set(sound, clip);
+    this.nameToAudio.set(sound, clip);
 
     const player = document.getElementById('audio-player') as HTMLAudioElement;
     player.src = clip.src;
