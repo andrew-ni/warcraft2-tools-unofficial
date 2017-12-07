@@ -34,10 +34,10 @@
                  placeholder="Map/Package name"
                  class="floated right"
                  [(ngModel)]="exportName">
-          <div class="ui button"
-               (click)="exportMap()" id='mapuploadbutton'>Upload Map</div>
-          <div class="ui button"
-               (click)="exportPackage()" id='packageuploadbutton'>Upload Package</div>
+          <button class="ui button"
+               (click)="exportMap()" id='mapuploadbutton' [disabled]="!ioService.loaded">Upload Map</button>
+          <button class="ui button"
+               (click)="exportPackage()" id='packageuploadbutton' [disabled]="!ioService.loaded">Upload Package</button>
           <!-- <div class="ui button"
                (click)="debug()">Debug</div> -->
           <div class="ui checkbox">
@@ -45,8 +45,8 @@
                    id='myCheck'>
             <label>Private Upload </label>
           </div>
-          <div class="ui right floated button"
-               (click)="logout()">Logout</div>
+          <button class="ui right floated button"
+               (click)="logout()">Logout</button>
         </div>
       </div>
     </div>
