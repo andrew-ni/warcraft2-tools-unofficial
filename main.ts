@@ -34,7 +34,7 @@ async function createWindow(openDevTools: boolean) {
   }));
 
   // Open the DevTools.
-  if (openDevTools) mainWindow.webContents.openDevTools();
+  if (devTools) mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {

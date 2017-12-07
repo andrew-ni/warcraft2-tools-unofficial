@@ -69,6 +69,9 @@ export class IOService {
   */
   private mapFileName: string;
 
+  /** Boolean for map/package uploading. */
+  private _loaded = false;
+
   constructor(
     mapService: MapService,
     private terrainService: TerrainService,
@@ -116,6 +119,8 @@ export class IOService {
     });
   }
 
+  get loaded() { return this._loaded; }
+
   /**
    * Opens the project zip
    * @param filePath the full path to the map project
@@ -155,6 +160,7 @@ export class IOService {
     this.zip.folder('img');
     this.zip.folder('snd');
     this.zip.folder('scripts');
+    this._loaded = true;
     this.map.mapProjectOpened.next(this.zip);
   }
 
