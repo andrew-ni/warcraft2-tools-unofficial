@@ -228,7 +228,7 @@ export class MapComponent implements OnInit {
     this.eventHandler.addEventListener('mouseup', (event) => {
 
       // calculate the selection are and draw the individual selection boxes
-      if (this.userService.state === State.selectionTool) {
+      if (this.userService.state === State.selectionTool && event.button === 0) {
         this.endMouse.x = Math.floor(event.offsetX / MapService.TERRAIN_SIZE);
         this.endMouse.y = Math.floor(event.offsetY / MapService.TERRAIN_SIZE);
         const reg: Region = { x: Math.min(this.beginMouse.x, this.endMouse.x), y: Math.min(this.beginMouse.y, this.endMouse.y), height: Math.abs(this.endMouse.y - this.beginMouse.y), width: Math.abs(this.endMouse.x - this.beginMouse.x) };
