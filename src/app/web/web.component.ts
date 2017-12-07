@@ -137,7 +137,8 @@ export class WebComponent implements OnInit {
   }
 
   public debug() {
-    console.log(this.ioService.loaded);
+    const element = <HTMLInputElement>document.getElementById('myCheck');
+    console.log(element.checked.toString());
   }
   private async exportMap() {
     if (this.ioService.loaded) {
@@ -149,7 +150,8 @@ export class WebComponent implements OnInit {
       const formData = new FormData();
       formData.append('fileToUpload', file);
       formData.append('uploader', this.userId.toString());
-      formData.append('private', 'false');
+      const isPrivate = <HTMLInputElement>document.getElementById('myCheck');
+      formData.append('private', isPrivate.checked.toString()); // append 'true' or 'false'
 
       this.http.post(url, formData)
         .subscribe({
@@ -159,9 +161,6 @@ export class WebComponent implements OnInit {
           },
           error: err => console.error(err),
         });
-    }
-    else {
-      console.log('exportmap: not loaded');
     }
   }
 
