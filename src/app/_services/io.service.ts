@@ -150,6 +150,7 @@ export class IOService {
   public async readPackage(data: Buffer, isZip: boolean) {
     this.zip = new JSZip();
 
+
     if (isZip) {  // check if package
       await this.zip.loadAsync(data);
       const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
@@ -316,14 +317,14 @@ export class IOService {
     const script = this.zip.folder('scripts');
     const map = this.map;
     script.forEach(async (name, file) => {
-      let pathName = './scripts/' + name;
-      let data = await file.async('text');
-      let iDifficulty = this.map.difficulty.indexOf(pathName);
-      if (iDifficulty != -1) {
+      const pathName = './scripts/' + name;
+      const data = await file.async('text');
+      const iDifficulty = this.map.difficulty.indexOf(pathName);
+      if (iDifficulty !== -1) {
         this.map.difficultyData[iDifficulty] = data;
-      }
-      let iEvents = this.map.events.indexOf(pathName);
-      if (iEvents != -1) {
+    }
+      const iEvents = this.map.events.indexOf(pathName);
+      if (iEvents !== -1) {
         this.map.eventsData[iEvents] = data;
       }
     });
@@ -339,6 +340,7 @@ export class IOService {
    * @param players player number and starting resource
    */
   public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+    this._loaded = true;
     this.openedFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;
