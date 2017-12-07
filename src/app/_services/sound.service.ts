@@ -44,7 +44,9 @@ export class SoundService {
    */
   public updateCustomSoundMap(category: string, file: string, clip: HTMLAudioElement, deleting: boolean) {
     if (deleting) {
-      this.customSoundMap.get(category).delete(file);
+      if (this.customSoundMap.has(category)) {
+        this.customSoundMap.get(category).delete(file);
+      }
     } else {
       if (this.customSoundMap.get(category) === undefined) {
         this.customSoundMap.set(category, new Map());
@@ -134,7 +136,6 @@ export class SoundService {
     readStream.once('error', (err) => {
       console.log(err);
     });
-    console.log(dest);
     readStream.pipe(fs.createWriteStream(dest)).on('finish', () => {
       this.editSoundMap(category, sound, clip);
       const split = dest.split(path.sep);
