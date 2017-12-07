@@ -43,6 +43,12 @@ interface IMap {
   tilesUpdated: Subject<Region>;
   mapVersion: string;
   resourcePath: string;
+  difficultyData: string[];
+  eventsData: string[];
+  difficulty: string[];
+  events: string[];
+  allScripts: string[];
+  allData: string[];
 }
 
 
@@ -146,6 +152,7 @@ export class IOService {
       this.mapFileName = await mapFile.name;    // save filename for later saving
 
       this.extractCustomSnds();
+      this.extractScripts();
 
       this.serializeService.initMapFromFile(mapData);
     } else {
@@ -218,6 +225,24 @@ export class IOService {
       });
     });
 
+    /*
+     * Add scripts to package
+     */
+    this.zip.remove('scripts');
+    this.zip.folder('scripts');
+    let filename: string;
+    let filedata: string;
+    for (let i = 0; i < this.map.difficultyData.length; ++i) {
+      filename = this.map.difficulty[i].split('/').slice(-1)[0];
+      filedata = this.map.difficultyData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+    for (let i = 0; i < this.map.eventsData.length; ++i) {
+      filename = this.map.events[i].split('/').slice(-1)[0];
+      filedata = this.map.eventsData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+
     return this.zip.generateAsync({ type: 'nodebuffer' });
   }
 
@@ -276,6 +301,20 @@ export class IOService {
         });
         // await Promise.all(promises);
         // this.map.customSndLoaded.next();
+      }
+    });
+  }
+
+  private async extractScripts() {
+    const script = this.zip.folder('scripts');
+    const map = this.map;
+    script.forEach((dirName, dirFile) => {
+      if (dirFile.dir) {   // TODO  see if we can get this from file var
+        script.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
+          map.allData.push(await file.async('text')); // TODO: FINISH
+          map.allScripts.push('./scripts/' + name);
+          console.log(name);
+        });
       }
     });
   }

@@ -71,6 +71,14 @@ export class MapService {
   public events: string[] = [];
   public triggerss: string[][] = [];  // i give up, fml
 
+  /** AI Lua script content. */
+  public difficultyData: string[] = [];
+  public eventsData: string[] = [];
+
+  /** All Lua scripts. */
+  public allScripts: string[] = [];
+  public allData: string[] = [];
+
   /** UI stuff for AI stuff (because I am too lazy to put it in User Service) */
   public uiaiti = -1;  // ui ai triggerIndex
   public uiaisl = -1; // ui ai scrollLeft
