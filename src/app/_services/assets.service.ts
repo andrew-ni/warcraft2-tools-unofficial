@@ -144,9 +144,11 @@ export class AssetsService {
 
     for (let i = this.map.assets.length - 1; i >= 0; i--) {
       if (this.map.assets[i].owner > this.map.players.length - 1) {
-        this.removeAsset(this.map.assets[i]);
+        this.removeAsset(this.map.assets[i], false);
       }
     }
+
+    this.map.assetRemoved.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
 
     document.getElementById('unitsBox').innerHTML = '';
   }
@@ -156,7 +158,7 @@ export class AssetsService {
    * Removes a single asset
    * @param toBeRemoved asset to be removed
    */
-  public removeAsset(toBeRemoved: Asset): void {
+  public removeAsset(toBeRemoved: Asset, redraw: boolean = true): void {
     this.map.assets.splice(this.map.assets.indexOf(toBeRemoved), 1);
     // console.log('removed asset ', toBeRemoved);
     for (let ypos = toBeRemoved.y; ypos < toBeRemoved.y + toBeRemoved.height; ypos++) {
@@ -164,7 +166,10 @@ export class AssetsService {
         this.map.assetLayer[ypos][xpos] = undefined;
       }
     }
-    this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
+
+    if (redraw) {
+      this.map.assetRemoved.next({ x: toBeRemoved.x, y: toBeRemoved.y, width: toBeRemoved.width, height: toBeRemoved.height });
+    }
 
   }
 
@@ -195,9 +200,10 @@ export class AssetsService {
     this.updateOwner(selectedAssets, newOwner);
 
     // update each region in the array to recolor assets
-    for (const reg of selectedRegions) {
-      this.map.assetsUpdated.next(reg);
-    }
+    // for (const reg of selectedRegions) {
+    //   this.map.assetsUpdated.next(reg);
+    // }
+    this.map.assetsUpdated.next({ x: 0, y: 0, width: this.map.width, height: this.map.height });
     // refocus onto the canvas to allow deletion if desired
     const ac = document.getElementById('assetCanvas');
     ac.focus();
