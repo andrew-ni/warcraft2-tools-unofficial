@@ -17,6 +17,7 @@
     </div>
     <button class="ui button fluid large"
             (click)="login()"
+            id='login'
             [disabled]="!form.valid">Login</button>
   </form>
 </div>
@@ -34,19 +35,23 @@
                  class="floated right"
                  [(ngModel)]="exportName">
           <div class="ui button"
-               (click)="exportMap()">Upload Map</div>
+               (click)="exportMap()" id='mapuploadbutton'>Upload Map</div>
           <div class="ui button"
-               (click)="exportPackage()">Upload Package</div>
-          <div class="ui button"
-               (click)="debug()">Debug</div>
+               (click)="exportPackage()" id='packageuploadbutton'>Upload Package</div>
+          <!-- <div class="ui button"
+               (click)="debug()">Debug</div> -->
           <div class="ui checkbox">
-                <input type="checkbox" id='myCheck'>
-                <label>Private Upload</label>
+            <input type="checkbox"
+                   id='myCheck'>
+            <label>Private Upload </label>
           </div>
+          <div class="ui right floated button"
+               (click)="logout()">Logout</div>
         </div>
       </div>
     </div>
   </div>
+  
 
   <div class="one column row segments">
     <div class="ui top attached label">Private Maps</div>

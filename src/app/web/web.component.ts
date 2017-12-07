@@ -39,6 +39,7 @@ export class WebComponent implements OnInit {
   private form: FormGroup;
   private maps: MapDisplay[] = [];
   private exportName = '';
+  private uploading = false;
 
   constructor(
     private http: HttpClient,
@@ -86,6 +87,11 @@ export class WebComponent implements OnInit {
           }
         });
     }
+  }
+
+  private logout() {
+    this.loggedIn = false;
+    this.uploading = false; // allows reset if web API breaks
   }
 
 
@@ -136,12 +142,18 @@ export class WebComponent implements OnInit {
       });
   }
 
-  public debug() {
-    const element = <HTMLInputElement>document.getElementById('myCheck');
-    console.log(element.checked.toString());
-  }
+  // public debug() {
+  //   const element = <HTMLInputElement>document.getElementById('myCheck');
+  //   console.log(element.checked.toString());
+  // }
   private async exportMap() {
-    if (this.ioService.loaded) {
+    if (this.ioService.loaded && !this.uploading) {
+      this.uploading = true;
+      const mapbtn = <HTMLInputElement>document.getElementById('mapuploadbutton');
+      mapbtn.className = 'ui loading button';
+      const pkgbtn = <HTMLInputElement>document.getElementById('packageuploadbutton');
+      pkgbtn.className = 'ui disabled button';
+
       let file: File;
       const url = 'http://34.214.129.0/dlc/tool_upload.php';
       file = new File([this.serializeService.serializeMap()], this.exportName + '.map', { type: 'text/plain' });
@@ -158,6 +170,9 @@ export class WebComponent implements OnInit {
           next: resp => {
             console.log(resp);
             this.getMaps();
+            mapbtn.className = 'ui button';
+            pkgbtn.className = 'ui button';
+            this.uploading = false;
           },
           error: err => console.error(err),
         });
@@ -165,7 +180,13 @@ export class WebComponent implements OnInit {
   }
 
   private async exportPackage() {
-    if (this.ioService.loaded) {
+    if (this.ioService.loaded && !this.uploading) {
+      this.uploading = true;
+      const mapbtn = <HTMLInputElement>document.getElementById('mapuploadbutton');
+      mapbtn.className = 'ui disabled button';
+      const pkgbtn = <HTMLInputElement>document.getElementById('packageuploadbutton');
+      pkgbtn.className = 'ui loading button';
+
       let file: File;
       const url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
       file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
@@ -181,6 +202,9 @@ export class WebComponent implements OnInit {
           next: resp => {
             console.log(resp);
             this.getMaps();
+            mapbtn.className = 'ui button';
+            pkgbtn.className = 'ui button';
+            this.uploading = false;
           },
           error: err => console.error(err),
         });
