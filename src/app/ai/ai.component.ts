@@ -19,7 +19,7 @@ export class AiComponent implements OnInit {
   };
 
   private tests = [];
-  private s = 'a'
+  private s = 'a';
 
   constructor(
     private ngZone: NgZone,

@@ -25,7 +25,7 @@ function getSelected(triggerIndex: number, subtriggerIndex: number, mapService: 
  */
 function changeSelected(triggerIndex: number, subtriggerIndex: number, selected: string, mapService: MapService, subtriggerFormat: SubscriptFormat) {
   mapService.uiaiti = triggerIndex;
-  mapService.uiaisl = document.getElementsByTagName("app-trigger-component")[triggerIndex].scrollLeft;
+  mapService.uiaisl = document.getElementsByTagName('app-trigger-component')[triggerIndex].scrollLeft;
 
   const trigger = mapService.triggerss[triggerIndex][0].split(' ');
   if (subtriggerFormat === SubscriptFormat.TRIGGER_TYPE) {

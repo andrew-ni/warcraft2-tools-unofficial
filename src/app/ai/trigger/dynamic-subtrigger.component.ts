@@ -23,8 +23,8 @@ export class DynamicSubtriggerComponent implements OnInit {
     (<any>component.instance).triggerIndex = this.triggerIndex;
     (<any>component.instance).subtriggerIndex = this.subtriggerIndex;
     (<any>component.instance).mapService = this.mapService;
-    if ( this.triggerIndex === this.mapService.uiaiti ) {
-      document.getElementsByTagName("app-trigger-component")[this.triggerIndex].scrollLeft = this.mapService.uiaisl;
+    if (this.triggerIndex === this.mapService.uiaiti) {
+      document.getElementsByTagName('app-trigger-component')[this.triggerIndex].scrollLeft = this.mapService.uiaisl;
     }
   }
 
