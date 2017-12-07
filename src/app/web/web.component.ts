@@ -2,8 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { parse as parseName } from 'path';
 import { IOService } from 'services/io.service';
 import { SerializeService } from 'services/serialize.service';
+
 
 
 interface LoginResponse {
@@ -117,17 +119,14 @@ export class WebComponent implements OnInit {
   }
 
   private async importMap(name: string) {
-    const params = new HttpParams()
-      .append('map', name);
-    // .append('name', this.form.value.username)
-    // .append('password', this.form.value.password);
+    const isZip = parseName(name).ext === '.zip';
+    const url = isZip ? `http://34.214.129.0/downloadCMaps/cMapPkgs/${name}` : `http://34.214.129.0/dlc/maps/${name}`;
 
-    this.http.get('http://34.213.125.24/dlc/map_download.php', { params })
+    this.http.get(url, { responseType: 'arraybuffer' })
       .do(resp => console.log(resp))
       .subscribe({
         next: resp => {
-          // const file = new File([resp as Buffer], Math.random().toString() + '.zip', { type: 'application/zip', });
-          // this.ioService.readPackage(resp as Buffer, true);
+          this.ioService.readPackage(Buffer.from(resp), isZip);
         },
         error: err => {
           this.loggedIn = false;
