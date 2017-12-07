@@ -530,8 +530,10 @@ export class TestmapService {
       case Action.GoldMine: {
         this.player.setDirection(dir);
         this.currentSound = this.soundService.getAssetSound(goldmineMap.get('selected')[0]);
-        this.currentWalkAction = 'gold';
-        this.actionDuration = 1;
+        if (this.playerAsset === AssetType.Peasant){
+          this.currentWalkAction = 'gold';
+          this.actionDuration = 1;
+        }
 
         // Activate goldmine for 3 seconds
         this.goldmine.setAction('active');
