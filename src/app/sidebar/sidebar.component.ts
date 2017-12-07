@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AssetType } from 'asset';
 import { MapService } from 'services/map.service';
-import { TileType } from 'tile';
 import { UserService } from 'services/user.service';
+import { TileType } from 'tile';
 
 
 interface ToolButton {
@@ -81,7 +81,7 @@ export class SidebarComponent implements OnInit {
     console.log('lumber value of selected player: 0 is:', this.mapService.players[0].lumber);
   }
 
-  onChangeTools(newValue, toolName:string, brushSize) {
+  onChangeTools(newValue, toolName: string, brushSize) {
     if (toolName === 'Cursor') {
       this.assetChange(this.userService.assetToBeDrawn, 1);
       this.userService.selectedAssets = [];
@@ -93,11 +93,11 @@ export class SidebarComponent implements OnInit {
       this.assetChange(this.userService.assetToBeDrawn, 1);
       document.getElementById('Cursor').setAttribute('style', 'opacity: 1');
       document.getElementById('buttonSize' + this.userService.selectedBrush).setAttribute('style', 'opacity: 1');
-      this.tileChange(this.userService.terrainToBeDrawn, 0.5); 
+      this.tileChange(this.userService.terrainToBeDrawn, 0.5);
       this.userService.selectedBrush = brushSize;
       this.userService.terrainToBeDrawn = this.userService.terrainToBeDrawn;
     }
-    document.getElementById(toolName).setAttribute('style', 'opacity: 0.5');  
+    document.getElementById(toolName).setAttribute('style', 'opacity: 0.5');
   }
 
   tileChange(num, num2) {
@@ -106,51 +106,51 @@ export class SidebarComponent implements OnInit {
         document.getElementById('Light Dirt').setAttribute('style', 'opacity: ' + num2);
         break;
       case 1:
-        document.getElementById('Dark Dirt').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Dark Dirt').setAttribute('style', 'opacity: ' + num2);
         break;
       case 2:
-        document.getElementById('Forest').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Forest').setAttribute('style', 'opacity: ' + num2);
         break;
       case 3:
         document.getElementById('Light Grass').setAttribute('style', 'opacity: ' + num2);
         break;
       case 4:
-        document.getElementById('Dark Grass').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Dark Grass').setAttribute('style', 'opacity: ' + num2);
         break;
       case 5:
-        document.getElementById('Shallow Water').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Shallow Water').setAttribute('style', 'opacity: ' + num2);
         break;
       case 6:
-        document.getElementById('Deep Water').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Deep Water').setAttribute('style', 'opacity: ' + num2);
         break;
       case 7:
         document.getElementById('Rock').setAttribute('style', 'opacity:  ' + num2);
         break;
     }
   }
-  
+
   assetChange(num, num2) {
     switch (num) {
       case 0:
         document.getElementById('Archer').setAttribute('style', 'opacity: ' + num2);
         break;
       case 1:
-        document.getElementById('Footman').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Footman').setAttribute('style', 'opacity: ' + num2);
         break;
       case 2:
-        document.getElementById('Peasant').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Peasant').setAttribute('style', 'opacity: ' + num2);
         break;
       case 3:
         document.getElementById('Ranger').setAttribute('style', 'opacity: ' + num2);
         break;
       case 4:
-        document.getElementById('Barracks').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Barracks').setAttribute('style', 'opacity: ' + num2);
         break;
       case 5:
-        document.getElementById('Blacksmith').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Blacksmith').setAttribute('style', 'opacity: ' + num2);
         break;
       case 6:
-        document.getElementById('Farm').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Farm').setAttribute('style', 'opacity: ' + num2);
         break;
       case 7:
         document.getElementById('CannonTower').setAttribute('style', 'opacity:  ' + num2);
@@ -162,19 +162,19 @@ export class SidebarComponent implements OnInit {
         document.getElementById('GoldMine').setAttribute('style', 'opacity: ' + num2);
         break;
       case 10:
-        document.getElementById('GuardTower').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('GuardTower').setAttribute('style', 'opacity: ' + num2);
         break;
       case 11:
-        document.getElementById('Keep').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('Keep').setAttribute('style', 'opacity: ' + num2);
         break;
       case 12:
         document.getElementById('LumberMill').setAttribute('style', 'opacity: ' + num2);
         break;
       case 13:
-        document.getElementById('ScoutTower').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('ScoutTower').setAttribute('style', 'opacity: ' + num2);
         break;
       case 14:
-        document.getElementById('TownHall').setAttribute('style', 'opacity: '  + num2);
+        document.getElementById('TownHall').setAttribute('style', 'opacity: ' + num2);
         break;
     }
   }

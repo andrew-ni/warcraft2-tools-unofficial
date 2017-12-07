@@ -70,5 +70,5 @@ export class NewmapComponent implements OnInit {
 }
 
 require('electron').ipcRenderer.on('menu:file:new', () => {
-  document.getElementById('newMapModal').setAttribute('style', 'display: inline;');
+  document.getElementById('newMapModal').setAttribute('style', 'display: flex;');
 });

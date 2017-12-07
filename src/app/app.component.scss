@@ -26,7 +26,8 @@
     background-color: lightblue;
 }
 
-#content{
+#content {
+    display: none;
     float: 1;
     overflow-y: auto;
     flex: 1;

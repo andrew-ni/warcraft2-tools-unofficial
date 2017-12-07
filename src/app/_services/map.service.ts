@@ -72,8 +72,8 @@ export class MapService {
   public triggerss: string[][] = [];  // i give up, fml
 
   /** UI stuff for AI stuff (because I am too lazy to put it in User Service) */
-  public uiaiti: number = -1;  // ui ai triggerIndex
-  public uiaisl: number = -1; // ui ai scrollLeft
+  public uiaiti = -1;  // ui ai triggerIndex
+  public uiaisl = -1; // ui ai scrollLeft
 
   /** The absolute path of index.html during runtime. */
   public readonly resourcePath: string;

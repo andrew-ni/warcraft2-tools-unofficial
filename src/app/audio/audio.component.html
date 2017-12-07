@@ -1,18 +1,34 @@
 <div class="ui container"
      id="audio">
   <h5 align="center">Audio Editing</h5>
-    <div class = "audio">
+  <div class="ui message">
+    <ul>
+      <li><b>Load</b> or create a <b>New</b> map/package to access the sounds.</li>
+      <li>Peasants and archers have unique sound folders.  General unit sounds (such as unit death) not found in those folders are found in <b>basic</b>.</li>
+      <li>Goldmine, Blacksmith, Farm, Lumber mill are found in <b>building</b>.</li>
+      <li>All other sounds not found in those folders are in <b>misc</b>.</li>
+    </ul>
+  </div>
+  <div class = "audio">
+    <div class = "content">
     <select id = 'category'  class="ui dropdown" [(ngModel)] = 'selectedCategory' (ngModelChange)='showSound($event)'>
       <option *ngFor="let i of SongCategories"
               [value]="i">{{i}}</option>
     </select>
-    <br/>
+    </div>
+    <div class = "content">
     <select [(ngModel)]= 'selectedClipName' *ngIf = "isSoundLoaded" class="ui dropdown" (ngModelChange)='playSound($event)'>
       <option *ngFor="let i of Sounds"
               [value]="i">{{i}}</option>
     </select>
-    <button class="ui button" *ngIf = "selectedClipName !== undefined " (click) = 'changeAudio()'>Change</button>
-    <button class="ui button" *ngIf = "selectedClipName !== undefined" (click) = 'revertAudio()'>Revert</button>
     </div>
+    <div class = "content">
+    <button class="ui button" *ngIf = "selectedClipName !== undefined " (click) = 'changeAudio()'>Change</button>
+    <button class="ui button" *ngIf = "selectedClipName !== undefined" (click) = 'revertAudio()'>Default</button>
+    </div>
+    </div>
+    <br>
+    <div class = "content">
     <audio id = "audio-player" controls="controls" ></audio>
+    </div>
 </div>
