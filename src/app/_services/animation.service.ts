@@ -40,6 +40,7 @@ export class AnimationService {
   /** Constructs this AnimationService with SpriteService injected. */
   constructor(
     private spriteService: SpriteService,
+    private mapService: MapService,
   ) { }
 
   /** Initializes the canvas with default values. */
@@ -73,7 +74,8 @@ export class AnimationService {
   public setCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.canvas = canvas;
     this.context = ctx;
-    this.spriteService.initializing.then(() => this.init());
+    this.mapService.mapProjectLoaded.first().subscribe(() => this.init());
+    
   }
 
   /**
