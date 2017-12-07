@@ -152,9 +152,10 @@ export class IOService {
       this.mapFileName = await mapFile.name;    // save filename for later saving
 
       this.extractCustomSnds();
-      this.extractScripts();
 
       this.serializeService.initMapFromFile(mapData);
+
+      this.extractScripts();  // I realize it is better to extract scripts after parsing map
     } else {
       this.serializeService.initMapFromFile(data.toString('utf8'));
     }
@@ -308,13 +309,16 @@ export class IOService {
   private async extractScripts() {
     const script = this.zip.folder('scripts');
     const map = this.map;
-    script.forEach((dirName, dirFile) => {
-      if (dirFile.dir) {   // TODO  see if we can get this from file var
-        script.folder(dirName).forEach(async (name, file) => {       // for each file in the folder
-          map.allData.push(await file.async('text')); // TODO: FINISH
-          map.allScripts.push('./scripts/' + name);
-          console.log(name);
-        });
+    script.forEach(async (name, file) => {
+      let pathName = './scripts/' + name;
+      let data = await file.async('text');
+      let iDifficulty = this.map.difficulty.indexOf(pathName);
+      if (iDifficulty != -1) {
+        this.map.difficultyData[iDifficulty] = data;
+      }
+      let iEvents = this.map.events.indexOf(pathName);
+      if (iEvents != -1) {
+        this.map.eventsData[iEvents] = data;
       }
     });
   }

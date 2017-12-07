@@ -200,13 +200,17 @@ export class SerializeService {
     }
 
     for (const difficulty of this.map.difficulty) {
-      const i = this.map.allScripts.indexOf(difficulty);
-      this.map.difficultyData.push(this.map.allData[i])
+      // const i = this.map.allScripts.indexOf(difficulty);
+      // this.map.difficultyData.push(this.map.allData[i])
+      // parse map before extract scripts
+      this.map.difficultyData.push('');
     }
 
     for (const events of this.map.events) {
-      const i = this.map.allScripts.indexOf(events);
-      this.map.eventsData.push(this.map.allData[i]);
+      // const i = this.map.allScripts.indexOf(events);
+      // this.map.eventsData.push(this.map.allData[i]);
+      //parse map before extract scripts
+      this.map.eventsData.push('');
     }
 
     // if execution has reached this point, that means all parsing was completed successfully
