@@ -43,6 +43,12 @@ interface IMap {
   tilesUpdated: Subject<Region>;
   mapVersion: string;
   resourcePath: string;
+  difficultyData: string[];
+  eventsData: string[];
+  difficulty: string[];
+  events: string[];
+  allScripts: string[];
+  allData: string[];
 }
 
 
@@ -153,6 +159,8 @@ export class IOService {
       this.extractCustomSnds();
 
       this.serializeService.initMapFromFile(mapData);
+
+      this.extractScripts();  // I realize it is better to extract scripts after parsing map
     } else {
       this.serializeService.initMapFromFile(data.toString('utf8'));
     }
@@ -224,6 +232,24 @@ export class IOService {
       });
     });
 
+    /*
+     * Add scripts to package
+     */
+    this.zip.remove('scripts');
+    this.zip.folder('scripts');
+    let filename: string;
+    let filedata: string;
+    for (let i = 0; i < this.map.difficultyData.length; ++i) {
+      filename = this.map.difficulty[i].split('/').slice(-1)[0];
+      filedata = this.map.difficultyData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+    for (let i = 0; i < this.map.eventsData.length; ++i) {
+      filename = this.map.events[i].split('/').slice(-1)[0];
+      filedata = this.map.eventsData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+
     return this.zip.generateAsync({ type: 'nodebuffer' });
   }
 
@@ -282,6 +308,23 @@ export class IOService {
         });
         // await Promise.all(promises);
         // this.map.customSndLoaded.next();
+      }
+    });
+  }
+
+  private async extractScripts() {
+    const script = this.zip.folder('scripts');
+    const map = this.map;
+    script.forEach(async (name, file) => {
+      let pathName = './scripts/' + name;
+      let data = await file.async('text');
+      let iDifficulty = this.map.difficulty.indexOf(pathName);
+      if (iDifficulty != -1) {
+        this.map.difficultyData[iDifficulty] = data;
+      }
+      let iEvents = this.map.events.indexOf(pathName);
+      if (iEvents != -1) {
+        this.map.eventsData[iEvents] = data;
       }
     });
   }

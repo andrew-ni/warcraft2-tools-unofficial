@@ -39,12 +39,12 @@ export class AiComponent implements OnInit {
         if (err) {
           console.log(err);
         } else {
-          // do something
+          filename = filename.split('/').slice(-1)[0];
+          filename = './scripts/' + filename;
+          this.ngZone.run(() => { this.mapService.difficulty.push(filename);
+                                  this.mapService.difficultyData.push(data); });
         }
       });
-      filename = filename.split('/').slice(-1)[0];
-      filename = './scripts/' + filename;
-      this.ngZone.run(() => { this.mapService.difficulty.push(filename); });
     });
   }
 
@@ -53,7 +53,8 @@ export class AiComponent implements OnInit {
    * @param index index of to be removed in map service array
    */
   delDifficulty(index: number) {
-    this.ngZone.run(() => { this.mapService.difficulty.splice(index, 1); });
+    this.ngZone.run(() => { this.mapService.difficulty.splice(index, 1);
+                            this.mapService.difficultyData.splice(index, 1); });
   }
 
   /**
@@ -67,12 +68,12 @@ export class AiComponent implements OnInit {
         if (err) {
           console.log(err);
         } else {
-          // do something
+          filename = filename.split('/').slice(-1)[0];
+          filename = './scripts/' + filename;
+          this.ngZone.run(() => { this.mapService.events.push(filename);
+                                  this.mapService.eventsData.push(data); });
         }
       });
-      filename = filename.split('/').slice(-1)[0];
-      filename = './scripts/' + filename;
-      this.ngZone.run(() => { this.mapService.events.push(filename); });
     });
   }
 
@@ -81,7 +82,8 @@ export class AiComponent implements OnInit {
    * @param index index of to be removed in map service array
    */
   delEvent(index: number) {
-    this.ngZone.run(() => { this.mapService.events.splice(index, 1); });
+    this.ngZone.run(() => { this.mapService.events.splice(index, 1);
+                            this.mapService.eventsData.splice(index, 1); });
   }
 
   /**
