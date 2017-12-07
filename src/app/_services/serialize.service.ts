@@ -170,9 +170,6 @@ export class SerializeService {
     this.map.triggerss = [];
     this.parseMapData(mapData);
     console.log('init Map');
-
-    ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
-    // ipcRenderer.send('assets:load', )
   }
 
   /**
