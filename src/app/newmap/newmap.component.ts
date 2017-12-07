@@ -41,7 +41,7 @@ export class NewmapComponent implements OnInit {
     createButton.addEventListener('click', () => this.buildMap());
 
     const numPlayersField: HTMLSelectElement = document.getElementById('NumPlayersField') as HTMLSelectElement;
-    numPlayersField.addEventListener('click', () => this.updateNumPlayers(Number(numPlayersField.value)));
+    numPlayersField.addEventListener('change', () => this.updateNumPlayers(Number(numPlayersField.value)));
   }
   /**
    * Initialize a new map with user input
