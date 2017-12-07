@@ -57,8 +57,8 @@ export class WebComponent implements OnInit {
       console.log(this.form.value.password);
 
       const params = new HttpParams()
-      .append('name', this.form.value.username)
-      .append('password', this.form.value.password);
+        .append('name', this.form.value.username)
+        .append('password', this.form.value.password);
 
       this.http.get<LoginResponse>('http://34.214.129.0/login/multi/index.php', { params })
         .do(resp => console.log(resp))
