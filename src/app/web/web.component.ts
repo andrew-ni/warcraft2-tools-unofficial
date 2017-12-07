@@ -136,30 +136,55 @@ export class WebComponent implements OnInit {
       });
   }
 
-  private async exportMap(zip = true) {
-    let file: File;
-    let url: string;
-    if (zip) {
-      url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
-      file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
-    } else {
-      url = 'http://34.214.129.0/dlc/tool_upload.php';
+  public debug() {
+    console.log(this.ioService.loaded);
+  }
+  private async exportMap() {
+    if (this.ioService.loaded) {
+      let file: File;
+      const url = 'http://34.214.129.0/dlc/tool_upload.php';
       file = new File([this.serializeService.serializeMap()], this.exportName + '.map', { type: 'text/plain' });
+      console.log(file);
+
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('uploader', this.userId.toString());
+      formData.append('private', 'false');
+
+      this.http.post(url, formData)
+        .subscribe({
+          next: resp => {
+            console.log(resp);
+            this.getMaps();
+          },
+          error: err => console.error(err),
+        });
     }
-    console.log(file);
+    else {
+      console.log('exportmap: not loaded');
+    }
+  }
 
-    const formData = new FormData();
-    formData.append('fileToUpload', file);
-    formData.append('uploader', this.userId.toString());
-    formData.append('private', 'false');
+  private async exportPackage() {
+    if (this.ioService.loaded) {
+      let file: File;
+      const url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
+      file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
+      console.log(file);
 
-    this.http.post(url, formData)
-      .subscribe({
-        next: resp => {
-          console.log(resp);
-          this.getMaps();
-        },
-        error: err => console.error(err),
-      });
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('uploader', this.userId.toString());
+      formData.append('private', 'false');
+
+      this.http.post(url, formData)
+        .subscribe({
+          next: resp => {
+            console.log(resp);
+            this.getMaps();
+          },
+          error: err => console.error(err),
+        });
+    }
   }
 }

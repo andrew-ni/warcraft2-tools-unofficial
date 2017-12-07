@@ -30,11 +30,15 @@
       <div class="ui form">
         <div class="inline field">
           <input type="text"
-                 placeholder="Map name"
+                 placeholder="Map/Package name"
                  class="floated right"
                  [(ngModel)]="exportName">
-          <div class="ui right floated button"
-               (click)="exportMap()">Export Map</div>
+          <div class="ui button"
+               (click)="exportMap()">Upload Map</div>
+          <div class="ui button"
+               (click)="exportPackage()">Upload Package</div>
+          <div class="ui button"
+               (click)="debug()">Debug</div>
         </div>
       </div>
     </div>
