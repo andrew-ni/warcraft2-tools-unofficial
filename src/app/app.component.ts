@@ -32,11 +32,13 @@ export class AppComponent {
       this.mapService.assetsUpdated.next({ y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
       this.mapService.tilesUpdated.next({ y: 0, x: 0, height: this.mapService.height, width: this.mapService.width });
       document.getElementById(tabName).style.display = 'flex';
+      document.getElementById('content').style.display = 'none';
     } else {
       if (tabName === 'animation') {
         this.animation.focus();
       }
       document.getElementById(tabName).style.display = 'block';
+      document.getElementById('content').style.display = 'block';
     }
   }
 }

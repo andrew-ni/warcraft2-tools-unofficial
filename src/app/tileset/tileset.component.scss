@@ -1,7 +1,6 @@
 #tilesetevents {
     position: relative;
-    left: 2em;
-    top: 2em;
+    padding: 2em;
 }
 
 #tilesetCanvas {
@@ -22,4 +21,5 @@
     pointer-events: none;
     position: absolute;
     border: 1px solid white;
+    top: 2em;
 }
