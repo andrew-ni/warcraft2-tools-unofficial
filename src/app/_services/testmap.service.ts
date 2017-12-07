@@ -158,6 +158,7 @@ export class TestmapService {
   constructor(
     private spriteService: SpriteService,
     private soundService: SoundService,
+    private mapService: MapService,
   ) {
 
 
@@ -607,7 +608,8 @@ export class TestmapService {
     this.playerCanvas = playerCanvas;
     this.playerContext = playerContext;
 
-    this.spriteService.initializing.then(() => this.init());
+    this.mapService.mapProjectLoaded.first().subscribe(() => this.init());
+
     const img = new Image();
     img.src = TestmapService.BACKGROUND_PATH;
 

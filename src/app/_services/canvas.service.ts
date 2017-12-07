@@ -101,7 +101,6 @@ export class CanvasService {
   private async init() {
     this.map.mapProjectLoaded.do(() => console.log('mapLoaded:Canvas')).subscribe({
       next: async () => {
-        await this.spriteService.init();
         this.map.assetsUpdated.next();
       },
       error: err => console.error(err),
@@ -327,7 +326,7 @@ export class CanvasService {
     this.terrainContext = terrainCtx;
     this.assetCanvas = assetCanvas;
     this.assetContext = assetCtx;
-    this.spriteService.initializing.then(() => this.init());
+    this.map.mapProjectLoaded.first().subscribe(() => this.init());
   }
 
 

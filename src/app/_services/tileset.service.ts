@@ -38,7 +38,7 @@ export class TilesetService {
     this.canvas = canvas;
     this.context = ctx;
     ctx.webkitImageSmoothingEnabled = false;
-    this.spriteService.initializing.then(() => this.init());
+    this.mapService.mapProjectLoaded.first().subscribe(() => this.init());
   }
 
   /**
@@ -54,7 +54,6 @@ export class TilesetService {
   private init() {
     this.mapService.mapProjectLoaded.do(() => console.log('mapLoaded:TilesetTab')).subscribe({
       next: async () => {
-        await this.spriteService.init();
         this.drawCanvas();
       },
       error: err => console.error(err),
