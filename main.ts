@@ -34,7 +34,7 @@ async function createWindow(openDevTools: boolean) {
   }));
 
   // Open the DevTools.
-  if (openDevTools || true) mainWindow.webContents.openDevTools();
+  if (devTools) mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -75,8 +75,4 @@ ipcMain.on('map:save', (event: Electron.IpcMessageEvent, data: string, filepath:
 
 ipcMain.on('map:load', (event: Electron.IpcMessageEvent, filepath: string) => {
   IO.loadMap(mainWindow.webContents, filepath);
-});
-
-ipcMain.on('terrain:load', (event: Electron.IpcMessageEvent, terrainFilePath: string, mapFilePath: string) => {
-  IO.loadTerrain(mainWindow.webContents, terrainFilePath, mapFilePath);
 });

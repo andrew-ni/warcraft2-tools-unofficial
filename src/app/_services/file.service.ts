@@ -28,8 +28,6 @@ export class FileService {
 
   private readonly defaultPath: string;
 
-  public initializing: Promise<void>;
-
   /** Access to map */
   private map: IMap;
 
@@ -38,18 +36,12 @@ export class FileService {
   ) {
     this.map = mapService;
     this.defaultPath = pathJoin(this.map.resourcePath, 'data');
+  }
 
-
-    let resolve: () => void;
-    this.initializing = new Promise<void>(res => resolve = res);
-
-    this.map.mapProjectOpened.subscribe(zip => {
-      this.root = zip;
-      this.img = (zip === undefined) ? undefined : zip.folder('img');
-      this.snd = (zip === undefined) ? undefined : zip.folder('snd');
-      resolve();
-      this.map.mapProjectLoaded.next();
-    });
+  public init(zip: JSZip) {
+    this.root = zip;
+    this.img = (zip === undefined) ? undefined : zip.folder('img');
+    this.snd = (zip === undefined) ? undefined : zip.folder('snd');
   }
 
   /**

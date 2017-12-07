@@ -34,6 +34,10 @@ interface IMap {
   difficulty: string[];
   events: string[];
   triggerss: string[][];
+  difficultyData: string[];
+  eventsData: string[];
+  allScripts: string[];
+  allData: string[];
   mapResized: Subject<Dimension>;
   assetsUpdated: Subject<Region>;
 }
@@ -170,9 +174,6 @@ export class SerializeService {
     this.map.triggerss = [];
     this.parseMapData(mapData);
     console.log('init Map');
-
-    ipcRenderer.send('terrain:load', this.map.terrainPath, filePath);
-    // ipcRenderer.send('assets:load', )
   }
 
   /**
@@ -196,6 +197,20 @@ export class SerializeService {
     [this.map.difficulty, this.map.events, triggers] = this.parseAI(aiDifficulty ? aiDifficulty.trim() : undefined, aiEvents ? aiEvents.trim() : undefined, aiTriggers ? aiTriggers.trim() : undefined);
     for (const trigger of triggers) {
       this.map.triggerss.push([trigger]);
+    }
+
+    for (const difficulty of this.map.difficulty) {
+      // const i = this.map.allScripts.indexOf(difficulty);
+      // this.map.difficultyData.push(this.map.allData[i])
+      // parse map before extract scripts
+      this.map.difficultyData.push('');
+    }
+
+    for (const events of this.map.events) {
+      // const i = this.map.allScripts.indexOf(events);
+      // this.map.eventsData.push(this.map.allData[i]);
+      //parse map before extract scripts
+      this.map.eventsData.push('');
     }
 
     // if execution has reached this point, that means all parsing was completed successfully

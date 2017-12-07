@@ -43,6 +43,12 @@ interface IMap {
   tilesUpdated: Subject<Region>;
   mapVersion: string;
   resourcePath: string;
+  difficultyData: string[];
+  eventsData: string[];
+  difficulty: string[];
+  events: string[];
+  allScripts: string[];
+  allData: string[];
 }
 
 
@@ -68,6 +74,9 @@ export class IOService {
    * to map.map
   */
   private mapFileName: string;
+
+  /** Boolean for map/package uploading. */
+  private _loaded = false;
 
   constructor(
     mapService: MapService,
@@ -116,6 +125,8 @@ export class IOService {
     });
   }
 
+  get loaded() { return this._loaded; }
+
   /**
    * Opens the project zip
    * @param filePath the full path to the map project
@@ -139,6 +150,7 @@ export class IOService {
   public async readPackage(data: Buffer, isZip: boolean) {
     this.zip = new JSZip();
 
+
     if (isZip) {  // check if package
       await this.zip.loadAsync(data);
       const mapFile: JSZip.JSZipObject = await this.zip.file(/.+\.map/)[0]; // only open first file
@@ -148,6 +160,8 @@ export class IOService {
       this.extractCustomSnds();
 
       this.serializeService.initMapFromFile(mapData);
+
+      this.extractScripts();  // I realize it is better to extract scripts after parsing map
     } else {
       this.serializeService.initMapFromFile(data.toString('utf8'));
     }
@@ -155,6 +169,7 @@ export class IOService {
     this.zip.folder('img');
     this.zip.folder('snd');
     this.zip.folder('scripts');
+    this._loaded = true;
     this.map.mapProjectOpened.next(this.zip);
   }
 
@@ -218,6 +233,24 @@ export class IOService {
       });
     });
 
+    /*
+     * Add scripts to package
+     */
+    this.zip.remove('scripts');
+    this.zip.folder('scripts');
+    let filename: string;
+    let filedata: string;
+    for (let i = 0; i < this.map.difficultyData.length; ++i) {
+      filename = this.map.difficulty[i].split('/').slice(-1)[0];
+      filedata = this.map.difficultyData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+    for (let i = 0; i < this.map.eventsData.length; ++i) {
+      filename = this.map.events[i].split('/').slice(-1)[0];
+      filedata = this.map.eventsData[i];
+      this.zip.folder('scripts').file( filename, filedata );
+    }
+
     return this.zip.generateAsync({ type: 'nodebuffer' });
   }
 
@@ -280,6 +313,23 @@ export class IOService {
     });
   }
 
+  private async extractScripts() {
+    const script = this.zip.folder('scripts');
+    const map = this.map;
+    script.forEach(async (name, file) => {
+      const pathName = './scripts/' + name;
+      const data = await file.async('text');
+      const iDifficulty = this.map.difficulty.indexOf(pathName);
+      if (iDifficulty !== -1) {
+        this.map.difficultyData[iDifficulty] = data;
+    }
+      const iEvents = this.map.events.indexOf(pathName);
+      if (iEvents !== -1) {
+        this.map.eventsData[iEvents] = data;
+      }
+    });
+  }
+
   /**
    * Initialize the map when new menu is used
    * @param name map name created.
@@ -290,6 +340,7 @@ export class IOService {
    * @param players player number and starting resource
    */
   public initNewMap(name: string, description: string, width: number, height: number, fillTile: TileType, players: Player[]): void {
+    this._loaded = true;
     this.openedFilePath = undefined;
     this.map.canSave = false;
     this.map.name = name;

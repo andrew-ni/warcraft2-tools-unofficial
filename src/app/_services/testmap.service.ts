@@ -158,6 +158,7 @@ export class TestmapService {
   constructor(
     private spriteService: SpriteService,
     private soundService: SoundService,
+    private mapService: MapService,
   ) {
 
 
@@ -530,8 +531,10 @@ export class TestmapService {
       case Action.GoldMine: {
         this.player.setDirection(dir);
         this.currentSound = this.soundService.getAssetSound(goldmineMap.get('selected')[0]);
-        this.currentWalkAction = 'gold';
-        this.actionDuration = 1;
+        if (this.playerAsset === AssetType.Peasant){
+          this.currentWalkAction = 'gold';
+          this.actionDuration = 1;
+        }
 
         // Activate goldmine for 3 seconds
         this.goldmine.setAction('active');
@@ -605,7 +608,8 @@ export class TestmapService {
     this.playerCanvas = playerCanvas;
     this.playerContext = playerContext;
 
-    this.spriteService.initializing.then(() => this.init());
+    this.mapService.mapProjectLoaded.first().subscribe(() => this.init());
+
     const img = new Image();
     img.src = TestmapService.BACKGROUND_PATH;
 

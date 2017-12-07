@@ -33,8 +33,6 @@ export class SpriteService {
   /** Contains all the sprites assets loaded */
   private sprites = new Map<AssetType, Sprite>();
 
-  public initializing: Promise<void[]>;
-
   private map: IMap;
 
   constructor(
@@ -43,7 +41,12 @@ export class SpriteService {
   ) {
     this.map = mapService;
     this.preInit();
-    this.initializing = this.init();
+
+    mapService.mapProjectOpened.subscribe(async zip => {
+      fileService.init(zip);
+      await this.init();
+      mapService.mapProjectLoaded.next(undefined);
+     });
   }
 
   public preInit() {
@@ -60,8 +63,6 @@ export class SpriteService {
    * Needs to be called before `get`
    */
   public async init() {
-    await this.fileService.initializing;
-
     const prefetches: Promise<void>[] = [];
     for (let type = 0; type < AssetType.MAX; type++) {
       prefetches.push(this.prefetch(type));
@@ -71,6 +72,8 @@ export class SpriteService {
     this.colorMap = await this.HTMLImageToImageData(await this.loadImage('data/img/Colors.png'));
 
     return Promise.all(prefetches);
+
+    
   }
 
   /**

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { remote } from 'electron';
 import { ReplaySubject, Subject } from 'rxjs/Rx';
 
+import { enableProdMode } from '@angular/core/src/application_ref';
 import { Asset } from 'asset';
 import { Dimension, Region } from 'interfaces';
 import * as JSZip from 'jszip';
@@ -69,6 +70,14 @@ export class MapService {
   public difficulty: string[] = [];
   public events: string[] = [];
   public triggerss: string[][] = [];  // i give up, fml
+
+  /** AI Lua script content. */
+  public difficultyData: string[] = [];
+  public eventsData: string[] = [];
+
+  /** All Lua scripts. */
+  public allScripts: string[] = [];
+  public allData: string[] = [];
 
   /** UI stuff for AI stuff (because I am too lazy to put it in User Service) */
   public uiaiti = -1;  // ui ai triggerIndex

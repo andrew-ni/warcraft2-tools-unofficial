@@ -54,7 +54,7 @@ export function buildMenu(window: Electron.WebContents): void {
         {
           label: 'Save Map',
           click() {
-            window.send('menu:file:map');
+            window.send('menu:file:savemap');
           }
         },
         {
@@ -63,7 +63,7 @@ export function buildMenu(window: Electron.WebContents): void {
             dialog.showSaveDialog(saveMapOptions, (filePath) => {
               if (filePath) {
                 console.log(filePath);
-                window.send('menu:file:map', filePath);
+                window.send('menu:file:savemap', filePath);
               }
             });
           }
