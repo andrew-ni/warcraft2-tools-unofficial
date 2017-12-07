@@ -4,7 +4,7 @@
 <div class="newmap">
     <span class="close" (click)="fun_close();">&times;</span>
     <h2 align="center">New Map</h2>
-<div class='ui equal width two column grid'>
+<div class='ui center aligned equal width two column grid'>
 
         <div class='column'><h3>Map Name: </h3></div>
         <div class='column'><div class='ui fluid input'><input type="text" placeholder='Name' id="NameField" name="mapName"> </div></div>
@@ -13,7 +13,7 @@
         <div class='column'><div class='ui fluid input'><input type="text" placeholder='Description' id="DescField" name="mapDesc"> </div></div>
 
         <div class='column'><h3>Map Dimensions:</h3> </div>
-        <div class='column' style="display:block;">
+        <div class='left aligned column'>
             <div class='ui input'>
                 <input type="text" placeholder='width' id="WidthField" name="width">
             </div>
@@ -23,7 +23,7 @@
         </div>
 
         <div class='column'><h3>Resources Cap:</h3> </div>
-        <div class='column'>
+        <div class='left aligned column'>
             <img class='ui middle aligned image' src = ":../../assets/frontend_icons/gold_icon.png">
             <div class='ui input'>
                 <input type="text" placeholder='Gold' id="GoldCapField" name="goldCap">
@@ -35,7 +35,7 @@
         </div>
         
         <div class='column'><h3>Number of Players:</h3> </div>
-        <div class='column'>
+        <div class='left aligned column'>
             <select class='ui dropdown' id="NumPlayersField" name = "numPlayersName">
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -47,16 +47,13 @@
             </select>
         </div>
         <div class='row'>
-            <div class='ui center aligned column'><h3>Starting Resources:</h3></div>
+            <div class='column'><h3>Starting Resources:</h3></div>
         </div>
 
         <div class='column' *ngFor="let n of currentPlayers; let i = index">
-            <!-- <div class='column'> -->
                 <h4>Player {{n.id}}:</h4>
-            <!-- </div> -->
 
-            <div class='column'>
-                <!-- <div *ngFor="let n of currentPlayers; let i = index"> -->
+            <!-- <div class='column'> -->
                     <img class='ui middle aligned image' src = ":../../assets/frontend_icons/gold_icon.png">
                     <div class='ui input'>
                         <input type="number" [(ngModel)]="currentPlayers[i].gold">
@@ -65,12 +62,11 @@
                     <div class='ui input'>
                         <input type="number" [(ngModel)]="currentPlayers[i].lumber">
                     </div>
-                <!-- </div> -->
-            </div> 
+            <!-- </div>  -->
         </div>
         
         <div class='row'>
-            <div class='ui center aligned column'>
+            <div class='column'>
                 <button class='ui button' id="CreateMapButton">Create Map</button>
             </div>
         </div>
