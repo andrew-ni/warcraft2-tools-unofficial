@@ -2,8 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { parse as parseName } from 'path';
 import { IOService } from 'services/io.service';
 import { SerializeService } from 'services/serialize.service';
+
 
 
 interface LoginResponse {
@@ -37,6 +39,7 @@ export class WebComponent implements OnInit {
   private form: FormGroup;
   private maps: MapDisplay[] = [];
   private exportName = '';
+  private uploading = false;
 
   constructor(
     private http: HttpClient,
@@ -86,6 +89,11 @@ export class WebComponent implements OnInit {
     }
   }
 
+  private logout() {
+    this.loggedIn = false;
+    this.uploading = false; // allows reset if web API breaks
+  }
+
 
   private async getMaps() {
     if (!this.loggedIn) return;
@@ -117,17 +125,14 @@ export class WebComponent implements OnInit {
   }
 
   private async importMap(name: string) {
-    const params = new HttpParams()
-      .append('map', name);
-    // .append('name', this.form.value.username)
-    // .append('password', this.form.value.password);
+    const isZip = parseName(name).ext === '.zip';
+    const url = isZip ? `http://34.214.129.0/downloadCMaps/cMapPkgs/${name}` : `http://34.214.129.0/dlc/maps/${name}`;
 
-    this.http.get('http://34.213.125.24/dlc/map_download.php', { params })
+    this.http.get(url, { responseType: 'arraybuffer' })
       .do(resp => console.log(resp))
       .subscribe({
         next: resp => {
-          // const file = new File([resp as Buffer], Math.random().toString() + '.zip', { type: 'application/zip', });
-          // this.ioService.readPackage(resp as Buffer, true);
+          this.ioService.readPackage(Buffer.from(resp), isZip);
         },
         error: err => {
           this.loggedIn = false;
@@ -137,30 +142,72 @@ export class WebComponent implements OnInit {
       });
   }
 
-  private async exportMap(zip = true) {
-    let file: File;
-    let url: string;
-    if (zip) {
-      url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
-      file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
-    } else {
-      url = 'http://34.214.129.0/dlc/tool_upload.php';
+  // public debug() {
+  //   const element = <HTMLInputElement>document.getElementById('myCheck');
+  //   console.log(element.checked.toString());
+  // }
+  private async exportMap() {
+    if (this.ioService.loaded && !this.uploading) {
+      this.uploading = true;
+      const mapbtn = <HTMLInputElement>document.getElementById('mapuploadbutton');
+      mapbtn.className = 'ui loading button';
+      const pkgbtn = <HTMLInputElement>document.getElementById('packageuploadbutton');
+      pkgbtn.className = 'ui disabled button';
+
+      let file: File;
+      const url = 'http://34.214.129.0/dlc/tool_upload.php';
       file = new File([this.serializeService.serializeMap()], this.exportName + '.map', { type: 'text/plain' });
+      console.log(file);
+
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('uploader', this.userId.toString());
+      const isPrivate = <HTMLInputElement>document.getElementById('myCheck');
+      formData.append('private', isPrivate.checked.toString()); // append 'true' or 'false'
+
+      this.http.post(url, formData)
+        .subscribe({
+          next: resp => {
+            console.log(resp);
+            this.getMaps();
+            mapbtn.className = 'ui button';
+            pkgbtn.className = 'ui button';
+            this.uploading = false;
+          },
+          error: err => console.error(err),
+        });
     }
-    console.log(file);
+  }
 
-    const formData = new FormData();
-    formData.append('fileToUpload', file);
-    formData.append('uploader', this.userId.toString());
-    formData.append('private', 'false');
+  private async exportPackage() {
+    if (this.ioService.loaded && !this.uploading) {
+      this.uploading = true;
+      const mapbtn = <HTMLInputElement>document.getElementById('mapuploadbutton');
+      mapbtn.className = 'ui disabled button';
+      const pkgbtn = <HTMLInputElement>document.getElementById('packageuploadbutton');
+      pkgbtn.className = 'ui loading button';
 
-    this.http.post(url, formData)
-      .subscribe({
-        next: resp => {
-          console.log(resp);
-          this.getMaps();
-        },
-        error: err => console.error(err),
-      });
+      let file: File;
+      const url = 'http://34.214.129.0/downloadCMaps/zip_upload.php';
+      file = new File([await this.ioService.buildPackage()], this.exportName + '.zip', { type: 'application/zip' });
+      console.log(file);
+
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('uploader', this.userId.toString());
+      formData.append('private', 'false');
+
+      this.http.post(url, formData)
+        .subscribe({
+          next: resp => {
+            console.log(resp);
+            this.getMaps();
+            mapbtn.className = 'ui button';
+            pkgbtn.className = 'ui button';
+            this.uploading = false;
+          },
+          error: err => console.error(err),
+        });
+    }
   }
 }
